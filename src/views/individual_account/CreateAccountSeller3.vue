@@ -236,18 +236,11 @@ export default {
         alert("Passwords do not match!");
         return;
       }
-      // Optionally, log selected country and city for debugging
-      // console.log("Country:", this.selectedCountry);
-      // console.log("City:", this.selectedCity);
-      // alert(`Selected: ${this.selectedCountry}, ${this.selectedCity}`);
-
-      // // Proceed with submission (for demo, we use an alert)
-      // alert("Form submitted successfully!");
 
       // Clear the saved form data from localStorage after submission
       localStorage.removeItem("accountFormData");
 
-      this.$router.push("/dashboard-seller");
+      this.$router.push("/login");
     },
   },
 };

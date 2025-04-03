@@ -133,12 +133,12 @@ const routes = [
     meta: { hideHeader: true, hideFooter: true },
   },
   {
-    path: "/all-category",
+    path: "/allcategory",
     component: AllCategory,
     meta: { hideHeader: true, hideFooter: true },
   },
   {
-    path: "/all-product",
+    path: "/allproduct",
     component: AllProduct,
     meta: { hideHeader: true, hideFooter: true },
   },

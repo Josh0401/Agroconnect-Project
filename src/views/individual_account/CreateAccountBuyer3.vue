@@ -248,8 +248,7 @@ export default {
       // Clear the saved form data from localStorage
       localStorage.removeItem("accountFormData");
 
-      // You can navigate to a confirmation page or perform an API call here
-      // this.$router.push("/next-step");
+      this.$router.push("/login");
     },
   },
 };

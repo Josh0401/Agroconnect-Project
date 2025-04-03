@@ -58,7 +58,7 @@
       <div class="container">
         <div class="categories-header">
           <p class="h1">Categories</p>
-          <router-link to="/all-categories" class="view-all">
+          <router-link to="/allcategory" class="view-all">
             View All <span class="arrow">&rarr;</span>
           </router-link>
         </div>
@@ -68,152 +68,202 @@
           >
             <!-- Card 1 -->
             <div class="col">
-              <div class="card h-100">
+              <router-link to="/market" class="card h-100">
                 <img
-                  src="../../assets/hybrid-coconut.jpg"
+                  src="../../assets/herb.jpg"
                   class="card-img-top"
-                  alt="Hybrid Coconut Seedlings"
+                  alt="Herbs and Spices"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Hybrid Coconut Seedlings</h5>
-                  <p class="card-text">Rs10</p>
+                  <h5 class="card-title">Herbs and Spices</h5>
                 </div>
-              </div>
+              </router-link>
             </div>
 
             <!-- Card 2 -->
             <div class="col">
-              <div class="card h-100">
+              <router-link to="/market" class="card h-100">
                 <img
-                  src="../../assets/hybrid_tenera_oil_palm.jpg"
+                  src="../../assets/fresh-fruit.png"
                   class="card-img-top"
-                  alt="Tenera Oil Palm Seedlings"
+                  alt="Fresh Fruits"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Hybrid Tenera Oil Palm Seedlings</h5>
-                  <p class="card-text">Rs15</p>
+                  <h5 class="card-title">Fresh Fruits</h5>
                 </div>
-              </div>
+              </router-link>
             </div>
 
             <!-- Card 3 -->
             <div class="col">
-              <div class="card h-100">
+              <router-link to="/market" class="card h-100">
                 <img
-                  src="../../assets/tenera_oil_palm_sprouted_seeds.jpg"
+                  src="../../assets/grains.png"
                   class="card-img-top"
-                  alt="Tenera Oil Palm Sprouted Seeds"
+                  alt="Grains"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Tenera Oil Palm Sprouted Seeds</h5>
-                  <p class="card-text">Rs20</p>
+                  <h5 class="card-title">Grains</h5>
                 </div>
-              </div>
+              </router-link>
             </div>
 
             <!-- Card 4 -->
             <div class="col">
-              <div class="card h-100">
+              <router-link to="/market" class="card h-100">
                 <img
-                  src="../../assets/cowpea.jpg"
+                  src="../../assets/root-tuber.jpg"
                   class="card-img-top"
-                  alt="Black-Eyed Pea (Cowpea)"
+                  alt="Roots and Tubers"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Black-Eyed Pea (Cowpea)</h5>
-                  <p class="card-text">Rs25</p>
+                  <h5 class="card-title">Roots and Tubers</h5>
                 </div>
-              </div>
+              </router-link>
             </div>
 
             <!-- Card 5 -->
             <div class="col">
-              <div class="card h-100">
+              <router-link to="/market" class="card h-100">
                 <img
-                  src="../../assets/white-maize.jpg"
+                  src="../../assets/nut-seeds.png"
                   class="card-img-top"
-                  alt="White Maize"
+                  alt="Nuts and Seeds"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">White Maize</h5>
-                  <p class="card-text">Rs30</p>
+                  <h5 class="card-title">Nuts and Seeds</h5>
                 </div>
-              </div>
+              </router-link>
             </div>
 
             <!-- Card 6 -->
             <div class="col">
-              <div class="card h-100">
+              <router-link to="/market" class="card h-100">
                 <img
-                  src="../../assets/white-beans.jpg"
+                  src="../../assets/cooking.png"
                   class="card-img-top"
-                  alt="White Beans"
+                  alt="Cooking"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">White Beans</h5>
-                  <p class="card-text">Rs35</p>
+                  <h5 class="card-title">Cooking</h5>
                 </div>
-              </div>
+              </router-link>
             </div>
 
             <!-- Card 7 -->
             <div class="col">
-              <div class="card h-100">
+              <router-link to="/market" class="card h-100">
                 <img
-                  src="../../assets/cassava.jpeg"
+                  src="../../assets/dairy.png"
                   class="card-img-top"
-                  alt="Cassava"
+                  alt="Dairy Products"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Cassava</h5>
-                  <p class="card-text">Rs40</p>
+                  <h5 class="card-title">Dairy Products</h5>
                 </div>
-              </div>
+              </router-link>
             </div>
 
             <!-- Card 8 -->
             <div class="col">
-              <div class="card h-100">
+              <router-link to="/market" class="card h-100">
                 <img
-                  src="../../assets/mung-beans.jpg"
+                  src="../../assets/processed-food.png"
                   class="card-img-top"
-                  alt="Mung Beans"
+                  alt="Processed Foods"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Mung Beans</h5>
-                  <p class="card-text">Rs45</p>
+                  <h5 class="card-title">Processed Foods</h5>
                 </div>
-              </div>
+              </router-link>
             </div>
 
             <!-- Card 9 -->
             <div class="col">
-              <div class="card h-100">
+              <router-link to="/market" class="card h-100">
                 <img
-                  src="../../assets/red-kidney-beans.jpg"
+                  src="../../assets/agro-chem.png"
                   class="card-img-top"
-                  alt="Red kidney Beans"
+                  alt="Agro Chemicals"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Red kidney Beans</h5>
-                  <p class="card-text">Rs50</p>
+                  <h5 class="card-title">Agro Chemicals</h5>
                 </div>
-              </div>
+              </router-link>
             </div>
 
             <!-- Card 10 -->
             <div class="col">
-              <div class="card h-100">
+              <router-link to="/market" class="card h-100">
                 <img
-                  src="../../assets/soursop-tea.jpg"
+                  src="../../assets/diabetic.png"
                   class="card-img-top"
-                  alt="Soursop Tea with Ginger"
+                  alt="Diabetics"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Soursop Tea with Ginger</h5>
-                  <p class="card-text">Rs55</p>
+                  <h5 class="card-title">Diabetics</h5>
                 </div>
-              </div>
+              </router-link>
+            </div>
+            <div class="col">
+              <router-link to="/market" class="card h-100">
+                <img
+                  src="../../assets/protein.png"
+                  class="card-img-top"
+                  alt="Proteins"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">Proteins</h5>
+                </div>
+              </router-link>
+            </div>
+            <div class="col">
+              <router-link to="/market" class="card h-100">
+                <img
+                  src="../../assets/baking.png"
+                  class="card-img-top"
+                  alt="Baking Ingredients"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">Baking Ingredients</h5>
+                </div>
+              </router-link>
+            </div>
+            <div class="col">
+              <router-link to="/market" class="card h-100">
+                <img
+                  src="../../assets/snack.png"
+                  class="card-img-top"
+                  alt="Snacks and Pastries"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">Snacks and Pastries</h5>
+                </div>
+              </router-link>
+            </div>
+            <div class="col">
+              <router-link to="/market" class="card h-100">
+                <img
+                  src="../../assets/cereal.png"
+                  class="card-img-top"
+                  alt="Cereals"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">Cereals and Beverages</h5>
+                </div>
+              </router-link>
+            </div>
+            <div class="col">
+              <router-link to="/market" class="card h-100">
+                <img
+                  src="../../assets/fresh-veg.png"
+                  class="card-img-top"
+                  alt="Fresh Vegetables"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">Fresh Vegetables</h5>
+                </div>
+              </router-link>
             </div>
           </div>
         </div>
@@ -225,7 +275,7 @@
       <div class="container">
         <div class="categories-header">
           <p class="h1">Products</p>
-          <router-link to="/all-products" class="view-all">
+          <router-link to="/allproduct" class="view-all">
             View All <span class="arrow">&rarr;</span>
           </router-link>
         </div>
@@ -692,5 +742,25 @@ body {
 
 .arrow {
   margin-left: 4px; /* small spacing before arrow */
+}
+.card {
+  position: relative;
+  overflow: hidden; /* ensures the zoomed image doesn't exceed the card bounds */
+  transition: transform 0.3s ease;
+}
+
+.card-img-top {
+  transition: transform 0.3s ease;
+}
+
+.card:hover .card-img-top {
+  transform: scale(1.05); /* zoom in the image */
+}
+
+.card:hover .card-title {
+  color: rgb(25, 135, 84); /* change text color on hover */
+}
+.card:hover {
+  cursor: pointer;
 }
 </style>
