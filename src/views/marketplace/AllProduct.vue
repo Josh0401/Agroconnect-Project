@@ -28,27 +28,48 @@
             <svg class="search-icon" fill="currentColor" viewBox="0 0 16 16">
               <path
                 d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85.708-.708-3.85-3.85zm-5.242.656
-           a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"
+                   a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"
               />
             </svg>
-
             <!-- Search input -->
             <input
               id="searchInput"
               type="text"
               placeholder="Search"
-              onkeydown="if(event.key === 'Enter') handleSearch()"
+              @keydown.enter="handleSearch"
+              v-model="searchQuery"
             />
-            <button type="button" onclick="handleSearch()">Search</button>
+            <button type="button" @click="handleSearch">Search</button>
           </div>
         </ul>
-        <!-- <div class="d-flex align-items-center py-1">
-            <router-link
-              class="nav-link me-3 btn btn-success text-white green rounded-pill px-4 py-1"
-              to="/login"
-              >Login/Signup</router-link
+        <div class="d-flex align-items-center py-1">
+          <!-- Shopping Cart Icon -->
+          <button class="btn position-relative me-3" @click="goToCart">
+            <!-- Shopping Cart SVG icon -->
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="currentColor"
+              class="bi bi-cart"
+              viewBox="0 0 16 16"
             >
-          </div> -->
+              <path
+                d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 
+                   .485.379L2.89 5H14.5a.5.5 0 0 1 
+                   .49.598l-1.5 7A.5.5 0 0 1 
+                   13 13H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM3.102 6l1.313 6h7.17l1.313-6H3.102zM5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"
+              />
+            </svg>
+            <!-- Badge for the cart item count -->
+            <span
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+              v-if="cartItemCount > 0"
+            >
+              {{ cartItemCount }}
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   </nav>
@@ -232,6 +253,10 @@ export default {
   data() {
     return {
       searchQuery: "",
+      cartItems: [
+        // { name: "Product 1", quantity: 2 },
+        // { name: "Product 2", quantity: 1 },
+      ],
     };
   },
   methods: {
@@ -244,6 +269,15 @@ export default {
           query: { q: query },
         });
       }
+    },
+    goToCart() {
+      // Navigate to the cart page
+      this.$router.push("/cart");
+    },
+  },
+  computed: {
+    cartItemCount() {
+      return this.cartItems.reduce((total, item) => total + item.quantity, 0);
     },
   },
 };

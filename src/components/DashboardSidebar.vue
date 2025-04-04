@@ -3,8 +3,8 @@
     <!-- Logo -->
     <div class="logo-container">
       <router-link to="/">
-        <img src="../assets/Agroconnect.png" alt="AgroEase Logo" class="logo"
-      /></router-link>
+        <img src="../assets/Agroconnect.png" alt="AgroEase Logo" class="logo" />
+      </router-link>
     </div>
 
     <!-- Navigation Links -->
@@ -31,12 +31,19 @@
           src="../../src/assets/tiny-profile.png"
           alt="User Avatar"
           class="avatar"
-      /></router-link>
+        />
+      </router-link>
       <div class="user-info">
         <p class="user-name">{{ user.name }}</p>
         <p class="user-role">{{ user.role }}</p>
       </div>
       <i class="fa-solid fa-chevron-down"></i>
+    </div>
+
+    <!-- Logout Button -->
+    <div class="logout" @click="logout">
+      <i class="fa-solid fa-sign-out-alt"></i>
+      <span>Logout</span>
     </div>
   </div>
 </template>
@@ -79,6 +86,13 @@ export default {
   methods: {
     isActive(route) {
       return this.$route.path === route;
+    },
+    logout() {
+      // Remove auth token or any user data from local storage
+      localStorage.removeItem("authToken");
+      // Optionally, perform any additional cleanup, such as calling an API endpoint
+
+      this.$router.push("/login");
     },
   },
 };
@@ -180,5 +194,26 @@ export default {
 .fa-chevron-down {
   color: #6c757d;
   cursor: pointer;
+}
+
+/* Logout Button */
+.logout {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 10px;
+  border-radius: 8px;
+  color: #6c757d;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 20px;
+}
+
+.logout:hover {
+  background: #f2f2f2;
+}
+
+.logout i {
+  font-size: 18px;
 }
 </style>

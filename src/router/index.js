@@ -23,6 +23,7 @@ import DashboardSeller from "../views/auth/dashboard/Dashboard(seller).vue";
 import Market from "../views/marketplace/Market.vue";
 import AllCategory from "../views/marketplace/AllCategory.vue";
 import AllProduct from "../views/marketplace/AllProduct.vue";
+import SignUpp from "../views/individual_account/SignUpp.vue";
 //import MarketPlaceHome from "../views/MarketPlaceHome.vue";
 // import About from "@/views/About.vue";
 
@@ -141,6 +142,10 @@ const routes = [
     path: "/allproduct",
     component: AllProduct,
     meta: { hideHeader: true, hideFooter: true },
+  },
+  {
+    path: "/test",
+    component: SignUpp,
   },
 ];
 
