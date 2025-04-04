@@ -24,6 +24,7 @@ import Market from "../views/marketplace/Market.vue";
 import AllCategory from "../views/marketplace/AllCategory.vue";
 import AllProduct from "../views/marketplace/AllProduct.vue";
 import SignUpp from "../views/individual_account/SignUpp.vue";
+import WishList from "../views/marketplace/WishList.vue";
 //import MarketPlaceHome from "../views/MarketPlaceHome.vue";
 // import About from "@/views/About.vue";
 
@@ -146,6 +147,11 @@ const routes = [
   {
     path: "/test",
     component: SignUpp,
+  },
+  {
+    path: "/wishlist",
+    component: WishList,
+    meta: { hideHeader: true, hideFooter: true },
   },
 ];
 
