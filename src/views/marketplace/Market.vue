@@ -52,7 +52,42 @@
       </div>
     </div>
   </nav>
+  <section class="container my-4">
+    <div class="row">
+      <!-- Large image on the left wrapped in a router-link -->
+      <div class="col-md-8 mb-3 mb-md-0">
+        <router-link to="/allproduct" class="d-block">
+          <img
+            src="../../assets/mkt-banner.png"
+            alt=""
+            class="img-fluid w-100"
+          />
+        </router-link>
+      </div>
 
+      <!-- Two stacked images on the right -->
+      <div class="col-md-4">
+        <div class="mb-3">
+          <router-link to="/allproduct" class="d-block">
+            <img
+              src="../../assets/mkt-banner2.png"
+              alt=""
+              class="img-fluid w-100"
+            />
+          </router-link>
+        </div>
+        <div>
+          <router-link to="/allproduct" class="d-block">
+            <img
+              src="../../assets/mkt-banner3.png"
+              alt=""
+              class="img-fluid w-100"
+            />
+          </router-link>
+        </div>
+      </div>
+    </div>
+  </section>
   <div class="categories py-5">
     <section class="newproduct">
       <div class="container">
