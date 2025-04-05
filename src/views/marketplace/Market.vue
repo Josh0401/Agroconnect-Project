@@ -148,7 +148,7 @@
               </li>
               <li>
                 <router-link class="dropdown-item" to="/account/settings"
-                  >Settings</router-link
+                  >Transactions</router-link
                 >
               </li>
               <li>
@@ -901,6 +901,7 @@ body {
 /* Hover state for the button */
 .search-container button:hover {
   background-color: #007f68;
+  color: #fff;
 }
 .card {
   border: none;

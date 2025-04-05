@@ -95,7 +95,8 @@
 
     <!-- Optional: Modal for adding new product -->
     <div v-if="showAddProductModal">
-      <div class="modal fade show" style="display: block" tabindex="-1">
+      <!-- Modal -->
+      <div class="modal show" style="display: block" tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
@@ -124,24 +125,35 @@
                 </div>
                 <div class="mb-3">
                   <label for="category" class="form-label">Category</label>
-                  <input
-                    type="text"
+                  <select
                     id="category"
-                    class="form-control"
+                    class="form-select"
                     v-model="newProduct.category"
-                  />
+                  >
+                    <option value="">Select a category</option>
+                    <option
+                      v-for="(cat, index) in categories"
+                      :key="index"
+                      :value="cat"
+                    >
+                      {{ cat }}
+                    </option>
+                  </select>
                   <small class="text-danger" v-if="errors.category">{{
                     errors.category
                   }}</small>
                 </div>
                 <div class="mb-3">
                   <label for="unitPrice" class="form-label">Unit Price</label>
-                  <input
-                    type="text"
-                    id="unitPrice"
-                    class="form-control"
-                    v-model="newProduct.unitPrice"
-                  />
+                  <div class="input-group">
+                    <span class="input-group-text">Rs</span>
+                    <input
+                      type="text"
+                      id="unitPrice"
+                      class="form-control"
+                      v-model="newProduct.unitPrice"
+                    />
+                  </div>
                   <small class="text-danger" v-if="errors.unitPrice">{{
                     errors.unitPrice
                   }}</small>
@@ -205,9 +217,10 @@
             </div>
           </div>
         </div>
-        <!-- Modal Backdrop -->
-        <div class="modal-backdrop fade show"></div>
       </div>
+
+      <!-- Modal Backdrop as a sibling -->
+      <div class="modal-backdrop show"></div>
     </div>
   </div>
 </template>
@@ -308,6 +321,23 @@ export default {
         image: "",
       },
       errors: {},
+      categories: [
+        "Herbs and Spices",
+        "Fresh Fruits",
+        "Grains",
+        "Roots and Tubers",
+        "Fresh Vegetables",
+        "Nuts and Seeds",
+        "Cooking",
+        "Dairy Products",
+        "Agro Chemicals",
+        "Diabetics",
+        "Proteins",
+        "Cereals and Beverages",
+        "Snacks and Pastries",
+        "Baking Ingredients",
+        "Processed Foods",
+      ],
     };
   },
   computed: {
@@ -461,6 +491,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: auto;
 }
 .modal-backdrop {
   position: fixed;

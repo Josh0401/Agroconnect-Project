@@ -28,15 +28,15 @@
 
           <form @submit.prevent="onLogin">
             <div class="mb-3">
-              <label for="emailOrPhone" class="form-label"
-                >Email Address / Phone Number</label
-              >
+              <label for="emailOrPhone" class="form-label">
+                Email Address
+              </label>
               <input
                 type="text"
                 class="form-control"
                 id="emailOrPhone"
-                placeholder="Enter Email Address / Phone Number"
-                v-model="emailOrPhone"
+                placeholder="Enter Email Address "
+                v-model="email"
               />
             </div>
 
@@ -69,17 +69,30 @@
               >
             </div>
 
+            <!-- Error Message -->
+            <div v-if="errorMessage" class="alert alert-danger">
+              {{ errorMessage }}
+            </div>
+
             <!-- Login Button -->
-            <button type="submit" class="btn btn-success w-100 py-2 mb-3">
-              Login
+            <button
+              type="submit"
+              class="btn btn-success w-100 py-2 mb-3"
+              :disabled="loading"
+            >
+              <span
+                v-if="loading"
+                class="spinner-border spinner-border-sm"
+              ></span>
+              <span v-else>Login</span>
             </button>
 
             <!-- Sign Up Link -->
             <p class="text-center mb-0">
               Don’t have an account?
-              <router-link to="/signup" class="text-decoration-none"
-                >Create Account</router-link
-              >
+              <router-link to="/signup" class="text-decoration-none">
+                Create Account
+              </router-link>
             </p>
           </form>
         </div>
@@ -89,15 +102,16 @@
 </template>
 
 <script>
-import { RouterLink } from "vue-router";
+import { useAuthStore } from "../../stores/auth";
 
 export default {
   name: "LoginComponent",
   data() {
     return {
-      emailOrPhone: "",
+      email: "",
       password: "",
-      rememberMe: false,
+      loading: false,
+      errorMessage: "",
     };
   },
   methods: {
@@ -105,29 +119,37 @@ export default {
       // Navigate back in history or to a specific route
       this.$router ? this.$router.go(-1) : window.history.back();
     },
-    onLogin() {
-      // Handle login logic here
-      // alert(`Logging in with ${this.emailOrPhone}`);
-      setTimeout(() => {
+    async onLogin() {
+      this.loading = true;
+      this.errorMessage = "";
+      const authStore = useAuthStore();
+      try {
+        await authStore.login({
+          email: this.email,
+          password: this.password,
+        });
         this.$router.push("/dashboard-seller");
-      }, 1000);
+      } catch (error) {
+        this.errorMessage =
+          error.response?.data?.message ||
+          error.message ||
+          "Login failed. Please try again.";
+      } finally {
+        this.loading = false;
+      }
     },
   },
 };
 </script>
 
 <style scoped>
-/* Basic styling for the layout. Adjust colors/images as needed. */
 .login-page {
   background-color: #f9f9f9;
 }
 .back {
   text-decoration: none;
 }
-/* Left side (image) hidden on smaller screens */
 .login-left {
-  background-color: #43b28c; /* fallback if image fails */
+  background-color: #43b28c; /* fallback color */
 }
-
-/* Right side background color (white) is set inline in the template. */
 </style>
