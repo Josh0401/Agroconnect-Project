@@ -54,11 +54,11 @@
               <th scope="col">Unit Price</th>
               <th scope="col">Unit</th>
               <th scope="col">In Stock</th>
-              <!-- <th scope="col" class="text-end">Actions</th> -->
+              <th scope="col" class="text-end">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(product, index) in filteredProducts" :key="index">
+            <tr v-for="(product, index) in filteredProducts" :key="product.id">
               <td>{{ product.id }}</td>
               <td class="d-flex align-items-center">
                 <img
@@ -82,20 +82,44 @@
                   {{ product.inStock > 0 ? product.inStock : "Out of Stock" }}
                 </span>
               </td>
-              <!-- <td class="text-end">
-                <button class="btn btn-light btn-sm" @click="showMenu(index)">
+              <!-- Actions Column -->
+              <td class="text-end position-relative">
+                <button
+                  class="btn btn-success btn-sm border-0"
+                  @click="toggleActionMenu(index)"
+                  style="padding: 0.25rem 0.5rem"
+                >
                   <i class="fa-solid fa-ellipsis-vertical"></i>
                 </button>
-              </td> -->
+
+                <!-- Action Dropdown -->
+                <div
+                  v-if="activeActionIndex === index"
+                  class="action-menu position-absolute bg-white border rounded shadow py-2"
+                  style="right: 0; top: 100%; z-index: 1100; min-width: 120px"
+                >
+                  <button
+                    class="dropdown-item w-100 text-start px-3 py-2"
+                    @click="openEditProduct(product)"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    class="dropdown-item w-100 text-start px-3 py-2 text-danger"
+                    @click="deleteProduct(product)"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- Optional: Modal for adding new product -->
+    <!-- Add Product Modal (existing code) -->
     <div v-if="showAddProductModal">
-      <!-- Modal -->
       <div class="modal show" style="display: block" tabindex="-1">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -218,8 +242,121 @@
           </div>
         </div>
       </div>
+      <!-- Modal Backdrop -->
+      <div class="modal-backdrop show"></div>
+    </div>
 
-      <!-- Modal Backdrop as a sibling -->
+    <!-- Edit Product Modal -->
+    <div v-if="showEditProductModal">
+      <div class="modal show" style="display: block" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Edit Product</h5>
+              <button
+                type="button"
+                class="btn-close"
+                @click="closeEditModal"
+              ></button>
+            </div>
+            <div class="modal-body">
+              <form @submit.prevent="handleUpdateProduct">
+                <div class="mb-3">
+                  <label for="editProductName" class="form-label"
+                    >Product Name</label
+                  >
+                  <input
+                    type="text"
+                    id="editProductName"
+                    class="form-control"
+                    v-model="editingProduct.name"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="editCategory" class="form-label">Category</label>
+                  <select
+                    id="editCategory"
+                    class="form-select"
+                    v-model="editingProduct.category"
+                  >
+                    <option value="">Select a category</option>
+                    <option
+                      v-for="(cat, index) in categories"
+                      :key="index"
+                      :value="cat"
+                    >
+                      {{ cat }}
+                    </option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="editUnitPrice" class="form-label"
+                    >Unit Price</label
+                  >
+                  <div class="input-group">
+                    <span class="input-group-text">Rs</span>
+                    <input
+                      type="text"
+                      id="editUnitPrice"
+                      class="form-control"
+                      v-model="editingProduct.unitPrice"
+                    />
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="editUnit" class="form-label">Unit</label>
+                  <input
+                    type="text"
+                    id="editUnit"
+                    class="form-control"
+                    v-model="editingProduct.unit"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="editInStock" class="form-label">In Stock</label>
+                  <input
+                    type="number"
+                    id="editInStock"
+                    class="form-control"
+                    v-model.number="editingProduct.inStock"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="editImage" class="form-label"
+                    >Product Image</label
+                  >
+                  <input
+                    type="file"
+                    id="editImage"
+                    class="form-control"
+                    @change="handleEditImageUpload"
+                  />
+                  <div v-if="editingProduct.image" class="mt-2">
+                    <img
+                      :src="editingProduct.image"
+                      alt="Image Preview"
+                      style="width: 100px; height: auto"
+                    />
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    @click="closeEditModal"
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" class="btn btn-primary">
+                    Update Product
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Edit Modal Backdrop -->
       <div class="modal-backdrop show"></div>
     </div>
   </div>
@@ -311,6 +448,7 @@ export default {
           image: "../src/assets/ugwu.png",
         },
       ],
+      // State for add product modal
       showAddProductModal: false,
       newProduct: {
         name: "",
@@ -321,30 +459,19 @@ export default {
         image: "",
       },
       errors: {},
-      categories: [
-        "Herbs and Spices",
-        "Fresh Fruits",
-        "Grains",
-        "Roots and Tubers",
-        "Fresh Vegetables",
-        "Nuts and Seeds",
-        "Cooking",
-        "Dairy Products",
-        "Agro Chemicals",
-        "Diabetics",
-        "Proteins",
-        "Cereals and Beverages",
-        "Snacks and Pastries",
-        "Baking Ingredients",
-        "Processed Foods",
-      ],
+      // List of categories for select dropdowns
+      categories: ["Rice", "Vegetables", "Fruits", "Others"],
+      // For action menu on table rows
+      activeActionIndex: null,
+      // State for edit product modal
+      showEditProductModal: false,
+      editingProduct: {},
+      editingProductIndex: null,
     };
   },
   computed: {
     filteredProducts() {
       let result = this.products;
-
-      // Filter by search
       if (this.searchQuery) {
         const query = this.searchQuery.toLowerCase();
         result = result.filter(
@@ -353,20 +480,17 @@ export default {
             p.id.toLowerCase().includes(query)
         );
       }
-
-      // Filter by stock
       if (this.selectedFilter === "inStock") {
         result = result.filter((p) => p.inStock > 0);
       } else if (this.selectedFilter === "outOfStock") {
         result = result.filter((p) => p.inStock === 0);
       }
-
       return result;
     },
   },
   methods: {
     filterProducts() {
-      // Called on search input or filter change
+      // Handled reactively by computed property.
     },
     openModal() {
       this.showAddProductModal = true;
@@ -378,41 +502,30 @@ export default {
     handleImageUpload(event) {
       const file = event.target.files[0];
       if (file) {
-        // Check if the file is an image
         if (!file.type.startsWith("image/")) {
           this.errors.image = "Please upload a valid image file.";
           return;
         }
-        // Create a temporary URL for preview
         this.newProduct.image = URL.createObjectURL(file);
         this.errors.image = "";
       }
     },
     validateForm() {
       this.errors = {};
-      if (!this.newProduct.name) {
-        this.errors.name = "Product name is required.";
-      }
-      if (!this.newProduct.category) {
+      if (!this.newProduct.name) this.errors.name = "Product name is required.";
+      if (!this.newProduct.category)
         this.errors.category = "Category is required.";
-      }
-      if (!this.newProduct.unitPrice) {
+      if (!this.newProduct.unitPrice)
         this.errors.unitPrice = "Unit Price is required.";
-      }
-      if (!this.newProduct.unit) {
-        this.errors.unit = "Unit is required.";
-      }
-      if (this.newProduct.inStock === null || this.newProduct.inStock === "") {
+      if (!this.newProduct.unit) this.errors.unit = "Unit is required.";
+      if (this.newProduct.inStock === null || this.newProduct.inStock === "")
         this.errors.inStock = "In Stock quantity is required.";
-      }
-      if (!this.newProduct.image) {
+      if (!this.newProduct.image)
         this.errors.image = "Product image is required.";
-      }
       return Object.keys(this.errors).length === 0;
     },
     handleAddProduct() {
       if (this.validateForm()) {
-        // Generate a new product ID (for demo purposes)
         const newId = "#SLT" + (Math.floor(Math.random() * 900) + 100);
         const productToAdd = {
           id: newId,
@@ -423,13 +536,10 @@ export default {
           inStock: this.newProduct.inStock,
           image: this.newProduct.image,
         };
-        // Add the new product to the products array
         this.products.push(productToAdd);
-        // Close the modal and reset the form
         this.closeModal();
       }
     },
-
     resetForm() {
       this.newProduct = {
         name: "",
@@ -440,14 +550,56 @@ export default {
         image: "",
       };
       this.errors = {};
-      // Reset file input value if needed
       const fileInput = document.getElementById("image");
-      if (fileInput) {
-        fileInput.value = "";
+      if (fileInput) fileInput.value = "";
+    },
+    // Toggle the action menu for a product row
+    toggleActionMenu(index) {
+      this.activeActionIndex = this.activeActionIndex === index ? null : index;
+    },
+    // Delete product from the list after confirmation
+    deleteProduct(product) {
+      if (confirm(`Are you sure you want to delete "${product.name}"?`)) {
+        this.products = this.products.filter((p) => p.id !== product.id);
+      }
+      this.activeActionIndex = null;
+    },
+    // Open edit modal for the selected product
+    openEditProduct(product) {
+      // Find the product's index in the main products array
+      const idx = this.products.findIndex((p) => p.id === product.id);
+      if (idx > -1) {
+        // Create a copy so as not to mutate immediately
+        this.editingProduct = { ...this.products[idx] };
+        this.editingProductIndex = idx;
+        this.showEditProductModal = true;
+      }
+      this.activeActionIndex = null;
+    },
+    // Handle image upload in edit modal
+    handleEditImageUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        if (!file.type.startsWith("image/")) {
+          alert("Please upload a valid image file.");
+          return;
+        }
+        this.editingProduct.image = URL.createObjectURL(file);
       }
     },
-    // Optional: Function to show action menu (if needed)
-
+    // Update the product details after editing
+    handleUpdateProduct() {
+      if (this.editingProductIndex !== null) {
+        // Update the product in the main array
+        this.products.splice(this.editingProductIndex, 1, this.editingProduct);
+        this.closeEditModal();
+      }
+    },
+    closeEditModal() {
+      this.showEditProductModal = false;
+      this.editingProduct = {};
+      this.editingProductIndex = null;
+    },
     showMenu(index) {
       alert(`Action menu for product at index: ${index}`);
     },
@@ -456,27 +608,43 @@ export default {
 </script>
 
 <style scoped>
-/* Container that holds sidebar and main content */
+/* Container styles */
 .products-page {
   min-height: 100vh;
 }
 
-/* Sidebar styling (re-uses .sidebar from your existing code) */
+/* Sidebar */
 .sidebar {
   width: 250px;
   flex-shrink: 0;
   position: fixed;
   height: 100vh;
   background-color: #fff;
-  /* ...any other existing styles... */
 }
 
-/* Main content offset so it starts where the sidebar ends (on larger screens) */
+/* Main content */
 .products-content {
-  margin-left: 250px; /* matches sidebar width */
+  margin-left: 250px;
   width: calc(100% - 250px);
   min-height: 100vh;
   background-color: #f8f9fa;
+}
+
+/* Action menu styles */
+.action-menu {
+  min-width: 100px;
+}
+.action-menu button {
+  display: block;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 8px 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.action-menu button:hover {
+  background-color: #f2f2f2;
 }
 
 /* Modal Styles */
@@ -491,7 +659,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  pointer-events: auto;
 }
 .modal-backdrop {
   position: fixed;
@@ -502,39 +669,52 @@ export default {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1040;
 }
-/* Table header styling */
+
+/* Action menu styles */
+.action-menu {
+  min-width: 100px;
+}
+.action-menu button {
+  display: block;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 8px 12px;
+  text-align: left;
+  cursor: pointer;
+  opacity: 1;
+}
+.action-menu button:hover {
+  background-color: #f2f2f2;
+}
+
+/* Table styling */
 .table thead th {
   font-size: 0.9rem;
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 0.5px;
 }
-
-/* Table body styling */
 .table tbody td {
   font-size: 0.95rem;
   color: #333;
 }
-
 .badge {
   font-size: 0.85rem;
   border-radius: 12px;
   padding: 6px 10px;
 }
 
-/* Make it responsive on smaller screens */
+/* Responsive */
 @media (max-width: 768px) {
-  /* Stack sidebar above main content */
   .products-page {
     flex-direction: column;
   }
-
   .sidebar {
     position: static;
     width: 100%;
     height: auto;
   }
-
   .products-content {
     margin-left: 0;
     width: 100%;
