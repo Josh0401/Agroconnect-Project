@@ -16,6 +16,7 @@ import Individuals from "../views/servicelist/Individuals.vue";
 import MarketPlace from "../views/servicelist/MarketPlace.vue";
 import Companies from "../views/servicelist/Companies.vue";
 import Profile from "../views/auth/dashboard/Profile(seller).vue";
+import ProfilePage from "../views/account/ProfilePage.vue"; // Added new ProfilePage component
 import ProductSeller from "../views/auth/dashboard/Product(seller).vue";
 import OrderSeller from "../views/auth/dashboard/Order(seller).vue";
 import TransactionSeller from "../views/auth/dashboard/Transaction(seller).vue";
@@ -27,6 +28,7 @@ import SignUpp from "../views/individual_account/SignUpp.vue";
 import WishList from "../views/marketplace/WishList.vue";
 import Cart from "../views/marketplace/Cart.vue";
 import Checkout from "../views/marketplace/Checkout.vue";
+import ProductDetail from "../views/marketplace/ProductDetail.vue";
 //import MarketPlaceHome from "../views/MarketPlaceHome.vue";
 // import About from "@/views/About.vue";
 
@@ -111,6 +113,12 @@ const routes = [
     component: Profile,
     meta: { hideHeader: true, hideFooter: true },
   },
+  // New route for account profile page
+  {
+    path: "/account/profile",
+    component: ProfilePage,
+    meta: { hideHeader: true, hideFooter: true },
+  },
   {
     path: "/product-seller",
     component: ProductSeller,
@@ -144,6 +152,13 @@ const routes = [
   {
     path: "/allproduct",
     component: AllProduct,
+    meta: { hideHeader: true, hideFooter: true },
+  },
+  {
+    path: "/product/:id",
+    name: "ProductDetail",
+    component: ProductDetail,
+    props: true,
     meta: { hideHeader: true, hideFooter: true },
   },
   {

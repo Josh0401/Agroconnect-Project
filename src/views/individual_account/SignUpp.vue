@@ -41,6 +41,11 @@ export default {
       if (currentStep.value > 1) currentStep.value--;
     };
     const handleSubmit = async () => {
+      // Here you can call your store's submitSignup method
+      // For example:
+      // const store = useSignupStore();
+      // await store.submitSignup();
+      // Then, handle any navigation or feedback to the user
       console.log("Form submitted");
     };
 

@@ -415,21 +415,23 @@
       </div>
     </section>
   </div>
-  <div class="products">
-    <section class="newproduct">
-      <div class="container">
-        <div class="categories-header">
-          <p class="h1">Products</p>
-          <router-link to="/allproduct" class="view-all">
-            View All <span class="arrow">&rarr;</span>
-          </router-link>
-        </div>
-        <div class="container my-5">
-          <div
-            class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4"
-          >
-            <!-- Card 1 -->
-            <div class="col">
+<!-- Products Section with Clickable Cards -->
+<div class="products">
+  <section class="newproduct">
+    <div class="container">
+      <div class="categories-header">
+        <p class="h1">Products</p>
+        <router-link to="/allproduct" class="view-all">
+          View All <span class="arrow">&rarr;</span>
+        </router-link>
+      </div>
+      <div class="container my-5">
+        <div
+          class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4"
+        >
+          <!-- Card 1 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/hybrid-coconut-seedlings' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/hybrid-coconut.jpg"
@@ -441,10 +443,12 @@
                   <p class="card-text">Rs10</p>
                 </div>
               </div>
-            </div>
+            </router-link>
+          </div>
 
-            <!-- Card 2 -->
-            <div class="col">
+          <!-- Card 2 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/hybrid-tenera-oil-palm-seedlings' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/hybrid_tenera_oil_palm.jpg"
@@ -456,10 +460,12 @@
                   <p class="card-text">Rs15</p>
                 </div>
               </div>
-            </div>
+            </router-link>
+          </div>
 
-            <!-- Card 3 -->
-            <div class="col">
+          <!-- Card 3 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/tenera-oil-palm-sprouted-seeds' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/tenera_oil_palm_sprouted_seeds.jpg"
@@ -471,10 +477,12 @@
                   <p class="card-text">Rs20</p>
                 </div>
               </div>
-            </div>
+            </router-link>
+          </div>
 
-            <!-- Card 4 -->
-            <div class="col">
+          <!-- Card 4 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/black-eyed-pea-cowpea' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/cowpea.jpg"
@@ -486,10 +494,12 @@
                   <p class="card-text">Rs25</p>
                 </div>
               </div>
-            </div>
+            </router-link>
+          </div>
 
-            <!-- Card 5 -->
-            <div class="col">
+          <!-- Card 5 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/white-maize' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/white-maize.jpg"
@@ -501,10 +511,12 @@
                   <p class="card-text">Rs30</p>
                 </div>
               </div>
-            </div>
+            </router-link>
+          </div>
 
-            <!-- Card 6 -->
-            <div class="col">
+          <!-- Card 6 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/white-beans' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/white-beans.jpg"
@@ -516,10 +528,12 @@
                   <p class="card-text">Rs35</p>
                 </div>
               </div>
-            </div>
+            </router-link>
+          </div>
 
-            <!-- Card 7 -->
-            <div class="col">
+          <!-- Card 7 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/cassava' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/cassava.jpeg"
@@ -531,10 +545,12 @@
                   <p class="card-text">Rs40</p>
                 </div>
               </div>
-            </div>
+            </router-link>
+          </div>
 
-            <!-- Card 8 -->
-            <div class="col">
+          <!-- Card 8 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/mung-beans' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/mung-beans.jpg"
@@ -546,10 +562,12 @@
                   <p class="card-text">Rs45</p>
                 </div>
               </div>
-            </div>
+            </router-link>
+          </div>
 
-            <!-- Card 9 -->
-            <div class="col">
+          <!-- Card 9 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/red-kidney-beans' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/red-kidney-beans.jpg"
@@ -561,10 +579,12 @@
                   <p class="card-text">Rs50</p>
                 </div>
               </div>
-            </div>
+            </router-link>
+          </div>
 
-            <!-- Card 10 -->
-            <div class="col">
+          <!-- Card 10 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/soursop-tea' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/soursop-tea.jpg"
@@ -576,24 +596,27 @@
                   <p class="card-text">Rs55</p>
                 </div>
               </div>
-            </div>
+            </router-link>
           </div>
         </div>
       </div>
-    </section>
-  </div>
-  <div class="new-products">
-    <section class="newproduct">
-      <div class="container">
-        <div class="categories-header">
-          <p class="h1">New Products</p>
-        </div>
-        <div class="container my-5">
-          <div
-            class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4"
-          >
-            <!-- Card 1 -->
-            <div class="col">
+    </div>
+  </section>
+</div>
+  <!-- New Products Section with Clickable Cards -->
+<div class="new-products">
+  <section class="newproduct">
+    <div class="container">
+      <div class="categories-header">
+        <p class="h1">New Products</p>
+      </div>
+      <div class="container my-5">
+        <div
+          class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4"
+        >
+          <!-- Card 1 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/hybrid-coconut-seedlings' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/hybrid-coconut.jpg"
@@ -605,10 +628,12 @@
                   <p class="card-text">Rs10</p>
                 </div>
               </div>
-            </div>
+            </router-link>
+          </div>
 
-            <!-- Card 2 -->
-            <div class="col">
+          <!-- Card 2 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/hybrid-tenera-oil-palm-seedlings' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/hybrid_tenera_oil_palm.jpg"
@@ -620,10 +645,12 @@
                   <p class="card-text">Rs15</p>
                 </div>
               </div>
-            </div>
+            </router-link>
+          </div>
 
-            <!-- Card 3 -->
-            <div class="col">
+          <!-- Card 3 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/tenera-oil-palm-sprouted-seeds' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/tenera_oil_palm_sprouted_seeds.jpg"
@@ -635,10 +662,12 @@
                   <p class="card-text">Rs20</p>
                 </div>
               </div>
-            </div>
+            </router-link>
+          </div>
 
-            <!-- Card 4 -->
-            <div class="col">
+          <!-- Card 4 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/black-eyed-pea-cowpea' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/cowpea.jpg"
@@ -650,10 +679,12 @@
                   <p class="card-text">Rs25</p>
                 </div>
               </div>
-            </div>
+            </router-link>
+          </div>
 
-            <!-- Card 5 -->
-            <div class="col">
+          <!-- Card 5 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/white-maize' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/white-maize.jpg"
@@ -665,10 +696,12 @@
                   <p class="card-text">Rs30</p>
                 </div>
               </div>
-            </div>
+            </router-link>
+          </div>
 
-            <!-- Card 6 -->
-            <div class="col">
+          <!-- Card 6 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/white-beans' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/white-beans.jpg"
@@ -680,10 +713,12 @@
                   <p class="card-text">Rs35</p>
                 </div>
               </div>
-            </div>
+            </router-link>
+          </div>
 
-            <!-- Card 7 -->
-            <div class="col">
+          <!-- Card 7 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/cassava' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/cassava.jpeg"
@@ -695,10 +730,12 @@
                   <p class="card-text">Rs40</p>
                 </div>
               </div>
-            </div>
+            </router-link>
+          </div>
 
-            <!-- Card 8 -->
-            <div class="col">
+          <!-- Card 8 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/mung-beans' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/mung-beans.jpg"
@@ -710,10 +747,12 @@
                   <p class="card-text">Rs45</p>
                 </div>
               </div>
-            </div>
+            </router-link>
+          </div>
 
-            <!-- Card 9 -->
-            <div class="col">
+          <!-- Card 9 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/red-kidney-beans' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/red-kidney-beans.jpg"
@@ -725,10 +764,12 @@
                   <p class="card-text">Rs50</p>
                 </div>
               </div>
-            </div>
+            </router-link>
+          </div>
 
-            <!-- Card 10 -->
-            <div class="col">
+          <!-- Card 10 -->
+          <div class="col">
+            <router-link :to="{ path: '/product/soursop-tea' }" class="text-decoration-none">
               <div class="card h-100">
                 <img
                   src="../../assets/soursop-tea.jpg"
@@ -740,12 +781,13 @@
                   <p class="card-text">Rs55</p>
                 </div>
               </div>
-            </div>
+            </router-link>
           </div>
         </div>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
+</div>
   <Footer />
 </template>
 

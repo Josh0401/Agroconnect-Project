@@ -5,47 +5,8 @@ export const useAuthStore = defineStore("auth", {
   state: () => ({
     token: null,
     user: null,
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone_number: "",
-    address: "",
-    selectedCountry: "",
-    selectedCity: "",
-    password: "",
-    confirmPassword: "",
   }),
   actions: {
-    async submitSignup({
-      firstName,
-      lastName,
-      email,
-      phone_number,
-      address,
-      selectedCountry,
-      selectedCity,
-      password,
-    }) {
-      try {
-        const response = await axios.post(
-          "https://agroconnect.shop/api/register",
-          {
-            first_name: firstName,
-            last_name: lastName,
-            email,
-            phone_no: phone_number,
-            address,
-            country: selectedCountry,
-            city: selectedCity,
-            password,
-          }
-        );
-        return response.data;
-      } catch (error) {
-        throw error;
-      }
-    },
-
     async login({ email, password }) {
       try {
         const response = await axios.post(
