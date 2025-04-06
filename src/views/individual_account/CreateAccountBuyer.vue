@@ -30,7 +30,7 @@
             type="text"
             class="form-control form-control-lg"
             placeholder="Enter Your First Name"
-            v-model="firstName"
+            v-model="signupStore.firstName"
             required
           />
         </div>
@@ -41,7 +41,7 @@
             type="text"
             class="form-control form-control-lg"
             placeholder="Enter Your Last Name"
-            v-model="lastName"
+            v-model="signupStore.lastName"
             required
           />
         </div>
@@ -52,7 +52,7 @@
             type="email"
             class="form-control form-control-lg"
             placeholder="Enter Your Email Address"
-            v-model="email"
+            v-model="signupStore.email"
             required
           />
         </div>
@@ -75,60 +75,27 @@
 </template>
 
 <script>
+import { useAuthStore } from "../../stores/auth";
+import { useRouter } from "vue-router";
+
 export default {
   name: "CreateAccountBuyer",
-  data() {
-    return {
-      firstName: "",
-      lastName: "",
-      email: "",
-    };
-  },
-  created() {
-    // Load saved data when the component is created
-    this.loadFormData();
-  },
-  methods: {
-    goBack() {
-      // Save form data before navigating back
-      this.saveFormData();
-      // Navigate back or to a specific route
-      if (this.$router) {
-        this.$router.go(-1);
-      } else {
-        window.history.back();
-      }
-    },
-    continueSignup() {
-      // Save form data before moving forward
-      this.saveFormData();
+  setup() {
+    const signupStore = useAuthStore();
+    const router = useRouter();
 
-      // For demonstration purposes we alert the data
-      alert(
-        `Account creation step 1 for: ${this.firstName} ${this.lastName}, email: ${this.email}`
-      );
-      // Navigate to the next step
-      this.$router.push("/create-buyer2");
-    },
-    saveFormData() {
-      // Store form data in localStorage using a unique key
-      const formData = {
-        firstName: this.firstName,
-        lastName: this.lastName,
-        email: this.email,
-      };
-      localStorage.setItem("buyerFormData", JSON.stringify(formData));
-    },
-    loadFormData() {
-      // Retrieve saved form data from localStorage
-      const savedData = localStorage.getItem("buyerFormData");
-      if (savedData) {
-        const { firstName, lastName, email } = JSON.parse(savedData);
-        this.firstName = firstName || "";
-        this.lastName = lastName || "";
-        this.email = email || "";
-      }
-    },
+    const goBack = () => {
+      // Navigate back
+      router.go(-1);
+    };
+
+    const continueSignup = () => {
+      // You can add validation logic here if needed
+      // Navigate to step 2; assuming your route is set up accordingly
+      router.push("/create-buyer2");
+    };
+
+    return { signupStore, goBack, continueSignup };
   },
 };
 </script>

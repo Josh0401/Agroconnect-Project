@@ -29,7 +29,7 @@
           <label class="form-label fw-semibold">Select Your Country</label>
           <select
             id="country"
-            v-model="selectedCountry"
+            v-model="signupStore.selectedCountry"
             class="form-select form-select-lg"
             required
           >
@@ -48,7 +48,7 @@
           <label class="form-label fw-semibold">Select a City</label>
           <select
             id="city"
-            v-model="selectedCity"
+            v-model="signupStore.selectedCity"
             class="form-select form-select-lg"
             required
           >
@@ -65,9 +65,18 @@
             type="password"
             class="form-control form-control-lg"
             placeholder="Enter a Password"
-            v-model="password"
+            v-model="signupStore.password"
+            @input="validatePassword"
             required
           />
+          <p
+            v-if="
+              signupStore.password.length > 0 && signupStore.password.length < 8
+            "
+            class="text-danger"
+          >
+            Password must be at least 8 characters long.
+          </p>
         </div>
 
         <!-- Confirm Password Field -->
@@ -77,7 +86,8 @@
             type="password"
             class="form-control form-control-lg"
             placeholder="Confirm Password"
-            v-model="confirmPassword"
+            v-model="signupStore.confirmPassword"
+            @input="validatePassword"
             required
           />
           <p v-if="passwordError" class="text-danger">{{ passwordError }}</p>
@@ -112,144 +122,118 @@
 </template>
 
 <script>
-export default {
-  name: "CreateAccountIndividual",
-  data() {
-    return {
-      // Fields from previous steps (if any)
-      firstName: "",
-      lastName: "",
-      email: "",
-      // Fields on this step
-      password: "",
-      confirmPassword: "",
-      passwordError: "",
-      countries: ["Nigeria", "Mauritius"],
-      cities: {
-        Nigeria: [
-          "Lagos",
-          "Abuja",
-          "Kano",
-          "Port Harcourt",
-          "Ibadan",
-          "Benin City",
-          "Kaduna",
-          "Jos",
-          "Enugu",
-          "Owerri",
-        ],
-        Mauritius: [
-          "Port Louis",
-          "Curepipe",
-          "Quatre Bornes",
-          "Vacoas",
-          "Beau Bassin",
-          "Rose Hill",
-          "Mahebourg",
-          "Goodlands",
-          "Triolet",
-          "Souillac",
-        ],
-      },
-      selectedCountry: "",
-      selectedCity: "",
-    };
-  },
-  computed: {
-    filteredCities() {
-      return this.selectedCountry ? this.cities[this.selectedCountry] : [];
-    },
-  },
-  created() {
-    // Load previously saved data when the component is created
-    this.loadFormData();
-  },
-  watch: {
-    // Validate password on changes
-    confirmPassword() {
-      this.validatePassword();
-    },
-  },
-  methods: {
-    // Navigate back and save data
-    goBack() {
-      this.saveFormData();
-      if (this.$router) {
-        this.$router.go(-1);
-      } else {
-        window.history.back();
-      }
-    },
-    // Navigate to previous step and save data
-    previousSignup() {
-      this.saveFormData();
-      this.$router.push("/create-buyer2");
-    },
-    // Validate if password and confirmPassword match
-    validatePassword() {
-      if (this.confirmPassword && this.password !== this.confirmPassword) {
-        this.passwordError = "Passwords do not match";
-      } else {
-        this.passwordError = "";
-      }
-    },
-    // Save form data to localStorage
-    saveFormData() {
-      const formData = {
-        firstName: this.firstName,
-        lastName: this.lastName,
-        email: this.email,
-        password: this.password,
-        confirmPassword: this.confirmPassword,
-        selectedCountry: this.selectedCountry,
-        selectedCity: this.selectedCity,
-      };
-      localStorage.setItem("accountFormData", JSON.stringify(formData));
-    },
-    // Load form data from localStorage
-    loadFormData() {
-      const savedData = localStorage.getItem("accountFormData");
-      if (savedData) {
-        const data = JSON.parse(savedData);
-        this.firstName = data.firstName || "";
-        this.lastName = data.lastName || "";
-        this.email = data.email || "";
-        this.password = data.password || "";
-        this.confirmPassword = data.confirmPassword || "";
-        this.selectedCountry = data.selectedCountry || "";
-        this.selectedCity = data.selectedCity || "";
-      }
-    },
-    // Submit form: validate, clear storage, and proceed
-    submitForm() {
-      // Basic logging for country and city
-      console.log("Country:", this.selectedCountry);
-      console.log("City:", this.selectedCity);
-      alert(`Selected: ${this.selectedCountry}, ${this.selectedCity}`);
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../../stores/auth";
 
-      // Check if password fields are filled
-      if (!this.password || !this.confirmPassword) {
+export default {
+  name: "CreateAccountBuyer3",
+  setup() {
+    const router = useRouter();
+    const signupStore = useAuthStore();
+    const passwordError = ref("");
+
+    // Define the list of countries and cities locally (or these could be part of your store)
+    const countries = ["Nigeria", "Mauritius"];
+    const cities = {
+      Nigeria: [
+        "Lagos",
+        "Abuja",
+        "Kano",
+        "Port Harcourt",
+        "Ibadan",
+        "Benin City",
+        "Kaduna",
+        "Jos",
+        "Enugu",
+        "Owerri",
+      ],
+      Mauritius: [
+        "Port Louis",
+        "Curepipe",
+        "Quatre Bornes",
+        "Vacoas",
+        "Beau Bassin",
+        "Rose Hill",
+        "Mahebourg",
+        "Goodlands",
+        "Triolet",
+        "Souillac",
+      ],
+    };
+
+    const filteredCities = computed(() => {
+      return signupStore.selectedCountry
+        ? cities[signupStore.selectedCountry]
+        : [];
+    });
+
+    const validatePassword = () => {
+      if (
+        signupStore.confirmPassword &&
+        signupStore.password !== signupStore.confirmPassword
+      ) {
+        passwordError.value = "Passwords do not match";
+      } else {
+        passwordError.value = "";
+      }
+    };
+
+    const goBack = () => {
+      // Simply navigate back to the previous step (e.g., Step 2)
+      router.push("/create-buyer2");
+    };
+
+    const previousSignup = () => {
+      router.push("/create-buyer2");
+    };
+
+    const submitForm = async () => {
+      // Validate password fields
+      if (!signupStore.password || !signupStore.confirmPassword) {
         alert("Please fill in both password fields.");
         return;
       }
-
-      // Check if passwords match
-      if (this.password !== this.confirmPassword) {
+      if (signupStore.password.length < 8) {
+        alert("Password must be at least 8 characters long.");
+        return;
+      }
+      if (signupStore.password !== signupStore.confirmPassword) {
         alert("Passwords do not match!");
         return;
       }
 
-      // Here you can add further validations if needed
+      // Call the store's submitSignup action to make the API call
+      try {
+        const result = await signupStore.submitSignup({
+          firstName: signupStore.firstName,
+          lastName: signupStore.lastName,
+          email: signupStore.email,
+          phone_number: signupStore.phone_number,
+          address: signupStore.address,
+          selectedCountry: signupStore.selectedCountry,
+          selectedCity: signupStore.selectedCity,
+          password: signupStore.password,
+        });
 
-      // Successful submission: clear localStorage and alert user
-      alert("Form submitted successfully!");
-      console.log({ password: this.password });
+        console.log("Signup successful:", result);
+        alert("Form submitted successfully!");
+        router.push("/login");
+      } catch (error) {
+        alert("There was an error submitting your form.");
+      }
+    };
 
-      // Clear the saved form data from localStorage
-      localStorage.removeItem("accountFormData");
-
-      this.$router.push("/login");
-    },
+    return {
+      signupStore,
+      countries,
+      filteredCities,
+      passwordError,
+      validatePassword,
+      goBack,
+      previousSignup,
+      submitForm,
+    };
   },
 };
 </script>

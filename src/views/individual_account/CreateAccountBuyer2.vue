@@ -30,7 +30,7 @@
             type="number"
             class="form-control form-control-lg"
             placeholder="Enter Your Phone Number"
-            v-model="phone_number"
+            v-model="signupStore.phone_number"
             required
           />
         </div>
@@ -41,7 +41,7 @@
             type="text"
             class="form-control form-control-lg"
             placeholder="Enter Your Address"
-            v-model="address"
+            v-model="signupStore.address"
           />
         </div>
       </form>
@@ -52,8 +52,9 @@
           class="btn btn-success w-100 py-2 px-2 mx-2 mb-3"
           @click="previousSignup"
         >
-          Previous</button
-        ><button
+          Previous
+        </button>
+        <button
           class="btn btn-success w-100 py-2 px-2 mx-2 mb-3"
           @click="continueSignup"
         >
@@ -73,55 +74,29 @@
 </template>
 
 <script>
+import { useAuthStore } from "../../stores/auth";
+import { useRouter } from "vue-router";
+
 export default {
-  name: "CreateAccountIndividual",
-  data() {
-    return {
-      phone_number: "",
-      address: "",
+  name: "CreateAccountBuyer2",
+  setup() {
+    const signupStore = useAuthStore();
+    const router = useRouter();
+
+    const goBack = () => {
+      router.go(-1);
     };
-  },
-  created() {
-    // Restore data from localStorage when component is created
-    this.loadFormData();
-  },
-  methods: {
-    goBack() {
-      if (this.$router) {
-        this.$router.go(-1);
-      } else {
-        window.history.back();
-      }
-    },
-    continueSignup() {
-      // Save form data to localStorage
-      this.saveFormData();
 
-      // Navigate to the next step
-      this.$router.push("/create-buyer3");
-    },
-    previousSignup() {
-      // Save form data before going back
-      this.saveFormData();
+    const continueSignup = () => {
+      // Additional validation can be done here if needed
+      router.push("/create-buyer3");
+    };
 
-      // Navigate to the previous step
-      this.$router.push("/create-account-buyer");
-    },
-    saveFormData() {
-      const formData = {
-        phone_number: this.phone_number,
-        address: this.address,
-      };
-      localStorage.setItem("formData", JSON.stringify(formData));
-    },
-    loadFormData() {
-      const savedData = localStorage.getItem("formData");
-      if (savedData) {
-        const { phone_number, address } = JSON.parse(savedData);
-        this.phone_number = phone_number || "";
-        this.address = address || "";
-      }
-    },
+    const previousSignup = () => {
+      router.push("/create-account-buyer");
+    };
+
+    return { signupStore, goBack, continueSignup, previousSignup };
   },
 };
 </script>
