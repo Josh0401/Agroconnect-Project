@@ -26,6 +26,7 @@ import AllProduct from "../views/marketplace/AllProduct.vue";
 import SignUpp from "../views/individual_account/SignUpp.vue";
 import WishList from "../views/marketplace/WishList.vue";
 import Cart from "../views/marketplace/Cart.vue";
+import Checkout from "../views/marketplace/Checkout.vue";
 //import MarketPlaceHome from "../views/MarketPlaceHome.vue";
 // import About from "@/views/About.vue";
 
@@ -157,6 +158,11 @@ const routes = [
   {
     path: "/cart",
     component: Cart,
+    meta: { hideHeader: true, hideFooter: true },
+  },
+  {
+    path: "/checkout",
+    component: Checkout,
     meta: { hideHeader: true, hideFooter: true },
   },
 ];

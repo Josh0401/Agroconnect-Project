@@ -33,7 +33,7 @@
             >
               <path
                 d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85.708-.708-3.85-3.85zm-5.242.656
-                       a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"
+                         a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"
               />
             </svg>
             <!-- Search input & button visible only on larger screens -->
@@ -90,9 +90,9 @@
             >
               <path
                 d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 
-                       .485.379L2.89 5H14.5a.5.5 0 0 1 
-                       .49.598l-1.5 7A.5.5 0 0 1 
-                       13 13H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM3.102 6l1.313 6h7.17l1.313-6H3.102zM5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"
+                         .485.379L2.89 5H14.5a.5.5 0 0 1 
+                         .49.598l-1.5 7A.5.5 0 0 1 
+                         13 13H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM3.102 6l1.313 6h7.17l1.313-6H3.102zM5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"
               />
             </svg>
             <span
@@ -174,63 +174,219 @@
   </div>
 
   <div class="container my-5">
-    <h2 class="text-center mb-4">My Wishlist</h2>
+    <div class="row">
+      <!-- Shipping Information Section -->
+      <div class="col-12 col-md-7 mb-5 mb-md-0">
+        <h4 class="mb-4">Shipping Information</h4>
+        <form @submit.prevent="placeOrder">
+          <!-- First & Last Name -->
+          <div class="row mb-3">
+            <div class="col-12 col-sm-6">
+              <label for="firstName" class="form-label">First Name</label>
+              <input
+                type="text"
+                id="firstName"
+                v-model="firstName"
+                class="form-control"
+                placeholder="Enter first name"
+                required
+              />
+            </div>
+            <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+              <label for="lastName" class="form-label">Last Name</label>
+              <input
+                type="text"
+                id="lastName"
+                v-model="lastName"
+                class="form-control"
+                placeholder="Enter last name"
+                required
+              />
+            </div>
+          </div>
 
-    <div class="table-responsive" v-if="wishlistItems && wishlistItems.length">
-      <table class="table align-middle table-bordered">
-        <thead class="bg-light">
-          <tr>
-            <th>PRODUCT</th>
-            <th>PRICE</th>
-            <th>STOCK STATUS</th>
-            <th>ACTION</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(item, index) in wishlistItems" :key="index">
-            <!-- Product name + optional image -->
-            <td>
-              <!-- If you have product images, uncomment this <img> and set the path
-            <img
-              :src="item.image"
-              alt="Product Image"
-              class="me-2"
-              style="width: 60px; height: 60px; object-fit: cover"
-            /> 
-            -->
-              {{ item.name }}
-            </td>
+          <!-- Shipping Address -->
+          <div class="mb-3">
+            <label for="shippingAddress" class="form-label"
+              >Shipping Address</label
+            >
+            <input
+              type="text"
+              id="shippingAddress"
+              v-model="shippingAddress"
+              class="form-control"
+              placeholder="Enter your address"
+              required
+            />
+          </div>
 
-            <!-- Price (formatted if desired) -->
-            <td>Rs{{ formatPrice(item.price) }}</td>
+          <!-- State & City -->
+          <div class="row mb-3">
+            <div class="col-12 col-sm-6">
+              <label for="state" class="form-label">State</label>
+              <input
+                type="text"
+                id="state"
+                v-model="state"
+                class="form-control"
+                placeholder="State"
+                required
+              />
+            </div>
+            <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+              <label for="city" class="form-label">City</label>
+              <input
+                type="text"
+                id="city"
+                v-model="city"
+                class="form-control"
+                placeholder="City"
+                required
+              />
+            </div>
+          </div>
 
-            <!-- Stock status -->
-            <td>{{ item.stockStatus }}</td>
+          <!-- Email & Phone -->
+          <div class="row mb-3">
+            <div class="col-12 col-sm-6">
+              <label for="email" class="form-label">Email Address</label>
+              <input
+                type="email"
+                id="email"
+                v-model="email"
+                class="form-control"
+                placeholder="example@email.com"
+                required
+              />
+            </div>
+            <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+              <label for="phone" class="form-label">Phone Number</label>
+              <input
+                type="text"
+                id="phone"
+                v-model="phone"
+                class="form-control"
+                placeholder="e.g. 09012345678"
+                required
+              />
+            </div>
+          </div>
 
-            <!-- Actions -->
-            <td>
-              <button
-                class="btn btn-success me-2"
-                :disabled="item.stockStatus === 'Out of Stock'"
-                @click="moveToCart(item, index)"
+          <!-- Additional Info -->
+          <div class="mb-3">
+            <label for="orderNotes" class="form-label"
+              >Additional Info (Optional)</label
+            >
+            <textarea
+              id="orderNotes"
+              v-model="orderNotes"
+              class="form-control"
+              rows="3"
+              placeholder="Notes about your order, e.g. special notes for delivery"
+            ></textarea>
+          </div>
+        </form>
+      </div>
+
+      <!-- Order Summary & Payment Method -->
+      <div class="col-12 col-md-5">
+        <!-- Order Summary -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Order Summary</h5>
+
+            <!-- Example of items in the summary -->
+            <div
+              v-for="(item, index) in orderItems"
+              :key="index"
+              class="d-flex justify-content-between align-items-center mb-2"
+            >
+              <div>
+                <img
+                  :src="item.image"
+                  alt="Product Image"
+                  class="rounded"
+                  style="
+                    width: 50px;
+                    height: 50px;
+                    object-fit: cover;
+                    margin-right: 10px;
+                  "
+                />
+                <span class="ms-2">{{ item.name }} x {{ item.quantity }}</span>
+              </div>
+              <div>${{ formatPrice(item.price * item.quantity) }}</div>
+            </div>
+
+            <hr />
+
+            <!-- Subtotal & Shipping -->
+            <div class="d-flex justify-content-between mb-2">
+              <span>Subtotal:</span>
+              <strong>${{ formatPrice(subtotal) }}</strong>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span>Shipping:</span>
+              <strong
+                >${{ formatPrice(shippingCost) }} ({{ shippingMethod }})</strong
               >
-                Move to cart
-              </button>
-              <button class="btn btn-danger" @click="removeFromWishlist(index)">
-                <i class="fas fa-times"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+            </div>
 
-    <!-- If no wishlist items, show a friendly message -->
-    <div class="text-center" v-else>
-      <p>Your wishlist is empty.</p>
+            <hr />
+
+            <!-- Total -->
+            <div class="d-flex justify-content-between mb-3">
+              <span>Total:</span>
+              <strong>${{ formatPrice(totalCost) }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Choose Payment Method -->
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5 class="card-title mb-3">Choose a Payment Method</h5>
+
+            <div class="form-check mb-2">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="paymentMethod"
+                id="stripeOption"
+                value="stripe"
+                v-model="paymentMethod"
+              />
+              <label class="form-check-label" for="stripeOption">
+                Stripe
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="paymentMethod"
+                id="paystackOption"
+                value="paystack"
+                v-model="paymentMethod"
+              />
+              <label class="form-check-label" for="paystackOption">
+                Paystack
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Place Order Button -->
+        <button
+          class="btn btn-primary w-100"
+          :disabled="!paymentMethod"
+          @click="placeOrder"
+        >
+          Place Order
+        </button>
+      </div>
     </div>
   </div>
-  <!-- END OF WISHLIST SECTION -->
 
   <Footer />
 </template>
@@ -239,7 +395,7 @@
 import Footer from "../../components/MarketFooter.vue";
 
 export default {
-  name: "Wishlist",
+  name: "Checkout",
   components: {
     Footer,
   },
@@ -249,23 +405,23 @@ export default {
       wishlistItems: [
         {
           name: "Velles alipo Bread",
-          price: 200,
+          price: 2000,
           stockStatus: "In Stock",
           // image: "path-to-bread-image", // if you have images
         },
         {
           name: "ORON Crayfish",
-          price: 300,
+          price: 3000,
           stockStatus: "In Stock",
         },
         {
           name: "1 Litre SUPER GRO",
-          price: 160,
+          price: 1600,
           stockStatus: "In Stock",
         },
         {
           name: "Rice",
-          price: 70,
+          price: 700,
           stockStatus: "Out of Stock",
         },
         {
@@ -303,6 +459,27 @@ export default {
       wishlistItemCount: 0,
       cartItemCount: 0,
       dropdownOpen: false,
+      firstName: "",
+      lastName: "",
+      shippingAddress: "",
+      state: "",
+      city: "",
+      email: "",
+      phone: "",
+      orderNotes: "",
+
+      orderItems: [
+        {
+          name: "Green Apple",
+          price: 300,
+          quantity: 1,
+          image: "https://via.placeholder.com/50x50.png?text=Apple",
+        },
+      ],
+
+      shippingMethod: "DHL Express Worldwide",
+      shippingCost: 10,
+      paymentMethod: null,
     };
   },
   methods: {
@@ -338,21 +515,41 @@ export default {
       this.$router.push("/login");
     },
     formatPrice(value) {
-      // This will format the price with commas, e.g. 2,000,000
       return value.toLocaleString();
     },
-    moveToCart(item, index) {
-      // 1. Add this item to your cart if you wish:
-      // this.cartItems.push(item);
-
-      // 2. Remove from wishlist
-      this.removeFromWishlist(index);
-      // 3. Optionally update localStorage or make an API call here
+    placeOrder() {
+      // Logic to handle order placement
+      const orderDetails = {
+        firstName: this.firstName,
+        lastName: this.lastName,
+        shippingAddress: this.shippingAddress,
+        state: this.state,
+        city: this.city,
+        email: this.email,
+        phone: this.phone,
+        orderNotes: this.orderNotes,
+        orderItems: this.orderItems,
+        paymentMethod: this.paymentMethod,
+      };
+      console.log("Order placed:", orderDetails);
+      // Redirect or show success message
     },
-    removeFromWishlist(index) {
-      this.wishlistItems.splice(index, 1);
+    // Function to handle logout
+  },
+
+  computed: {
+    // Calculate subtotal from order items
+    subtotal() {
+      return this.orderItems.reduce((acc, item) => {
+        return acc + item.price * item.quantity;
+      }, 0);
+    },
+    // Calculate total cost
+    totalCost() {
+      return this.subtotal + this.shippingCost;
     },
   },
+
   mounted() {
     const storedCartItems = JSON.parse(localStorage.getItem("cartItems"));
     if (storedCartItems) {
@@ -453,6 +650,15 @@ a {
   vertical-align: middle;
 }
 
+.card img {
+  vertical-align: middle;
+}
+
+/* Make sure the form labels have consistent spacing */
+.form-label {
+  font-weight: 500;
+}
+
 /* Responsive adjustments (if needed) */
 @media (max-width: 576px) {
   .navbar-brand img {
@@ -463,6 +669,9 @@ a {
   }
   .table-responsive {
     font-size: 0.9rem;
+  }
+  .row .col-sm-6 {
+    margin-top: 0 !important;
   }
 }
 </style>
