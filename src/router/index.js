@@ -16,6 +16,9 @@ import Individuals from "../views/servicelist/Individuals.vue";
 import MarketPlace from "../views/servicelist/MarketPlace.vue";
 import Companies from "../views/servicelist/Companies.vue";
 import Profile from "../views/auth/dashboard/Profile(seller).vue";
+import ProfilePage from "../views/account/ProfilePage.vue"; // Added new ProfilePage component
+import OrdersPage from "../views/account/OrdersPage.vue"; // Added new OrdersPage component
+import TrackOrderPage from "../views/account/TrackOrderPage.vue"; // Import for Track Order Page
 import ProductSeller from "../views/auth/dashboard/Product(seller).vue";
 import OrderSeller from "../views/auth/dashboard/Order(seller).vue";
 import TransactionSeller from "../views/auth/dashboard/Transaction(seller).vue";
@@ -27,6 +30,7 @@ import SignUpp from "../views/individual_account/SignUpp.vue";
 import WishList from "../views/marketplace/WishList.vue";
 import Cart from "../views/marketplace/Cart.vue";
 import Checkout from "../views/marketplace/Checkout.vue";
+import ProductDetail from "../views/marketplace/ProductDetail.vue";
 //import MarketPlaceHome from "../views/MarketPlaceHome.vue";
 // import About from "@/views/About.vue";
 
@@ -111,6 +115,18 @@ const routes = [
     component: Profile,
     meta: { hideHeader: true, hideFooter: true },
   },
+  // New route for account profile page
+  {
+    path: "/account/profile",
+    component: ProfilePage,
+    meta: { hideHeader: true, hideFooter: true },
+  },
+  // New route for account orders page
+  {
+    path: "/account/orders",
+    component: OrdersPage,
+    meta: { hideHeader: true, hideFooter: true },
+  },
   {
     path: "/product-seller",
     component: ProductSeller,
@@ -147,6 +163,13 @@ const routes = [
     meta: { hideHeader: true, hideFooter: true },
   },
   {
+    path: "/product/:id",
+    name: "ProductDetail",
+    component: ProductDetail,
+    props: true,
+    meta: { hideHeader: true, hideFooter: true },
+  },
+  {
     path: "/test",
     component: SignUpp,
   },
@@ -163,6 +186,14 @@ const routes = [
   {
     path: "/checkout",
     component: Checkout,
+    meta: { hideHeader: true, hideFooter: true },
+  },
+  // Added route for Track Order Page
+  {
+    path: "/orders/track/:id",
+    name: "TrackOrder",
+    component: TrackOrderPage,
+    props: true,
     meta: { hideHeader: true, hideFooter: true },
   },
 ];

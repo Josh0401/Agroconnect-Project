@@ -69,14 +69,6 @@
             @input="validatePassword"
             required
           />
-          <p
-            v-if="
-              signupStore.password.length > 0 && signupStore.password.length < 8
-            "
-            class="text-danger"
-          >
-            Password must be at least 8 characters long.
-          </p>
         </div>
 
         <!-- Confirm Password Field -->
@@ -133,6 +125,7 @@ export default {
     const signupStore = useAuthStore();
     const passwordError = ref("");
 
+    // Define the list of countries and cities locally (or these could be part of your store)
     const countries = ["Nigeria", "Mauritius"];
     const cities = {
       Nigeria: [
@@ -174,7 +167,7 @@ export default {
       ) {
         passwordError.value = "Passwords do not match";
       } else {
-        passwordError.value = "";
+        this.passwordError = "";
       }
     };
 
@@ -213,7 +206,6 @@ export default {
           selectedCountry: signupStore.selectedCountry,
           selectedCity: signupStore.selectedCity,
           password: signupStore.password,
-          userType: signupStore.userType, // should be "buyer"
         });
 
         console.log("Signup successful:", result);

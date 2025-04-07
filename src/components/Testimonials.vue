@@ -6,7 +6,7 @@
         <div class="card h-100">
           <div class="card-body">
             <p class="card-text">
-              "AgroEase transformed the way I sell my farm produce. Highly
+              "AgroConnect transformed the way I sell my farm produce. Highly
               recommended!"
             </p>
             <h5 class="card-title mt-3">- David Gillroy</h5>
@@ -29,7 +29,7 @@
           <div class="card-body">
             <p class="card-text">
               "A game changer for farmers and buyers alike. I love using
-              AgroEase!"
+              AgroConnect!"
             </p>
             <h5 class="card-title mt-3">- Ahmed Bello</h5>
           </div>
