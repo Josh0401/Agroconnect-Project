@@ -17,6 +17,8 @@ import MarketPlace from "../views/servicelist/MarketPlace.vue";
 import Companies from "../views/servicelist/Companies.vue";
 import Profile from "../views/auth/dashboard/Profile(seller).vue";
 import ProfilePage from "../views/account/ProfilePage.vue"; // Added new ProfilePage component
+import OrdersPage from "../views/account/OrdersPage.vue"; // Added new OrdersPage component
+import TrackOrderPage from "../views/account/TrackOrderPage.vue"; // Import for Track Order Page
 import ProductSeller from "../views/auth/dashboard/Product(seller).vue";
 import OrderSeller from "../views/auth/dashboard/Order(seller).vue";
 import TransactionSeller from "../views/auth/dashboard/Transaction(seller).vue";
@@ -119,6 +121,12 @@ const routes = [
     component: ProfilePage,
     meta: { hideHeader: true, hideFooter: true },
   },
+  // New route for account orders page
+  {
+    path: "/account/orders",
+    component: OrdersPage,
+    meta: { hideHeader: true, hideFooter: true },
+  },
   {
     path: "/product-seller",
     component: ProductSeller,
@@ -178,6 +186,14 @@ const routes = [
   {
     path: "/checkout",
     component: Checkout,
+    meta: { hideHeader: true, hideFooter: true },
+  },
+  // Added route for Track Order Page
+  {
+    path: "/orders/track/:id",
+    name: "TrackOrder",
+    component: TrackOrderPage,
+    props: true,
     meta: { hideHeader: true, hideFooter: true },
   },
 ];

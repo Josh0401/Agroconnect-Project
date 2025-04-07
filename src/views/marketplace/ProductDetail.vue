@@ -149,7 +149,7 @@
                     >
                   </li>
                   <li>
-                    <router-link class="dropdown-item" to="/account/settings"
+                    <router-link class="dropdown-item" to="/account/transactions"
                       >Transactions</router-link
                     >
                   </li>

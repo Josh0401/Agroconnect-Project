@@ -377,64 +377,19 @@
       </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-light py-4 mt-5">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-3 mb-4 mb-md-0">
-            <a class="d-inline-block mb-3" href="/">
-              <img src="../../assets/Agroconnect.png" alt="AgroEase Logo" height="40" />
-            </a>
-            <p class="small text-muted">© 2023. All rights reserved</p>
-          </div>
-          
-          <div class="col-md-9">
-            <div class="row">
-              <div class="col-md-8">
-                <div class="d-flex flex-wrap gap-4">
-                  <a href="/home" class="text-decoration-none text-dark">Home</a>
-                  <a href="/about-us" class="text-decoration-none text-dark">About Us</a>
-                  <a href="/services" class="text-decoration-none text-dark">Services</a>
-                  <a href="/faqs" class="text-decoration-none text-dark">FAQs</a>
-                  <a href="/contact" class="text-decoration-none text-dark">Contact</a>
-                </div>
-                
-                <div class="d-flex flex-wrap gap-4 mt-3">
-                  <a href="/privacy-policy" class="text-decoration-none text-muted small">Privacy Policy</a>
-                  <a href="/terms" class="text-decoration-none text-muted small">Terms of Conditions</a>
-                  <a href="/legal" class="text-decoration-none text-muted small">Legal</a>
-                  <a href="/help" class="text-decoration-none text-muted small">Help</a>
-                </div>
-              </div>
-              
-              <div class="col-md-4">
-                <div class="d-flex gap-3 mb-3 justify-content-md-end">
-                  <a href="#" class="text-dark"><i class="bi bi-facebook fs-5"></i></a>
-                  <a href="#" class="text-dark"><i class="bi bi-instagram fs-5"></i></a>
-                  <a href="#" class="text-dark"><i class="bi bi-linkedin fs-5"></i></a>
-                  <a href="#" class="text-dark"><i class="bi bi-whatsapp fs-5"></i></a>
-                </div>
-                
-                <div class="d-flex gap-2 justify-content-md-end">
-                  <a href="#" class="text-decoration-none">
-                    <img src="../../assets/google-play.png" alt="Google Play" height="40">
-                  </a>
-                  <a href="#" class="text-decoration-none">
-                    <img src="../../assets/app-store.png" alt="App Store" height="40">
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
+    <!-- Using the Footer component from Market.vue instead of the inline footer -->
+    <Footer />
   </div>
 </template>
 
 <script>
+import Footer from "../../components/MarketFooter.vue";
+
 export default {
   name: "ProfilePage",
+  components: {
+    Footer,
+  },
   data() {
     return {
       // For navbar

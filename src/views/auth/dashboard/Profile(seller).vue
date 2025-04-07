@@ -68,7 +68,7 @@
               id="email"
               v-model="profile.email"
               class="form-control"
-              placeholder="agroease@gmail.com"
+              placeholder="AgroConnect@gmail.com"
             />
           </div>
         </div>

@@ -26,7 +26,7 @@
 
           <h2 class="fw-bold mb-1">Reset Password</h2>
           <p class="text-muted mb-4">
-            Kindly enter the email used to sign into AgroEase
+            Kindly enter the email used to sign into AgroConnect
           </p>
 
           <form @submit.prevent="onReset">
