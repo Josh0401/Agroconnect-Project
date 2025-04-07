@@ -133,7 +133,6 @@ export default {
     const signupStore = useAuthStore();
     const passwordError = ref("");
 
-    // Define the list of countries and cities locally (or these could be part of your store)
     const countries = ["Nigeria", "Mauritius"];
     const cities = {
       Nigeria: [
@@ -214,6 +213,7 @@ export default {
           selectedCountry: signupStore.selectedCountry,
           selectedCity: signupStore.selectedCity,
           password: signupStore.password,
+          userType: signupStore.userType, // should be "buyer"
         });
 
         console.log("Signup successful:", result);

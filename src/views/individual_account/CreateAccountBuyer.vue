@@ -90,8 +90,7 @@ export default {
     };
 
     const continueSignup = () => {
-      // You can add validation logic here if needed
-      // Navigate to step 2; assuming your route is set up accordingly
+      signupStore.userType = "buyer";
       router.push("/create-buyer2");
     };
 

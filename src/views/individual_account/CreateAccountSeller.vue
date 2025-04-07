@@ -30,7 +30,7 @@
             type="text"
             class="form-control form-control-lg"
             placeholder="Enter Your First Name"
-            v-model="firstName"
+            v-model="authStore.firstName"
             required
           />
         </div>
@@ -41,7 +41,7 @@
             type="text"
             class="form-control form-control-lg"
             placeholder="Enter Your Last Name"
-            v-model="lastName"
+            v-model="authStore.lastName"
             required
           />
         </div>
@@ -52,7 +52,7 @@
             type="email"
             class="form-control form-control-lg"
             placeholder="Enter Your Email Address"
-            v-model="email"
+            v-model="authStore.email"
             required
           />
         </div>
@@ -66,66 +66,77 @@
       <!-- Login Link -->
       <p class="text-center">
         Already have an account?
-        <router-link to="/login" class="text-decoration-none"
-          >Login</router-link
-        >
+        <router-link to="/login" class="text-decoration-none">
+          Login
+        </router-link>
       </p>
     </div>
   </div>
 </template>
 
 <script>
+import { useAuthStore } from "../../stores/auth";
+import { useRouter } from "vue-router";
+
 export default {
-  name: "CreateAccountIndividual",
-  data() {
-    return {
-      firstName: "",
-      lastName: "",
-      email: "",
+  name: "CreateAccountSeller1",
+  setup() {
+    const authStore = useAuthStore();
+    const router = useRouter();
+
+    const goBack = () => {
+      router.go(-1);
     };
-  },
-  created() {
-    // Load saved data from localStorage when the component is created
-    this.loadFormData();
-  },
-  methods: {
-    goBack() {
-      // Save form data before navigating back
-      this.saveFormData();
-      if (this.$router) {
-        this.$router.go(-1);
-      } else {
-        window.history.back();
-      }
-    },
-    continueSignup() {
-      // Save form data before moving forward
-      this.saveFormData();
-      alert(
-        `Account creation step 1 for: ${this.firstName} ${this.lastName}, email: ${this.email}`
-      );
-      this.$router.push("/create-seller2");
-    },
-    saveFormData() {
-      const formData = {
-        firstName: this.firstName,
-        lastName: this.lastName,
-        email: this.email,
-      };
-      localStorage.setItem("accountIndividualData", JSON.stringify(formData));
-    },
-    loadFormData() {
-      const savedData = localStorage.getItem("accountIndividualData");
-      if (savedData) {
-        const { firstName, lastName, email } = JSON.parse(savedData);
-        this.firstName = firstName || "";
-        this.lastName = lastName || "";
-        this.email = email || "";
-      }
-    },
+
+    const continueSignup = () => {
+      // Set user type to "seller" in the global state
+      authStore.userType = "seller";
+      // Navigate to the next step in the seller signup flow
+      router.push("/create-seller2");
+    };
+
+    return {
+      authStore,
+      goBack,
+      continueSignup,
+    };
   },
 };
 </script>
+
+<style scoped>
+.create-account {
+  overflow: hidden;
+}
+
+.left-col {
+  background-color: #06b17c;
+  background-image: url("../../assets/smiley-woman.svg");
+  background-size: cover;
+  background-position: center;
+}
+
+.steps .step-circle {
+  width: 30px;
+  height: 30px;
+  border: 2px solid #06b17c;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #06b17c;
+  font-weight: bold;
+}
+
+.steps .step-circle.active {
+  background-color: #06b17c;
+  color: #fff;
+}
+
+.back {
+  text-decoration: none;
+}
+</style>
 
 <style scoped>
 .create-account {

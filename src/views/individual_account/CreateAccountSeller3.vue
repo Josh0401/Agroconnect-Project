@@ -1,7 +1,6 @@
 <template>
   <div class="create-account d-flex flex-row min-vh-100">
     <div class="left-col d-none d-md-block col-md-6 p-0"></div>
-
     <div
       class="right-col col-12 col-md-6 d-flex flex-column justify-content-center px-4"
     >
@@ -11,10 +10,8 @@
       >
         <i class="bi bi-arrow-left me-2"></i> Back
       </button>
-
       <h2 class="fw-bold mb-2">Create Account</h2>
       <p class="text-muted mb-3">Create an account to join for a good start</p>
-
       <div class="steps d-flex align-items-center mb-4">
         <span class="step-circle">1</span>
         <span class="mx-2">—</span>
@@ -22,14 +19,13 @@
         <span class="mx-2">—</span>
         <span class="step-circle active">3</span>
       </div>
-
       <form @submit.prevent="submitForm" class="mb-4">
         <!-- Country Dropdown -->
         <div class="mb-3">
           <label class="form-label fw-semibold">Select Your Country</label>
           <select
             id="country"
-            v-model="selectedCountry"
+            v-model="authStore.selectedCountry"
             class="form-select form-select-lg"
             required
           >
@@ -42,13 +38,12 @@
             </option>
           </select>
         </div>
-
         <!-- City Dropdown -->
         <div class="mb-3">
           <label class="form-label fw-semibold">Select a City</label>
           <select
             id="city"
-            v-model="selectedCity"
+            v-model="authStore.selectedCity"
             class="form-select form-select-lg"
             required
           >
@@ -57,7 +52,6 @@
             </option>
           </select>
         </div>
-
         <!-- Password -->
         <div class="mb-3">
           <label class="form-label fw-semibold">Password</label>
@@ -65,9 +59,18 @@
             type="password"
             class="form-control form-control-lg"
             placeholder="Enter a Password"
-            v-model="password"
+            v-model="authStore.password"
+            @input="validatePassword"
             required
           />
+          <p
+            v-if="
+              authStore.password.length > 0 && authStore.password.length < 8
+            "
+            class="text-danger"
+          >
+            Password must be at least 8 characters long.
+          </p>
         </div>
         <!-- Confirm Password -->
         <div class="mb-3">
@@ -76,13 +79,13 @@
             type="password"
             class="form-control form-control-lg"
             placeholder="Confirm Password"
-            v-model="confirmPassword"
+            v-model="authStore.confirmPassword"
+            @input="validatePassword"
             required
           />
           <p v-if="passwordError" class="text-danger">{{ passwordError }}</p>
         </div>
       </form>
-
       <!-- Navigation Buttons -->
       <div class="d-flex">
         <button
@@ -98,7 +101,6 @@
           Submit
         </button>
       </div>
-
       <!-- Login Link -->
       <p class="text-center">
         Already have an account?
@@ -111,137 +113,118 @@
 </template>
 
 <script>
+import { computed, ref } from "vue";
+import { useAuthStore } from "../../stores/auth";
+import { useRouter } from "vue-router";
+
 export default {
-  name: "CreateAccountIndividual",
-  data() {
-    return {
-      // These fields might also be saved from previous steps.
-      firstName: "",
-      lastName: "",
-      email: "",
-      // Current step fields
-      password: "",
-      confirmPassword: "",
-      passwordError: "",
-      countries: ["Nigeria", "Mauritius"],
-      cities: {
-        Nigeria: [
-          "Lagos",
-          "Abuja",
-          "Kano",
-          "Port Harcourt",
-          "Ibadan",
-          "Benin City",
-          "Kaduna",
-          "Jos",
-          "Enugu",
-          "Owerri",
-        ],
-        Mauritius: [
-          "Port Louis",
-          "Curepipe",
-          "Quatre Bornes",
-          "Vacoas",
-          "Beau Bassin",
-          "Rose Hill",
-          "Mahebourg",
-          "Goodlands",
-          "Triolet",
-          "Souillac",
-        ],
-      },
-      selectedCountry: "",
-      selectedCity: "",
+  name: "CreateAccountSeller3",
+  setup() {
+    const authStore = useAuthStore();
+    const router = useRouter();
+    const passwordError = ref("");
+
+    const countries = ["Nigeria", "Mauritius"];
+    const cities = {
+      Nigeria: [
+        "Lagos",
+        "Abuja",
+        "Kano",
+        "Port Harcourt",
+        "Ibadan",
+        "Benin City",
+        "Kaduna",
+        "Jos",
+        "Enugu",
+        "Owerri",
+      ],
+      Mauritius: [
+        "Port Louis",
+        "Curepipe",
+        "Quatre Bornes",
+        "Vacoas",
+        "Beau Bassin",
+        "Rose Hill",
+        "Mahebourg",
+        "Goodlands",
+        "Triolet",
+        "Souillac",
+      ],
     };
-  },
-  computed: {
-    filteredCities() {
-      return this.selectedCountry ? this.cities[this.selectedCountry] : [];
-    },
-  },
-  created() {
-    // Load saved form data when component is created
-    this.loadFormData();
-  },
-  watch: {
-    // Validate password when confirmPassword changes
-    confirmPassword() {
-      this.validatePassword();
-    },
-  },
-  methods: {
-    goBack() {
-      // Save data before navigating back
-      this.saveFormData();
-      if (this.$router) {
-        this.$router.go(-1);
+
+    const filteredCities = computed(() => {
+      return authStore.selectedCountry ? cities[authStore.selectedCountry] : [];
+    });
+
+    const validatePassword = () => {
+      if (
+        authStore.confirmPassword &&
+        authStore.password !== authStore.confirmPassword
+      ) {
+        passwordError.value = "Passwords do not match";
+      } else if (authStore.password && authStore.password.length < 8) {
+        passwordError.value = "Password must be at least 8 characters long";
       } else {
-        window.history.back();
+        passwordError.value = "";
       }
-    },
-    previousSignup() {
-      // Save data and navigate to the previous step
-      this.saveFormData();
-      this.$router.push("/create-buyer2");
-    },
-    continueSignup() {
-      // This method is not used in submission here.
-      // It could be used for moving to an intermediate step.
-      alert(
-        `Account creation step 1 for: ${this.firstName} ${this.lastName}, email: ${this.email}`
-      );
-      // e.g., this.$router.push('/next-step');
-    },
-    validatePassword() {
-      if (this.confirmPassword && this.password !== this.confirmPassword) {
-        this.passwordError = "Passwords do not match";
-      } else {
-        this.passwordError = "";
-      }
-    },
-    saveFormData() {
-      // Save all relevant fields into localStorage
-      const formData = {
-        firstName: this.firstName,
-        lastName: this.lastName,
-        email: this.email,
-        password: this.password,
-        confirmPassword: this.confirmPassword,
-        selectedCountry: this.selectedCountry,
-        selectedCity: this.selectedCity,
-      };
-      localStorage.setItem("accountFormData", JSON.stringify(formData));
-    },
-    loadFormData() {
-      // Retrieve the saved data from localStorage, if any
-      const savedData = localStorage.getItem("accountFormData");
-      if (savedData) {
-        const data = JSON.parse(savedData);
-        this.firstName = data.firstName || "";
-        this.lastName = data.lastName || "";
-        this.email = data.email || "";
-        this.password = data.password || "";
-        this.confirmPassword = data.confirmPassword || "";
-        this.selectedCountry = data.selectedCountry || "";
-        this.selectedCity = data.selectedCity || "";
-      }
-    },
-    submitForm() {
-      // Validate the password fields first
-      if (!this.password || !this.confirmPassword) {
+    };
+
+    const goBack = () => {
+      router.push("/create-seller2");
+    };
+
+    const previousSignup = () => {
+      router.push("/create-seller2");
+    };
+
+    const submitForm = async () => {
+      // Validate that password fields are not empty
+      if (!authStore.password || !authStore.confirmPassword) {
         alert("Please fill in both password fields.");
         return;
       }
-      if (this.password !== this.confirmPassword) {
-        alert("Passwords do not match!");
-        return;
+
+      // Validate password
+
+      // Build the payload from the store's state
+      const payload = {
+        firstName: authStore.firstName,
+        lastName: authStore.lastName,
+        email: authStore.email,
+        phone_number: authStore.phone_number,
+        address: authStore.address,
+        selectedCountry: authStore.selectedCountry,
+        selectedCity: authStore.selectedCity,
+        password: authStore.password,
+        userType: authStore.userType, // should be "seller"
+        productName: authStore.productName,
+        productCategory: authStore.productCategory,
+      };
+
+      try {
+        const result = await authStore.submitSignup(payload);
+        console.log("Signup successful:", result);
+        alert("Signup successful!");
+        router.push("/login");
+      } catch (error) {
+        console.error("Signup error:", error);
+
+        alert(
+          "There was an error submitting your signup. Please check your details and try again."
+        );
       }
+    };
 
-      // Clear the saved form data from localStorage after submission
-      localStorage.removeItem("accountFormData");
-
-      this.$router.push("/login");
-    },
+    return {
+      authStore,
+      countries,
+      filteredCities,
+      passwordError,
+      goBack,
+      previousSignup,
+      submitForm,
+      validatePassword,
+    };
   },
 };
 </script>

@@ -123,12 +123,22 @@ export default {
       this.loading = true;
       this.errorMessage = "";
       const authStore = useAuthStore();
+
       try {
         await authStore.login({
           email: this.email,
           password: this.password,
         });
-        this.$router.push("/dashboard-seller");
+
+        // Redirect based on userType
+        if (authStore.userType === "seller") {
+          this.$router.push("/dashboard-seller");
+        } else if (authStore.userType === "buyer") {
+          this.$router.push("/dashboard-buyer");
+        } else {
+          // Fallback route if userType is missing or unrecognized
+          this.$router.push("/dashboard");
+        }
       } catch (error) {
         this.errorMessage =
           error.response?.data?.message ||

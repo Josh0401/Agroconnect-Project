@@ -31,33 +31,33 @@
             type="number"
             class="form-control form-control-lg"
             placeholder="Enter Your Phone Number"
-            v-model="phone_number"
+            v-model="authStore.phone_number"
             required
           />
         </div>
 
         <!-- Product Name -->
         <div class="mb-3">
-          <label class="form-label fw-semibold"
-            >What Product Do You Sell?</label
-          >
+          <label class="form-label fw-semibold">
+            What Product Do You Sell?
+          </label>
           <input
             type="text"
             class="form-control form-control-lg"
             placeholder="Enter Product"
-            v-model="productName"
+            v-model="authStore.productName"
             required
           />
         </div>
 
         <!-- Product Category -->
         <div class="mb-3">
-          <label class="form-label fw-semibold"
-            >What is the Product Category</label
-          >
+          <label class="form-label fw-semibold">
+            What is the Product Category
+          </label>
           <select
             id="item"
-            v-model="productCategory"
+            v-model="authStore.productCategory"
             class="form-select form-select-lg"
             required
           >
@@ -81,12 +81,13 @@
 
         <!-- Address -->
         <div class="mb-3">
-          <label class="form-label fw-semibold">Address (optional)</label>
+          <label class="form-label fw-semibold">Address</label>
           <input
-            type="email"
+            required
+            type="text"
             class="form-control form-control-lg"
             placeholder="Enter Your Address"
-            v-model="address"
+            v-model="authStore.address"
           />
         </div>
       </form>
@@ -110,76 +111,45 @@
       <!-- Login Link -->
       <p class="text-center">
         Already have an account?
-        <router-link to="/login" class="text-decoration-none"
-          >Login</router-link
-        >
+        <router-link to="/login" class="text-decoration-none">
+          Login
+        </router-link>
       </p>
     </div>
   </div>
 </template>
 
 <script>
+import { useAuthStore } from "../../stores/auth";
+import { useRouter } from "vue-router";
+
 export default {
-  name: "CreateAccountIndividual",
-  data() {
-    return {
-      // Seller-specific fields
-      phone_number: "",
-      productName: "",
-      productCategory: "",
-      address: "",
+  name: "CreateAccountSeller2",
+  setup() {
+    const authStore = useAuthStore();
+    const router = useRouter();
+
+    const goBack = () => {
+      router.go(-1);
     };
-  },
-  created() {
-    // Load saved form data from localStorage when component is created
-    this.loadFormData();
-  },
-  methods: {
-    goBack() {
-      this.saveFormData();
-      if (this.$router) {
-        this.$router.go(-1);
-      } else {
-        window.history.back();
-      }
-    },
-    previousSignup() {
-      this.saveFormData();
-      // Navigate to the previous step (update the route as needed)
-      this.$router.push("/create-account-seller");
-    },
-    continueSignup() {
-      this.saveFormData();
-      // Example alert to show collected data; replace with real processing as needed.
-      alert(
-        `Seller Details:
-Phone Number: ${this.phone_number}
-Product Name: ${this.productName}
-Category: ${this.productCategory}
-Address: ${this.address}`
-      );
-      // Navigate to the next step (update the route as needed)
-      this.$router.push("/create-seller3");
-    },
-    saveFormData() {
-      const formData = {
-        phone_number: this.phone_number,
-        productName: this.productName,
-        productCategory: this.productCategory,
-        address: this.address,
-      };
-      localStorage.setItem("sellerFormData", JSON.stringify(formData));
-    },
-    loadFormData() {
-      const savedData = localStorage.getItem("sellerFormData");
-      if (savedData) {
-        const data = JSON.parse(savedData);
-        this.phone_number = data.phone_number || "";
-        this.productName = data.productName || "";
-        this.productCategory = data.productCategory || "";
-        this.address = data.address || "";
-      }
-    },
+
+    const previousSignup = () => {
+      router.push("/create-account-seller");
+    };
+
+    const continueSignup = () => {
+      // Here, the form fields are already bound to the store:
+      // authStore.phone_number, authStore.productName, authStore.productCategory, authStore.address
+      // Optionally, you could add validation before moving on.
+      router.push("/create-seller3");
+    };
+
+    return {
+      authStore,
+      goBack,
+      previousSignup,
+      continueSignup,
+    };
   },
 };
 </script>
