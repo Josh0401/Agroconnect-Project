@@ -31,6 +31,10 @@ import WishList from "../views/marketplace/WishList.vue";
 import Cart from "../views/marketplace/Cart.vue";
 import Checkout from "../views/marketplace/Checkout.vue";
 import ProductDetail from "../views/marketplace/ProductDetail.vue";
+import Cat from "../views/marketplace/Cat.vue";
+import LoginSelect from "../views/LoginSelect.vue";
+import LoginSeller from "../views/auth/LoginSeller.vue";
+//import Categories from "../components/Categories.vue";
 //import MarketPlaceHome from "../views/MarketPlaceHome.vue";
 // import About from "@/views/About.vue";
 
@@ -50,9 +54,20 @@ const routes = [
   },
   {
     path: "/login",
+    component: LoginSelect,
+    meta: { hideHeader: true, hideFooter: true },
+  },
+  {
+    path: "/login-buyer",
     component: Login,
     meta: { hideHeader: true, hideFooter: true },
   },
+  {
+    path: "/login-seller",
+    component: LoginSeller,
+    meta: { hideHeader: true, hideFooter: true },
+  },
+
   {
     path: "/reset-password",
     component: ResetPassword,
@@ -195,6 +210,12 @@ const routes = [
     component: TrackOrderPage,
     props: true,
     meta: { hideHeader: true, hideFooter: true },
+  },
+  {
+    path: "/cat/:category?",
+    name: "Cat",
+    component: Cat,
+    props: true,
   },
 ];
 

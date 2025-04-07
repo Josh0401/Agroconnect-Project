@@ -57,6 +57,11 @@ button:focus-visible {
 .card {
   padding: 2em;
 }
+a.router-link-active,
+a.router-link-exact-active,
+a.router-link {
+  text-decoration: none !important;
+}
 
 #app {
   width: 100%;
