@@ -30,7 +30,7 @@
             type="text"
             class="form-control form-control-lg"
             placeholder="Enter Your First Name"
-            v-model="signupStore.firstName"
+            v-model="authStore.firstName"
             required
           />
         </div>
@@ -41,7 +41,7 @@
             type="text"
             class="form-control form-control-lg"
             placeholder="Enter Your Last Name"
-            v-model="signupStore.lastName"
+            v-model="authStore.lastName"
             required
           />
         </div>
@@ -52,7 +52,7 @@
             type="email"
             class="form-control form-control-lg"
             placeholder="Enter Your Email Address"
-            v-model="signupStore.email"
+            v-model="authStore.email"
             required
           />
         </div>

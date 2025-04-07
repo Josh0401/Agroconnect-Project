@@ -69,6 +69,14 @@
             @input="validatePassword"
             required
           />
+          <p
+            v-if="
+              authStore.password.length > 0 && authStore.password.length < 8
+            "
+            class="text-danger"
+          >
+            Password must be at least 8 characters long.
+          </p>
         </div>
 
         <!-- Confirm Password Field -->

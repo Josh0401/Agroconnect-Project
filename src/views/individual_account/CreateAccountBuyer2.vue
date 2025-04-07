@@ -30,7 +30,7 @@
             type="number"
             class="form-control form-control-lg"
             placeholder="Enter Your Phone Number"
-            v-model="signupStore.phone_number"
+            v-model="authStore.phone_number"
             required
           />
         </div>
@@ -41,7 +41,7 @@
             type="text"
             class="form-control form-control-lg"
             placeholder="Enter Your Address"
-            v-model="signupStore.address"
+            v-model="authStore.address"
           />
         </div>
       </form>
