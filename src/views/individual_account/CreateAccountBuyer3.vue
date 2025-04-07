@@ -29,7 +29,7 @@
           <label class="form-label fw-semibold">Select Your Country</label>
           <select
             id="country"
-            v-model="signupStore.selectedCountry"
+            v-model="authStore.selectedCountry"
             class="form-select form-select-lg"
             required
           >
@@ -48,7 +48,7 @@
           <label class="form-label fw-semibold">Select a City</label>
           <select
             id="city"
-            v-model="signupStore.selectedCity"
+            v-model="authStore.selectedCity"
             class="form-select form-select-lg"
             required
           >
@@ -65,7 +65,7 @@
             type="password"
             class="form-control form-control-lg"
             placeholder="Enter a Password"
-            v-model="signupStore.password"
+            v-model="authStore.password"
             @input="validatePassword"
             required
           />
@@ -78,7 +78,7 @@
             type="password"
             class="form-control form-control-lg"
             placeholder="Confirm Password"
-            v-model="signupStore.confirmPassword"
+            v-model="authStore.confirmPassword"
             @input="validatePassword"
             required
           />
@@ -122,7 +122,7 @@ export default {
   name: "CreateAccountBuyer3",
   setup() {
     const router = useRouter();
-    const signupStore = useAuthStore();
+    const authStore = useAuthStore();
     const passwordError = ref("");
 
     // Define the list of countries and cities locally (or these could be part of your store)
@@ -155,15 +155,13 @@ export default {
     };
 
     const filteredCities = computed(() => {
-      return signupStore.selectedCountry
-        ? cities[signupStore.selectedCountry]
-        : [];
+      return authStore.selectedCountry ? cities[authStore.selectedCountry] : [];
     });
 
     const validatePassword = () => {
       if (
-        signupStore.confirmPassword &&
-        signupStore.password !== signupStore.confirmPassword
+        authStore.confirmPassword &&
+        authStore.password !== authStore.confirmPassword
       ) {
         passwordError.value = "Passwords do not match";
       } else {
@@ -182,30 +180,30 @@ export default {
 
     const submitForm = async () => {
       // Validate password fields
-      if (!signupStore.password || !signupStore.confirmPassword) {
+      if (!authStore.password || !authStore.confirmPassword) {
         alert("Please fill in both password fields.");
         return;
       }
-      if (signupStore.password.length < 8) {
+      if (authStore.password.length < 8) {
         alert("Password must be at least 8 characters long.");
         return;
       }
-      if (signupStore.password !== signupStore.confirmPassword) {
+      if (authStore.password !== authStore.confirmPassword) {
         alert("Passwords do not match!");
         return;
       }
 
       // Call the store's submitSignup action to make the API call
       try {
-        const result = await signupStore.submitSignup({
-          firstName: signupStore.firstName,
-          lastName: signupStore.lastName,
-          email: signupStore.email,
-          phone_number: signupStore.phone_number,
-          address: signupStore.address,
-          selectedCountry: signupStore.selectedCountry,
-          selectedCity: signupStore.selectedCity,
-          password: signupStore.password,
+        const result = await authStore.submitSignup({
+          firstName: authStore.firstName,
+          lastName: authStore.lastName,
+          email: authStore.email,
+          phone_number: authStore.phone_number,
+          address: authStore.address,
+          selectedCountry: authStore.selectedCountry,
+          selectedCity: authStore.selectedCity,
+          password: authStore.password,
         });
 
         console.log("Signup successful:", result);
@@ -217,7 +215,7 @@ export default {
     };
 
     return {
-      signupStore,
+      authStore,
       countries,
       filteredCities,
       passwordError,
