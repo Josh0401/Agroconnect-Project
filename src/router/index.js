@@ -31,7 +31,7 @@ import WishList from "../views/marketplace/WishList.vue";
 import Cart from "../views/marketplace/Cart.vue";
 import Checkout from "../views/marketplace/Checkout.vue";
 import ProductDetail from "../views/marketplace/ProductDetail.vue";
-import Cat from "../views/marketplace/Cat.vue";
+import FilteredCategoriesPage from "../views/marketplace/FilteredCategoriesPage.vue";
 import LoginSelect from "../views/LoginSelect.vue";
 import LoginSeller from "../views/auth/LoginSeller.vue";
 import TransactionsPage from "../views/account/TransactionsPage.vue";
@@ -213,10 +213,9 @@ const routes = [
     meta: { hideHeader: true, hideFooter: true },
   },
   {
-    path: "/cat/:category?",
-    name: "Cat",
-    component: Cat,
-    props: true,
+    path: "/filtered-categories",
+    name: "FilteredCategoriesPage",
+    component: () => import("../views/marketplace/FilteredCategoriesPage.vue"),
   },
   {
     path: "/account/transactions",

@@ -23,29 +23,63 @@
 
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav mx-auto">
-          <div class="search-container">
-            <!-- Inline SVG for the search icon -->
-            <svg class="search-icon" fill="currentColor" viewBox="0 0 16 16">
+          <!-- Search container -->
+          <div class="search-container d-flex align-items-center">
+            <!-- Search Icon (always visible) -->
+            <svg
+              class="search-icon me-2"
+              fill="currentColor"
+              viewBox="0 0 16 16"
+            >
               <path
                 d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85.708-.708-3.85-3.85zm-5.242.656
                    a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"
               />
             </svg>
-            <!-- Search input -->
+            <!-- Search input & button visible only on larger screens -->
             <input
               id="searchInput"
               type="text"
               placeholder="Search"
               @keydown.enter="handleSearch"
               v-model="searchQuery"
+              class="d-none d-lg-block form-control me-2"
             />
-            <button type="button" @click="handleSearch">Search</button>
+            <button
+              type="button"
+              @click="handleSearch"
+              class="d-none d-lg-block btn btn-outline-secondary"
+            >
+              Search
+            </button>
           </div>
         </ul>
         <div class="d-flex align-items-center py-1">
+          <!-- Wishlist Icon -->
+          <button class="btn position-relative me-3" @click="goToWishlist">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="currentColor"
+              class="bi bi-heart"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M8 2.748c-1.1-1.176-2.785-1.103-3.95.285-1.168 1.395-.593 3.247 1.12 4.722C6.2 9.8 8 11.4 8 11.4s1.8-1.6 3.78-4.095c1.714-1.475 2.288-3.327 1.12-4.722C10.785 1.645 9.1 1.572 8 2.748z"
+              />
+            </svg>
+            <!-- Optional badge for wishlist count -->
+            <span
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+              v-if="wishlistItemCount > 0"
+            >
+              {{ wishlistItemCount }}
+            </span>
+          </button>
+
           <!-- Shopping Cart Icon -->
           <button class="btn position-relative me-3" @click="goToCart">
-            <!-- Shopping Cart SVG icon -->
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -61,7 +95,6 @@
                    13 13H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM3.102 6l1.313 6h7.17l1.313-6H3.102zM5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"
               />
             </svg>
-            <!-- Badge for the cart item count -->
             <span
               class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
               v-if="cartItemCount > 0"
@@ -69,11 +102,74 @@
               {{ cartItemCount }}
             </span>
           </button>
+
+          <!-- Account Icon with Dropdown -->
+          <div
+            class="dropdown account-dropdown me-3"
+            @mouseenter="openDropdown"
+            @mouseleave="closeDropdown"
+          >
+            <button
+              class="btn dropdown-toggle p-0"
+              type="button"
+              id="accountDropdown"
+              aria-expanded="dropdownOpen"
+            >
+              <!-- Account SVG Icon -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="currentColor"
+                class="bi bi-person"
+                viewBox="0 0 16 16"
+              >
+                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                <path
+                  fill-rule="evenodd"
+                  d="M8 9a5 5 0 0 0-4.546 2.916.5.5 0 0 0 .832.554A4 4 0 0 1 8 10a4 4 0 0 1 3.714 2.37.5.5 0 0 0 .832-.554A5 5 0 0 0 8 9z"
+                />
+              </svg>
+            </button>
+            <ul
+              class="dropdown-menu"
+              :class="{ show: dropdownOpen }"
+              aria-labelledby="accountDropdown"
+            >
+              <li>
+                <router-link class="dropdown-item" to="/account/profile"
+                  >Profile</router-link
+                >
+              </li>
+              <li>
+                <router-link class="dropdown-item" to="/account/orders"
+                  >Orders</router-link
+                >
+              </li>
+              <li>
+                <router-link class="dropdown-item" to="/account/transactions"
+                  >Transactions</router-link
+                >
+              </li>
+              <li>
+                <a class="dropdown-item" href="/login" @click.prevent="logout()"
+                  >Logout</a
+                >
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   </nav>
-
+  <div class="w-100">
+    <img
+      src="../../assets/hero-img-market.png"
+      alt="Hero Image"
+      class="img-fluid w-100 shadow-sm"
+      style="border-radius: 0"
+    />
+  </div>
   <div class="products py-5">
     <section class="newproduct">
       <div class="container">
@@ -252,6 +348,11 @@ export default {
   },
   data() {
     return {
+      dropdownOpen: false,
+      dropdownTimeout: null,
+      searchQuery: "",
+      cartItemCount: 0,
+      wishlistItemCount: 0,
       searchQuery: "",
       cartItems: [
         // { name: "Product 1", quantity: 2 },
@@ -273,6 +374,28 @@ export default {
     goToCart() {
       // Navigate to the cart page
       this.$router.push("/cart");
+    },
+    openDropdown() {
+      if (this.dropdownTimeout) {
+        clearTimeout(this.dropdownTimeout);
+        this.dropdownTimeout = null;
+      }
+      this.dropdownOpen = true;
+    },
+    closeDropdown() {
+      // Delay closing the dropdown to allow the user to move the mouse to the menu
+      this.dropdownTimeout = setTimeout(() => {
+        this.dropdownOpen = false;
+      }, 300); // Adjust delay (in ms) as needed
+    },
+    logout() {
+      // Implement your logout logic here:
+      // e.g., clear auth state, call logout API, then redirect to login page
+      console.log("Logging out...");
+      // Example: Clear local storage or Vuex store, then navigate to login
+      // localStorage.removeItem("authToken");
+      // this.$store.dispatch("logout");
+      this.$router.push("/login");
     },
   },
   computed: {

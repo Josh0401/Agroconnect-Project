@@ -56,8 +56,12 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import img from "../../assets/cowpea.jpg"; // Importing the image
+import { ref, computed, watch } from "vue";
+import { useRoute } from "vue-router";
+import img from "../../assets/cowpea.jpg"; // Example image
+
+// Get the route object in order to read query parameters
+const route = useRoute();
 
 // Sample list of categories
 const categories = ref([
@@ -70,6 +74,12 @@ const categories = ref([
   "Dairy Products",
   "Processed Foods",
   "Agro Chemicals",
+  "Diabetics",
+  "Proteins",
+  "Baking Ingredients",
+  "Snacks and Pastries",
+  "Cereals and Beverages",
+  "Fresh Vegetables",
 ]);
 
 // Sample products data
@@ -98,15 +108,33 @@ const products = ref([
   // ... more products
 ]);
 
-// Set the default selected category
-const selectedCategory = ref(categories.value[0]);
+// Set the default selected category from the URL query if valid,
+// otherwise default to the first category in the list.
+const selectedCategory = ref(
+  route.query.category && categories.value.includes(route.query.category)
+    ? route.query.category
+    : categories.value[0]
+);
 
-// Handle category selection
+// Watch for changes in the route query parameter and update selectedCategory accordingly.
+watch(
+  () => route.query.category,
+  (newCategory) => {
+    if (newCategory && categories.value.includes(newCategory)) {
+      selectedCategory.value = newCategory;
+    }
+  }
+);
+
+// Handle category selection from the sidebar (e.g., user clicks a category)
 function selectCategory(category) {
   selectedCategory.value = category;
+  // Optionally, you could update the URL query parameter here as well.
+  // For example, you might use useRouter and push the change,
+  // but if you want the change to be purely internal, leaving it like this is fine.
 }
 
-// Compute the filtered products based on the selected category
+// Compute the filtered products based on the selected category.
 const filteredProducts = computed(() =>
   products.value.filter(
     (product) => product.category === selectedCategory.value
