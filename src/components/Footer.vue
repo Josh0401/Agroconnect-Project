@@ -6,7 +6,7 @@
         <!-- Left: Logo + Tagline -->
         <div class="col-md-4 d-flex align-items-center mb-3 mb-md-0">
           <!-- Logo (replace /logo.png with your own) -->
-          <a class="navbar-brand d-flex align-items-center" href="/">
+          <a class="navbar-brand d-flex align-items-center" href="/market">
             <img
               src="../assets/Agroconnect.png"
               alt="AgroEase Logo"

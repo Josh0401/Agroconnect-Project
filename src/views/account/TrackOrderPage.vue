@@ -3,7 +3,7 @@
     <!-- Navbar component - reusing the same structure from OrdersPage -->
     <nav class="navbar navbar-expand-lg sticky-top bg-white shadow-sm py-3">
       <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="/">
+        <a class="navbar-brand d-flex align-items-center" href="/market">
           <img
             src="../../assets/Agroconnect.png"
             alt="AgroConnect Logo"
@@ -406,7 +406,7 @@
         <div class="container">
           <div class="row">
             <div class="col-md-3 mb-4 mb-md-0">
-              <a class="d-inline-block mb-3" href="/">
+              <a class="d-inline-block mb-3" href="/market">
                 <img src="../../assets/Agroconnect.png" alt="AgroConnect Logo" height="40" />
               </a>
               <p class="small text-muted">© 2023. All rights reserved</p>

@@ -35,6 +35,8 @@ import Cat from "../views/marketplace/Cat.vue";
 import LoginSelect from "../views/LoginSelect.vue";
 import LoginSeller from "../views/auth/LoginSeller.vue";
 import TransactionsPage from "../views/account/TransactionsPage.vue";
+import FilteredCategoriesPage from "../views/marketplace/FilteredCategoriesPage.vue";
+import GroupsCommunitiesPage from "../views/account/GroupsCommunitiesPage.vue";
 //import Categories from "../components/Categories.vue";
 //import MarketPlaceHome from "../views/MarketPlaceHome.vue";
 // import About from "@/views/About.vue";
@@ -218,6 +220,16 @@ const routes = [
     component: Cat,
     props: true,
   },
+  {
+  path: "/filtered-categories",
+  name: "FilteredCategoriesPage",
+  component: () => import("../views/marketplace/FilteredCategoriesPage.vue"),
+},
+{
+  path: "/account/groups-communities",
+  component: GroupsCommunitiesPage,
+  meta: { hideHeader: true, hideFooter: true },
+},
   {
     path: "/account/transactions",
     component: TransactionsPage,

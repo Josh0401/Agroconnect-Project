@@ -12,9 +12,15 @@
           <div
             class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4"
           >
-            <!-- Card 1 -->
+            <!-- Card 1: Herbs and Spices -->
             <div class="col">
-              <router-link to="/market" class="card h-100">
+              <router-link
+                :to="{
+                  name: 'FilteredCategoriesPage',
+                  query: { category: 'Herbs and Spices' },
+                }"
+                class="card h-100"
+              >
                 <img
                   src="../assets/herb.jpg"
                   class="card-img-top"
@@ -26,9 +32,15 @@
               </router-link>
             </div>
 
-            <!-- Card 2 -->
+            <!-- Card 2: Fresh Fruits -->
             <div class="col">
-              <router-link to="/market" class="card h-100">
+              <router-link
+                :to="{
+                  name: 'FilteredCategoriesPage',
+                  query: { category: 'Fresh Fruits' },
+                }"
+                class="card h-100"
+              >
                 <img
                   src="../assets/fresh-fruit.png"
                   class="card-img-top"
@@ -40,9 +52,15 @@
               </router-link>
             </div>
 
-            <!-- Card 3 -->
+            <!-- Card 3: Grains -->
             <div class="col">
-              <router-link to="/market" class="card h-100">
+              <router-link
+                :to="{
+                  name: 'FilteredCategoriesPage',
+                  query: { category: 'Grains' },
+                }"
+                class="card h-100"
+              >
                 <img
                   src="../assets/grains.png"
                   class="card-img-top"
@@ -54,9 +72,15 @@
               </router-link>
             </div>
 
-            <!-- Card 4 -->
+            <!-- Card 4: Roots and Tubers -->
             <div class="col">
-              <router-link to="/market" class="card h-100">
+              <router-link
+                :to="{
+                  name: 'FilteredCategoriesPage',
+                  query: { category: 'Roots and Tubers' },
+                }"
+                class="card h-100"
+              >
                 <img
                   src="../assets/root-tuber.jpg"
                   class="card-img-top"
@@ -68,9 +92,15 @@
               </router-link>
             </div>
 
-            <!-- Card 5 -->
+            <!-- Card 5: Nuts and Seeds -->
             <div class="col">
-              <router-link to="/market" class="card h-100">
+              <router-link
+                :to="{
+                  name: 'FilteredCategoriesPage',
+                  query: { category: 'Nuts and Seeds' },
+                }"
+                class="card h-100"
+              >
                 <img
                   src="../assets/nut-seeds.png"
                   class="card-img-top"
@@ -82,9 +112,15 @@
               </router-link>
             </div>
 
-            <!-- Card 6 -->
+            <!-- Card 6: Cooking -->
             <div class="col">
-              <router-link to="/market" class="card h-100">
+              <router-link
+                :to="{
+                  name: 'FilteredCategoriesPage',
+                  query: { category: 'Cooking' },
+                }"
+                class="card h-100"
+              >
                 <img
                   src="../assets/cooking.png"
                   class="card-img-top"
@@ -96,9 +132,15 @@
               </router-link>
             </div>
 
-            <!-- Card 7 -->
+            <!-- Card 7: Dairy Products -->
             <div class="col">
-              <router-link to="/market" class="card h-100">
+              <router-link
+                :to="{
+                  name: 'FilteredCategoriesPage',
+                  query: { category: 'Dairy Products' },
+                }"
+                class="card h-100"
+              >
                 <img
                   src="../assets/dairy.png"
                   class="card-img-top"
@@ -110,9 +152,15 @@
               </router-link>
             </div>
 
-            <!-- Card 8 -->
+            <!-- Card 8: Processed Foods -->
             <div class="col">
-              <router-link to="/market" class="card h-100">
+              <router-link
+                :to="{
+                  name: 'FilteredCategoriesPage',
+                  query: { category: 'Processed Foods' },
+                }"
+                class="card h-100"
+              >
                 <img
                   src="../assets/processed-food.png"
                   class="card-img-top"
@@ -124,9 +172,15 @@
               </router-link>
             </div>
 
-            <!-- Card 9 -->
+            <!-- Card 9: Agro Chemicals -->
             <div class="col">
-              <router-link to="/market" class="card h-100">
+              <router-link
+                :to="{
+                  name: 'FilteredCategoriesPage',
+                  query: { category: 'Agro Chemicals' },
+                }"
+                class="card h-100"
+              >
                 <img
                   src="../assets/agro-chem.png"
                   class="card-img-top"
@@ -138,9 +192,15 @@
               </router-link>
             </div>
 
-            <!-- Card 10 -->
+            <!-- Card 10: Diabetics -->
             <div class="col">
-              <router-link to="/market" class="card h-100">
+              <router-link
+                :to="{
+                  name: 'FilteredCategoriesPage',
+                  query: { category: 'Diabetics' },
+                }"
+                class="card h-100"
+              >
                 <img
                   src="../assets/diabetic.png"
                   class="card-img-top"
@@ -151,8 +211,16 @@
                 </div>
               </router-link>
             </div>
+
+            <!-- Card 11: Proteins -->
             <div class="col">
-              <router-link to="/market" class="card h-100">
+              <router-link
+                :to="{
+                  name: 'FilteredCategoriesPage',
+                  query: { category: 'Proteins' },
+                }"
+                class="card h-100"
+              >
                 <img
                   src="../assets/protein.png"
                   class="card-img-top"
@@ -163,8 +231,16 @@
                 </div>
               </router-link>
             </div>
+
+            <!-- Card 12: Baking Ingredients -->
             <div class="col">
-              <router-link to="/market" class="card h-100">
+              <router-link
+                :to="{
+                  name: 'FilteredCategoriesPage',
+                  query: { category: 'Baking Ingredients' },
+                }"
+                class="card h-100"
+              >
                 <img
                   src="../assets/baking.png"
                   class="card-img-top"
@@ -175,8 +251,16 @@
                 </div>
               </router-link>
             </div>
+
+            <!-- Card 13: Snacks and Pastries -->
             <div class="col">
-              <router-link to="/market" class="card h-100">
+              <router-link
+                :to="{
+                  name: 'FilteredCategoriesPage',
+                  query: { category: 'Snacks and Pastries' },
+                }"
+                class="card h-100"
+              >
                 <img
                   src="../assets/snack.png"
                   class="card-img-top"
@@ -187,8 +271,16 @@
                 </div>
               </router-link>
             </div>
+
+            <!-- Card 14: Cereals and Beverages -->
             <div class="col">
-              <router-link to="/market" class="card h-100">
+              <router-link
+                :to="{
+                  name: 'FilteredCategoriesPage',
+                  query: { category: 'Cereals and Beverages' },
+                }"
+                class="card h-100"
+              >
                 <img
                   src="../assets/cereal.png"
                   class="card-img-top"
@@ -199,8 +291,16 @@
                 </div>
               </router-link>
             </div>
+
+            <!-- Card 15: Fresh Vegetables -->
             <div class="col">
-              <router-link to="/market" class="card h-100">
+              <router-link
+                :to="{
+                  name: 'FilteredCategoriesPage',
+                  query: { category: 'Fresh Vegetables' },
+                }"
+                class="card h-100"
+              >
                 <img
                   src="../assets/fresh-veg.png"
                   class="card-img-top"
@@ -246,6 +346,7 @@ export default {
 </script>
 
 <style>
+/* (Your existing styles remain unchanged) */
 .nav-item.dropdown:hover .dropdown-menu {
   display: block;
   margin-top: 0;
@@ -362,6 +463,7 @@ a {
   position: relative;
   overflow: hidden; /* ensures the zoomed image doesn't exceed the card bounds */
   transition: transform 0.3s ease;
+  text-decoration: none !important;
 }
 .card-title {
   text-decoration: none !important;

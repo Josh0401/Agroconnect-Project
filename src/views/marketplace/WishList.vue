@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg sticky-top bg-white shadow-sm py-3">
     <div class="container">
-      <a class="navbar-brand d-flex align-items-center" href="/">
+      <a class="navbar-brand d-flex align-items-center" href="/market">
         <img
           src="../../assets/Agroconnect.png"
           alt="AgroEase Logo"
@@ -329,10 +329,17 @@ export default {
       this.cartItems.splice(index, 1);
     },
     openDropdown() {
+      if (this.dropdownTimeout) {
+        clearTimeout(this.dropdownTimeout);
+        this.dropdownTimeout = null;
+      }
       this.dropdownOpen = true;
     },
     closeDropdown() {
-      this.dropdownOpen = false;
+      // Delay closing the dropdown to allow the user to move the mouse to the menu
+      this.dropdownTimeout = setTimeout(() => {
+        this.dropdownOpen = false;
+      }, 300); // Adjust delay (in ms) as needed
     },
     logout() {
       this.$router.push("/login");

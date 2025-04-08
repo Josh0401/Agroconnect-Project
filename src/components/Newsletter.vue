@@ -2,7 +2,7 @@
   <section class="container py-5 text-center">
     <h2 class="mb-4">Subscribe to Our Newsletter</h2>
     <p class="lead">
-      Stay updated with the latest in agriculture and exclusive AgroEase offers.
+      Stay updated with the latest in agriculture and exclusive AgroConnect offers.
     </p>
     <div class="row justify-content-center">
       <div class="col-md-6">

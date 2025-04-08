@@ -3,7 +3,7 @@
     <!-- Navbar component - reusing the same structure from ProfilePage -->
     <nav class="navbar navbar-expand-lg sticky-top bg-white shadow-sm py-3">
       <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="/">
+        <a class="navbar-brand d-flex align-items-center" href="/market">
           <img
             src="../../assets/Agroconnect.png"
             alt="AgroEase Logo"
@@ -169,130 +169,108 @@
     </nav>
     <!-- Banner with breadcrumb -->
 
-    <div class="w-100">
+    <div class="banner-section w-100 position-relative">
       <img
         src="../../assets/hero-img-market.png"
         alt="Hero Image"
         class="img-fluid w-100 shadow-sm"
         style="border-radius: 0"
       />
-    </div>
-    <!-- <div
-        class="banner bg-dark text-white py-4"
-        style="
-          background-image: url('../../assets/profile-banner.jpg');
-          background-size: cover;
-          background-position: center;
-        "
-      >
+      <!-- Added breadcrumb navigation with home icon on the banner -->
+      <div class="breadcrumb-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center">
         <div class="container">
-          <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-              <li class="breadcrumb-item">
-                <router-link to="/market" class="text-white">
-                  <i class="bi bi-house-door"></i>
-                </router-link>
-              </li>
-              <li class="breadcrumb-item">
-                <router-link to="/account/orders" class="text-white"
-                  >Order History</router-link
-                >
-              </li>
-            </ol>
-          </nav>
+          <div class="d-flex align-items-center">
+            <router-link to="/market" class="text-white me-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
+                <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146Z"/>
+              </svg>
+            </router-link>
+            <span class="text-white mx-2">&gt;</span>
+            <span class="text-white fw-bold">Transactions</span>
+          </div>
         </div>
-      </div> -->
+      </div>
+    </div>
 
     <!-- Main content -->
     <div class="container my-5">
       <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="profile-title mb-0">Transaction History</h1>
+        <h1 class="profile-title mb-0">Transactions History</h1>
       </div>
 
-      <!-- Orders Table Section -->
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover text-center">
-          <thead class="table-light">
+      <!-- Updated Transactions Table Section to match the provided design -->
+      <div class="transactions-table-container bg-light rounded-3 p-3">
+        <table class="table transactions-table">
+          <thead>
             <tr>
-              <th>TRANSACTION ID</th>
-              <th>DATE</th>
-              <th>AMOUNT</th>
-              <th>PAYMENT METHOD</th>
-              <th>STATUS</th>
+              <th>Transaction ID</th>
+              <th>Date</th>
+              <th>Total</th>
+              <th>Method</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="transaction in transactions" :key="transaction.id">
-              <td>{{ transaction.id }}</td>
-              <td>{{ formatDate(transaction.date) }}</td>
+            <tr v-for="transaction in paginatedTransactions" :key="transaction.id">
+              <td class="transaction-id">#{{ transaction.id }}</td>
+              <td>{{ formatSimpleDate(transaction.date) }}</td>
+              <td class="fw-medium">Rs {{ formatAmount(transaction.amount) }}</td>
+              <td>{{ capitalizeFirstLetter(transaction.method) }}</td>
               <td>
-                Rs{{
-                  transaction.amount.toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                  })
-                }}
+                <span 
+                  class="status-badge" 
+                  :class="{
+                    'confirmed': transaction.status === 'success',
+                    'failed': transaction.status === 'failed'
+                  }"
+                >
+                  {{ getStatusDisplay(transaction.status) }}
+                </span>
               </td>
-              <td>{{ transaction.method }}</td>
-              <td>{{ transaction.status }}</td>
             </tr>
           </tbody>
         </table>
       </div>
+
+      <!-- Pagination -->
+      <div class="d-flex justify-content-center mt-4">
+        <nav aria-label="Transactions pagination">
+          <ul class="pagination">
+            <li class="page-item" :class="{ disabled: currentPage === 1 }">
+              <a class="page-link" href="#" aria-label="Previous" @click.prevent="changePage(currentPage - 1)">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li 
+              v-for="page in displayedPages" 
+              :key="page" 
+              class="page-item" 
+              :class="{ active: currentPage === page }"
+            >
+              <template v-if="page === '...'">
+                <span class="page-link">{{ page }}</span>
+              </template>
+              <template v-else>
+                <a class="page-link" href="#" @click.prevent="changePage(page)">{{ page }}</a>
+              </template>
+            </li>
+            <li class="page-item" v-if="showEllipsis">
+              <span class="page-link">...</span>
+            </li>
+            <li class="page-item" v-if="totalPages > 5 && !displayedPages.includes(totalPages)">
+              <a class="page-link" href="#" @click.prevent="changePage(totalPages)">{{ totalPages }}</a>
+            </li>
+            <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+              <a class="page-link" href="#" aria-label="Next" @click.prevent="changePage(currentPage + 1)">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </div>
 
-    <!-- Footer - reusing the same structure from ProfilePage -->
-    <Footeer />
-    <!-- <footer class="bg-light py-4 mt-5">
-          <div class="container">
-            <div class="row">
-              <div class="col-md-3 mb-4 mb-md-0">
-                <a class="d-inline-block mb-3" href="/">
-                  <img src="../../assets/Agroconnect.png" alt="AgroEase Logo" height="40" />
-                </a>
-                <p class="small text-muted">© 2023. All rights reserved</p>
-              </div>
-              
-              <div class="col-md-9">
-                <div class="row">
-                  <div class="col-md-8">
-                    <div class="d-flex flex-wrap gap-4">
-                      <a href="/home" class="text-decoration-none text-dark">Home</a>
-                      <a href="/about-us" class="text-decoration-none text-dark">About Us</a>
-                      <a href="/services" class="text-decoration-none text-dark">Services</a>
-                      <a href="/faqs" class="text-decoration-none text-dark">FAQs</a>
-                      <a href="/contact" class="text-decoration-none text-dark">Contact</a>
-                    </div>
-                    
-                    <div class="d-flex flex-wrap gap-4 mt-3">
-                      <a href="/privacy-policy" class="text-decoration-none text-muted small">Privacy Policy</a>
-                      <a href="/terms" class="text-decoration-none text-muted small">Terms of Conditions</a>
-                      <a href="/legal" class="text-decoration-none text-muted small">Legal</a>
-                      <a href="/help" class="text-decoration-none text-muted small">Help</a>
-                    </div>
-                  </div>
-                  
-                  <div class="col-md-4">
-                    <div class="d-flex gap-3 mb-3 justify-content-md-end">
-                      <a href="#" class="text-dark"><i class="bi bi-facebook fs-5"></i></a>
-                      <a href="#" class="text-dark"><i class="bi bi-instagram fs-5"></i></a>
-                      <a href="#" class="text-dark"><i class="bi bi-linkedin fs-5"></i></a>
-                      <a href="#" class="text-dark"><i class="bi bi-whatsapp fs-5"></i></a>
-                    </div>
-                    
-                    <div class="d-flex gap-2 justify-content-md-end">
-                      <a href="#" class="text-decoration-none">
-                        <img src="../../assets/google-play.png" alt="Google Play" height="40">
-                      </a>
-                      <a href="#" class="text-decoration-none">
-                        <img src="../../assets/app-store.png" alt="App Store" height="40">
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </footer> -->
+    <!-- Footer -->
     <Footer />
   </div>
 </template>
@@ -316,67 +294,125 @@ export default {
       cartItemCount: 0, // This should be updated based on your cart data
       wishlistItemCount: 0, // This should be updated based on your wishlist data
       dropdownOpen: false,
-      cartItems: [
-        // { name: "Product 1", quantity: 2 },
-        // { name: "Product 2", quantity: 1 },
-      ],
+      // For pagination
+      currentPage: 1,
+      totalPages: 21,
+      itemsPerPage: 8,
 
+      // Sample transaction data with 24 entries to test pagination
       transactions: [
         {
-          id: "3919842299",
-          date: "2024-06-26T14:04:00",
-          amount: 100,
-          method: "paystack",
+          id: "SKU5756",
+          date: "2023-11-15T14:04:00",
+          amount: 60000,
+          method: "Juice",
           status: "success",
         },
         {
-          id: "3919842299",
-          date: "2024-06-26T14:04:00",
-          amount: 90,
-          method: "flutterwave",
+          id: "SKU5756",
+          date: "2023-11-15T14:04:00",
+          amount: 60000,
+          method: "Juice",
+          status: "failed",
+        },
+        {
+          id: "SKU5756",
+          date: "2023-11-15T19:46:00",
+          amount: 60000,
+          method: "Juice",
+          status: "failed",
+        },
+        {
+          id: "SKU5756",
+          date: "2023-11-15T03:23:00",
+          amount: 60000,
+          method: "Stripe",
+          status: "failed",
+        },
+        {
+          id: "SKU5756",
+          date: "2023-11-15T11:22:00",
+          amount: 60000,
+          method: "PayPal",
+          status: "failed",
+        },
+        {
+          id: "SKU5756",
+          date: "2023-11-15T20:03:00",
+          amount: 60000,
+          method: "PayPal",
+          status: "failed",
+        },
+        {
+          id: "SKU5756",
+          date: "2023-11-15T20:03:00",
+          amount: 60000,
+          method: "transfer",
           status: "success",
         },
         {
-          id: "3913938086",
-          date: "2024-06-24T19:46:00",
-          amount: 600,
-          method: "paystack",
+          id: "SKU5756",
+          date: "2023-11-15T20:03:00",
+          amount: 60000,
+          method: "transfer",
+          status: "success",
+        },
+        // Additional transactions for pagination testing
+        {
+          id: "SKU5757",
+          date: "2023-11-16T10:30:00",
+          amount: 45000,
+          method: "transfer",
           status: "success",
         },
         {
-          id: "3904938855",
-          date: "2024-06-22T03:23:00",
-          amount: 90,
-          method: "paystack",
+          id: "SKU5758",
+          date: "2023-11-16T12:15:00",
+          amount: 32000,
+          method: "transfer",
+          status: "failed",
+        },
+        {
+          id: "SKU5759",
+          date: "2023-11-17T09:22:00",
+          amount: 78000,
+          method: "PayPal",
           status: "success",
         },
         {
-          id: "3892399118",
-          date: "2024-06-18T11:22:00",
-          amount: 100,
-          method: "paystack",
+          id: "SKU5760",
+          date: "2023-11-17T14:45:00",
+          amount: 56000,
+          method: "PayPal",
           status: "success",
         },
         {
-          id: "3891023190",
-          date: "2024-06-17T20:03:00",
-          amount: 150,
-          method: "paystack",
+          id: "SKU5761",
+          date: "2023-11-18T08:10:00",
+          amount: 92000,
+          method: "Stripe",
+          status: "failed",
+        },
+        {
+          id: "SKU5762",
+          date: "2023-11-18T16:30:00",
+          amount: 41000,
+          method: "Stripe",
           status: "success",
         },
         {
-          id: "3891023190",
-          date: "2024-06-17T20:03:00",
-          amount: 51.12,
-          method: "flutterwave",
+          id: "SKU5763",
+          date: "2023-11-19T11:05:00",
+          amount: 63000,
+          method: "transfer",
           status: "success",
         },
         {
-          id: "3891023190",
-          date: "2024-06-17T20:03:00",
-          amount: 90.3,
-          method: "flutterwave",
-          status: "success",
+          id: "SKU5764",
+          date: "2023-11-19T17:20:00",
+          amount: 27000,
+          method: "Juice",
+          status: "failed",
         },
       ],
     };
@@ -384,11 +420,56 @@ export default {
 
   computed: {
     cartItemCount() {
-      return this.cartItems.reduce((total, item) => total + item.quantity, 0);
+      return this.cartItems ? this.cartItems.reduce((total, item) => total + item.quantity, 0) : 0;
     },
+    
+    // Pagination computed properties
+    paginatedTransactions() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      const end = start + this.itemsPerPage;
+      return this.transactions.slice(start, end);
+    },
+    
+    displayedPages() {
+      if (this.totalPages <= 5) {
+        return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+      }
+
+      if (this.currentPage <= 3) {
+        return [1, 2, 3, 4, 5];
+      }
+
+      if (this.currentPage >= this.totalPages - 2) {
+        return Array.from({ length: 5 }, (_, i) => this.totalPages - 4 + i);
+      }
+
+      return [
+        this.currentPage - 2,
+        this.currentPage - 1,
+        this.currentPage,
+        this.currentPage + 1,
+        this.currentPage + 2,
+      ];
+    },
+    
+    // Determine if we should show ellipsis in pagination
+    showEllipsis() {
+      return this.totalPages > 5 && this.currentPage < this.totalPages - 2;
+    }
   },
 
   methods: {
+    // Updated date formatter to match the design (just date without time)
+    formatSimpleDate(dateStr) {
+      const options = {
+        day: "numeric",
+        month: "short",
+        year: "numeric"
+      };
+      return new Date(dateStr).toLocaleDateString(undefined, options);
+    },
+    
+    // Keep the original date formatter for other uses
     formatDate(dateStr) {
       const options = {
         day: "2-digit",
@@ -400,11 +481,29 @@ export default {
       };
       return new Date(dateStr).toLocaleString(undefined, options);
     },
+    
     formatAmount(amount) {
-      return amount.toLocaleString(undefined, { minimumFractionDigits: 2 });
+      return amount.toLocaleString();
     },
+    
+    // Helper to capitalize first letter
+    capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    },
+    
+    // Convert status to display format
+    getStatusDisplay(status) {
+      switch(status) {
+        case 'success':
+          return 'Confirmed';
+        case 'failed':
+          return 'Failed';
+        default:
+          return status.charAt(0).toUpperCase() + status.slice(1);
+      }
+    },
+    
     // Navbar methods
-
     openDropdown() {
       if (this.dropdownTimeout) {
         clearTimeout(this.dropdownTimeout);
@@ -412,15 +511,16 @@ export default {
       }
       this.dropdownOpen = true;
     },
+    
     closeDropdown() {
       // Delay closing the dropdown to allow the user to move the mouse to the menu
       this.dropdownTimeout = setTimeout(() => {
         this.dropdownOpen = false;
       }, 300); // Adjust delay (in ms) as needed
     },
+    
     logout() {
       console.log("Logging out...");
-
       this.$router.push("/login");
     },
 
@@ -439,12 +539,20 @@ export default {
       // Navigate to the cart page
       this.$router.push("/cart");
     },
-    goToWishlist() {
-      // Redirect to the wishlist page
-      this.$router.push("/wishlist");
+    
+    // Pagination method
+    changePage(page) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+        // Scroll to top of table
+        this.$nextTick(() => {
+          const tableTop = document.querySelector('.transactions-table-container');
+          if (tableTop) {
+            tableTop.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      }
     },
-
-    // Date formatting helper
   },
 };
 </script>
@@ -462,6 +570,30 @@ export default {
 .card {
   border: none;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Global cursor styles for all clickable elements */
+button, 
+a, 
+.btn, 
+[role="button"],
+select,
+input[type="submit"],
+input[type="reset"],
+input[type="button"] {
+  cursor: pointer;
+}
+
+input[disabled], 
+button[disabled],
+.btn.disabled,
+a.disabled,
+.page-item.disabled .page-link {
+  cursor: not-allowed;
+}
+
+.pagination .page-item.page-ellipsis .page-link {
+  cursor: default;
 }
 
 .navbar-nav .nav-link {
@@ -555,65 +687,103 @@ body {
   font-size: 14px;
 }
 
-/* Banner styles */
-.banner {
+/* Banner styles with overlay for breadcrumb */
+.banner-section {
   position: relative;
-  background-color: #f8f9fa;
 }
 
-.banner::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+.breadcrumb-overlay {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 1;
 }
 
-.banner .container {
-  position: relative;
-  z-index: 2;
+/* Transaction table styles to match the design */
+.transactions-table-container {
+  border-radius: 8px;
+  background-color: #f8f9fa;
 }
 
-.breadcrumb-item + .breadcrumb-item::before {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-/* Order page specific styles */
-.card {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-  border-color: #e0e0e0;
-}
-
-.table {
+.transactions-table {
   margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
-.table th {
+.transactions-table thead th {
   font-weight: 600;
   color: #555;
-  border-top: none;
-  padding: 15px 10px;
+  padding: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #f8f9fa;
 }
 
-.table td {
-  padding: 15px 10px;
+.transactions-table tbody td {
+  padding: 15px;
   vertical-align: middle;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: white;
 }
 
-.badge {
+.transaction-id {
   font-weight: 500;
+  color: #555;
 }
 
-.btn:hover {
-  /* background-color: #fff; */
-  color: #198754;
+/* Status badge styles */
+.status-badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: inline-block;
+  cursor: default;
 }
 
-.page-link:focus {
-  box-shadow: 0 0 0 0.25rem rgba(106, 90, 205, 0.25);
+.status-badge.confirmed {
+  background-color: rgba(25, 135, 84, 0.1);
+  color: rgb(25, 135, 84);
+}
+
+.status-badge.failed {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+}
+
+/* Pagination styles to match OrdersPage */
+.pagination {
+  gap: 5px;
+}
+
+.pagination .page-item.disabled .page-link {
+  color: #aaa;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #6a5acd;
+  border-color: #6a5acd;
+  color: white;
+}
+
+.pagination .page-item.page-ellipsis .page-link {
+  background: transparent;
+}
+
+.pagination .page-item .page-link:hover:not(.active):not(.disabled) {
+  background-color: #f0f0f0;
+}
+
+.pagination .page-item .page-link {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #333;
+  margin: 0 3px;
+  border: 1px solid #dee2e6;
+  background-color: #fff;
+  font-weight: 500;
 }
 
 /* Responsive styles */
@@ -625,7 +795,7 @@ body {
 }
 
 @media (max-width: 768px) {
-  .table {
+  .transactions-table {
     min-width: 700px;
   }
 

@@ -3,7 +3,7 @@
     <div class="container">
       <a class="navbar-brand d-flex align-items-center" href="#">
         <img src="/logo.png" alt="AgroEase Logo" height="40" class="me-2" />
-        <span class="fw-bold">agroease</span>
+        <span class="fw-bold">Agroconnect</span>
       </a>
       <button
         class="navbar-toggler"

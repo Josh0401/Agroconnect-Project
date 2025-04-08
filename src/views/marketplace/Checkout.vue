@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg sticky-top bg-white shadow-sm py-3">
     <div class="container">
-      <a class="navbar-brand d-flex align-items-center" href="/">
+      <a class="navbar-brand d-flex align-items-center" href="/market">
         <img
           src="../../assets/Agroconnect.png"
           alt="AgroEase Logo"
