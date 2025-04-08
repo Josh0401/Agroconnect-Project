@@ -36,7 +36,7 @@
         </div>
 
         <div class="mb-3">
-          <label class="form-label fw-semibold">Address (optional)</label>
+          <label class="form-label fw-semibold">Address</label>
           <input
             type="text"
             class="form-control form-control-lg"
