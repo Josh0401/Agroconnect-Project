@@ -34,6 +34,7 @@ import ProductDetail from "../views/marketplace/ProductDetail.vue";
 import Cat from "../views/marketplace/Cat.vue";
 import LoginSelect from "../views/LoginSelect.vue";
 import LoginSeller from "../views/auth/LoginSeller.vue";
+import TransactionsPage from "../views/account/TransactionsPage.vue";
 //import Categories from "../components/Categories.vue";
 //import MarketPlaceHome from "../views/MarketPlaceHome.vue";
 // import About from "@/views/About.vue";
@@ -216,6 +217,11 @@ const routes = [
     name: "Cat",
     component: Cat,
     props: true,
+  },
+  {
+    path: "/account/transactions",
+    component: TransactionsPage,
+    meta: { hideHeader: true, hideFooter: true },
   },
 ];
 

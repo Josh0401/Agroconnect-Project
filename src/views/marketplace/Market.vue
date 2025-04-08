@@ -152,7 +152,7 @@
                 >
               </li>
               <li>
-                <a class="dropdown-item" href="#" @click.prevent="logout"
+                <a class="dropdown-item" href="/login" @click.prevent="logout()"
                   >Logout</a
                 >
               </li>
@@ -652,7 +652,6 @@ export default {
       searchQuery: "",
       cartItemCount: 0, // This should be updated based on your cart data
       wishlistItemCount: 0, // This should be updated based on your wishlist data
-      dropdownOpen: false,
       cartItems: [
         // { name: "Product 1", quantity: 2 },
         // { name: "Product 2", quantity: 1 },

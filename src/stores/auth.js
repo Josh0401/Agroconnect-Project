@@ -59,6 +59,62 @@ export const useAuthStore = defineStore("auth", {
         throw error;
       }
     },
+
+    async submitRegister({
+      firstName,
+      lastName,
+      email,
+      phone_number,
+      address,
+      selectedCountry,
+      selectedCity,
+      password,
+      userType,
+      productName,
+      productCategory,
+      accountType,
+      BusinessName,
+      BusinessEmail,
+      BusinessRegistrationNumber,
+      BusinessPhoneNumber,
+      BusinessAddress,
+      BusinessCountry,
+      BusinessCity,
+    }) {
+      try {
+        const payload = {
+          first_name: firstName,
+          last_name: lastName,
+          email,
+          phone_no: phone_number.toString(),
+          address,
+          country: selectedCountry,
+          city: selectedCity,
+          password,
+          account_type: userType,
+          business_name: BusinessName,
+          business_email: email,
+          business_reg_no: BusinessRegistrationNumber,
+          business_address: address,
+          product_name: productName,
+          product_category: productCategory,
+
+          // ...(userType === "seller" && {
+          //   productName,
+          //   productCategory,
+          // }),
+        };
+
+        const response = await axios.post(
+          "https://agroconnect.shop/api/seller-register",
+          payload
+        );
+        return response.data;
+      } catch (error) {
+        throw error;
+      }
+    },
+
     async login({ email, password }) {
       try {
         const response = await axios.post(
