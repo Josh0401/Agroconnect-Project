@@ -137,7 +137,7 @@ export default {
           this.$router.push("/dashboard-buyer");
         } else {
           // Fallback route if userType is missing or unrecognized
-          this.$router.push("/dashboard");
+          this.$router.push("/market");
         }
       } catch (error) {
         this.errorMessage =
