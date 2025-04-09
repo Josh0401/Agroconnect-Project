@@ -221,15 +221,16 @@ const routes = [
     props: true,
   },
   {
-  path: "/filtered-categories",
-  name: "FilteredCategoriesPage",
-  component: () => import("../views/marketplace/FilteredCategoriesPage.vue"),
-},
-{
-  path: "/account/groups-communities",
-  component: GroupsCommunitiesPage,
-  meta: { hideHeader: true, hideFooter: true },
-},
+    path: "/filtered-categories",
+    name: "FilteredCategoriesPage",
+    component: () => import("../views/marketplace/FilteredCategoriesPage.vue"),
+    meta: { hideHeader: true, hideFooter: true },
+  },
+  {
+    path: "/account/groups-communities",
+    component: GroupsCommunitiesPage,
+    meta: { hideHeader: true, hideFooter: true },
+  },
   {
     path: "/account/transactions",
     component: TransactionsPage,
