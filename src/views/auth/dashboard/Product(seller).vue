@@ -43,8 +43,25 @@
         </div>
       </div>
 
+      <!-- Loading State -->
+      <div v-if="loading" class="text-center py-5">
+        <div class="spinner-border text-success" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Loading products...</p>
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="error" class="alert alert-danger" role="alert">
+        <i class="fa-solid fa-exclamation-triangle me-2"></i>
+        {{ error }}
+        <button class="btn btn-outline-danger btn-sm ms-3" @click="fetchProducts">
+          Try Again
+        </button>
+      </div>
+
       <!-- Products Table -->
-      <div class="table-responsive">
+      <div v-else class="table-responsive">
         <table class="table table-borderless align-middle">
           <thead>
             <tr class="text-secondary">
@@ -85,7 +102,7 @@
               <!-- Actions Column -->
               <td class="text-end position-relative">
                 <button
-                  class="btn btn-success btn-sm border-0"
+                  class="btn btn-success btn-sm border-0" id="bin"
                   @click="toggleActionMenu(index)"
                   style="padding: 0.25rem 0.5rem"
                 >
@@ -233,8 +250,9 @@
                   >
                     Cancel
                   </button>
-                  <button type="submit" class="btn btn-primary">
-                    Add Product
+                  <button type="submit" class="btn btn-primary" :disabled="addingProduct">
+                    <span v-if="addingProduct" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    {{ addingProduct ? 'Adding...' : 'Add Product' }}
                   </button>
                 </div>
               </form>
@@ -347,8 +365,9 @@
                   >
                     Cancel
                   </button>
-                  <button type="submit" class="btn btn-primary">
-                    Update Product
+                  <button type="submit" class="btn btn-primary" :disabled="updatingProduct">
+                    <span v-if="updatingProduct" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    {{ updatingProduct ? 'Updating...' : 'Update Product' }}
                   </button>
                 </div>
               </form>
@@ -364,6 +383,45 @@
 
 <script>
 import Sidebar from "../../../components/DashboardSidebar.vue";
+// Import axios if you've installed it
+// If you haven't, run: npm install axios --save
+let axios;
+try {
+  axios = require('axios');
+} catch (e) {
+  // Fallback if axios is not available
+  axios = {
+    get: async () => {
+      console.error('Axios is not installed. Please run: npm install axios --save');
+      // Return mock data instead of failing
+      return { 
+        data: [
+          {
+            id: "#SLT145",
+            name: "Mama's Choice Rice",
+            category: "Rice",
+            unitPrice: "Rs 90",
+            unit: "Bag",
+            inStock: 5,
+            image: "../src/assets/rice.png",
+          },
+          {
+            id: "#SLT146",
+            name: "Cap Rice",
+            category: "Rice",
+            unitPrice: "Rs 25",
+            unit: "Bag",
+            inStock: 0,
+            image: "../src/assets/rice2.png",
+          }
+        ]
+      };
+    },
+    post: async () => ({ data: {} }),
+    put: async () => ({ data: {} }),
+    delete: async () => ({})
+  };
+}
 
 export default {
   name: "ProductsPage",
@@ -374,80 +432,10 @@ export default {
     return {
       searchQuery: "",
       selectedFilter: "",
-      products: [
-        {
-          id: "#SLT145",
-          name: "Mama's Choice Rice",
-          category: "Rice",
-          unitPrice: "Rs90",
-          unit: "Bag",
-          inStock: 5,
-          image: "../src/assets/rice.png",
-        },
-        {
-          id: "#SLT146",
-          name: "Cap Rice",
-          category: "Rice",
-          unitPrice: "Rs25",
-          unit: "Bag",
-          inStock: 0,
-          image: "../src/assets/rice2.png",
-        },
-        {
-          id: "#SLT147",
-          name: "Ugu Leaf",
-          category: "Vegetables",
-          unitPrice: "Rs15",
-          unit: "Bundle",
-          inStock: 10,
-          image: "../src/assets/ugwu.png",
-        },
-        {
-          id: "#SLT148",
-          name: "Ewedu Leaf",
-          category: "Vegetables",
-          unitPrice: "Rs50",
-          unit: "Bundle",
-          inStock: 0,
-          image: "../src/assets/ugwu.png",
-        },
-        {
-          id: "#SLT149",
-          name: "Table Rice",
-          category: "Rice",
-          unitPrice: "Rs90",
-          unit: "Bundle",
-          inStock: 12,
-          image: "../src/assets/rice.png",
-        },
-        {
-          id: "#SLT150",
-          name: "Ewedu Leaf",
-          category: "Vegetables",
-          unitPrice: "Rs60",
-          unit: "Bundle",
-          inStock: 0,
-          image: "../src/assets/ugwu.png",
-        },
-        {
-          id: "#SLT151",
-          name: "Capp Rice",
-          category: "Rice",
-          unitPrice: "Rs80",
-          unit: "Bundle",
-          inStock: 0,
-          image: "../src/assets/rice2.png",
-        },
-        {
-          id: "#SLT152",
-          name: "Vegetable Leaf",
-          category: "Vegetables",
-          unitPrice: "Rs80",
-          unit: "Bundle",
-          inStock: 8,
-          image: "../src/assets/ugwu.png",
-        },
-      ],
+      products: [],
+      loading: true, // Start with loading state
+      error: null,
+      
       // State for add product modal
       showAddProductModal: false,
       newProduct: {
@@ -458,15 +446,24 @@ export default {
         inStock: null,
         image: "",
       },
+      addingProduct: false,
       errors: {},
+      
       // List of categories for select dropdowns
       categories: ["Rice", "Vegetables", "Fruits", "Others"],
+      
       // For action menu on table rows
       activeActionIndex: null,
+      
       // State for edit product modal
       showEditProductModal: false,
       editingProduct: {},
       editingProductIndex: null,
+      updatingProduct: false,
+      
+      // API base URL - with fallback to local data if not set
+      apiBaseUrl: null,
+      useLocalData: true, // Set to true by default for initial testing
     };
   },
   computed: {
@@ -488,17 +485,150 @@ export default {
       return result;
     },
   },
+  created() {
+    // Try to get API URL from environment if available
+    try {
+      this.apiBaseUrl = process.env.VUE_APP_API_BASE_URL;
+      if (this.apiBaseUrl) {
+        this.useLocalData = false;
+      }
+    } catch (e) {
+      console.warn("Environment variables not available");
+    }
+    
+    // Fetch products after component is created
+    this.fetchProducts();
+  },
   methods: {
+    async fetchProducts() {
+      this.loading = true;
+      this.error = null;
+      
+      try {
+        if (this.useLocalData) {
+          // Use local demo data instead of API
+          console.log("Using local mock data instead of API");
+          // Wait a bit to simulate network request
+          await new Promise(resolve => setTimeout(resolve, 500));
+          
+          this.products = [
+            {
+              id: "#SLT145",
+              name: "Mama's Choice Rice",
+              category: "Rice",
+              unitPrice: "Rs 90",
+              unit: "Bag",
+              inStock: 5,
+              image: "../src/assets/rice.png",
+            },
+            {
+              id: "#SLT146",
+              name: "Cap Rice",
+              category: "Rice",
+              unitPrice: "Rs 25",
+              unit: "Bag",
+              inStock: 0,
+              image: "../src/assets/rice2.png",
+            },
+            {
+              id: "#SLT147",
+              name: "Ugu Leaf",
+              category: "Vegetables",
+              unitPrice: "Rs 15",
+              unit: "Bundle",
+              inStock: 10,
+              image: "../src/assets/ugwu.png",
+            },
+            {
+              id: "#SLT148",
+              name: "Ewedu Leaf",
+              category: "Vegetables",
+              unitPrice: "Rs 50",
+              unit: "Bundle",
+              inStock: 0,
+              image: "../src/assets/ugwu.png",
+            },
+            {
+              id: "#SLT149",
+              name: "Table Rice",
+              category: "Rice",
+              unitPrice: "Rs 90",
+              unit: "Bundle",
+              inStock: 12,
+              image: "../src/assets/rice.png",
+            },
+            {
+              id: "#SLT150",
+              name: "Ewedu Leaf",
+              category: "Vegetables",
+              unitPrice: "Rs 60",
+              unit: "Bundle",
+              inStock: 0,
+              image: "../src/assets/ugwu.png",
+            },
+            {
+              id: "#SLT151",
+              name: "Capp Rice",
+              category: "Rice",
+              unitPrice: "Rs 80",
+              unit: "Bundle",
+              inStock: 0,
+              image: "../src/assets/rice2.png",
+            },
+            {
+              id: "#SLT152",
+              name: "Vegetable Leaf",
+              category: "Vegetables",
+              unitPrice: "Rs 80",
+              unit: "Bundle",
+              inStock: 8,
+              image: "../src/assets/ugwu.png",
+            },
+          ];
+          
+        } else {
+          // Use actual API
+          const response = await axios.get(`${this.apiBaseUrl}/products`);
+          this.products = response.data.map(product => ({
+            id: product.id || `#SLT${Math.floor(Math.random() * 900) + 100}`,
+            name: product.name,
+            category: product.category,
+            unitPrice: product.unitPrice?.startsWith('Rs') ? product.unitPrice : `Rs${product.unitPrice}`,
+            unit: product.unit,
+            inStock: product.inStock,
+            image: product.image || '../src/assets/placeholder.png'
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        this.error = 'Failed to load products. Please try again later.';
+        
+        // Fallback to local data if API fails
+        if (!this.useLocalData) {
+          console.log("API failed, falling back to local data");
+          this.useLocalData = true;
+          await this.fetchProducts();
+          return;
+        }
+      } finally {
+        this.loading = false;
+      }
+    },
+    
     filterProducts() {
       // Handled reactively by computed property.
     },
+    
     openModal() {
       this.showAddProductModal = true;
+      this.resetForm();
     },
+    
     closeModal() {
       this.showAddProductModal = false;
       this.resetForm();
     },
+    
     handleImageUpload(event) {
       const file = event.target.files[0];
       if (file) {
@@ -508,8 +638,12 @@ export default {
         }
         this.newProduct.image = URL.createObjectURL(file);
         this.errors.image = "";
+        
+        // Store the actual file for upload
+        this.newProduct.imageFile = file;
       }
     },
+    
     validateForm() {
       this.errors = {};
       if (!this.newProduct.name) this.errors.name = "Product name is required.";
@@ -524,22 +658,73 @@ export default {
         this.errors.image = "Product image is required.";
       return Object.keys(this.errors).length === 0;
     },
-    handleAddProduct() {
+    
+    async handleAddProduct() {
       if (this.validateForm()) {
-        const newId = "#SLT" + (Math.floor(Math.random() * 900) + 100);
-        const productToAdd = {
-          id: newId,
-          name: this.newProduct.name,
-          category: this.newProduct.category,
-          unitPrice: this.newProduct.unitPrice,
-          unit: this.newProduct.unit,
-          inStock: this.newProduct.inStock,
-          image: this.newProduct.image,
-        };
-        this.products.push(productToAdd);
-        this.closeModal();
+        this.addingProduct = true;
+        
+        try {
+          if (this.useLocalData) {
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            // Generate a new ID and add to local array
+            const newId = "#SLT" + (Math.floor(Math.random() * 900) + 100);
+            const productToAdd = {
+              id: newId,
+              name: this.newProduct.name,
+              category: this.newProduct.category,
+              unitPrice: this.newProduct.unitPrice.startsWith('Rs') ? 
+                this.newProduct.unitPrice : `Rs${this.newProduct.unitPrice}`,
+              unit: this.newProduct.unit,
+              inStock: this.newProduct.inStock,
+              image: this.newProduct.image,
+            };
+            
+            this.products.push(productToAdd);
+          } else {
+            // Prepare form data for image upload
+            const formData = new FormData();
+            formData.append('name', this.newProduct.name);
+            formData.append('category', this.newProduct.category);
+            formData.append('unitPrice', this.newProduct.unitPrice);
+            formData.append('unit', this.newProduct.unit);
+            formData.append('inStock', this.newProduct.inStock);
+            
+            if (this.newProduct.imageFile) {
+              formData.append('image', this.newProduct.imageFile);
+            }
+            
+            // Send product data to the API
+            const response = await axios.post(`${this.apiBaseUrl}/products`, formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            });
+            
+            // Add the new product to the local array
+            const newProduct = response.data;
+            this.products.push({
+              id: newProduct.id || `#SLT${Math.floor(Math.random() * 900) + 100}`,
+              name: newProduct.name,
+              category: newProduct.category,
+              unitPrice: newProduct.unitPrice?.startsWith('Rs') ? newProduct.unitPrice : `Rs${newProduct.unitPrice}`,
+              unit: newProduct.unit,
+              inStock: newProduct.inStock,
+              image: newProduct.image || '../src/assets/placeholder.png'
+            });
+          }
+          
+          this.closeModal();
+        } catch (error) {
+          console.error('Error adding product:', error);
+          alert('Failed to add product. Please try again.');
+        } finally {
+          this.addingProduct = false;
+        }
       }
     },
+    
     resetForm() {
       this.newProduct = {
         name: "",
@@ -548,22 +733,39 @@ export default {
         unit: "",
         inStock: null,
         image: "",
+        imageFile: null
       };
       this.errors = {};
       const fileInput = document.getElementById("image");
       if (fileInput) fileInput.value = "";
     },
+    
     // Toggle the action menu for a product row
     toggleActionMenu(index) {
       this.activeActionIndex = this.activeActionIndex === index ? null : index;
     },
+    
     // Delete product from the list after confirmation
-    deleteProduct(product) {
+    async deleteProduct(product) {
       if (confirm(`Are you sure you want to delete "${product.name}"?`)) {
-        this.products = this.products.filter((p) => p.id !== product.id);
+        try {
+          if (!this.useLocalData) {
+            await axios.delete(`${this.apiBaseUrl}/products/${product.id}`);
+          } else {
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
+          
+          // Remove product from local array
+          this.products = this.products.filter((p) => p.id !== product.id);
+        } catch (error) {
+          console.error('Error deleting product:', error);
+          alert('Failed to delete product. Please try again.');
+        }
       }
       this.activeActionIndex = null;
     },
+    
     // Open edit modal for the selected product
     openEditProduct(product) {
       // Find the product's index in the main products array
@@ -576,6 +778,7 @@ export default {
       }
       this.activeActionIndex = null;
     },
+    
     // Handle image upload in edit modal
     handleEditImageUpload(event) {
       const file = event.target.files[0];
@@ -585,23 +788,73 @@ export default {
           return;
         }
         this.editingProduct.image = URL.createObjectURL(file);
+        this.editingProduct.imageFile = file;
       }
     },
+    
     // Update the product details after editing
-    handleUpdateProduct() {
-      if (this.editingProductIndex !== null) {
+    async handleUpdateProduct() {
+  if (this.editingProductIndex !== null) {
+    this.updatingProduct = true;
+    
+    try {
+      if (this.useLocalData) {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
         // Update the product in the main array
         this.products.splice(this.editingProductIndex, 1, this.editingProduct);
-        this.closeEditModal();
+      } else {
+        // Prepare form data for image upload
+        const formData = new FormData();
+        formData.append('name', this.editingProduct.name);
+        formData.append('category', this.editingProduct.category);
+        formData.append('unitPrice', this.editingProduct.unitPrice);
+        formData.append('unit', this.editingProduct.unit);
+        formData.append('inStock', this.editingProduct.inStock);
+        
+        if (this.editingProduct.imageFile) {
+          formData.append('image', this.editingProduct.imageFile);
+        }
+        
+        // Send updated product data to the API
+        const response = await axios.put(
+          `${this.apiBaseUrl}/products/${this.editingProduct.id}`, 
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }
+        );
+        
+        // Update the product in the local array
+        const updatedProduct = response.data;
+        this.products.splice(this.editingProductIndex, 1, {
+          id: updatedProduct.id,
+          name: updatedProduct.name,
+          category: updatedProduct.category,
+          unitPrice: updatedProduct.unitPrice?.startsWith('Rs') ? updatedProduct.unitPrice : `Rs${updatedProduct.unitPrice}`,
+          unit: updatedProduct.unit,
+          inStock: updatedProduct.inStock,
+          image: updatedProduct.image || this.editingProduct.image
+        });
       }
-    },
+      
+      this.closeEditModal();
+    } catch (error) {
+      console.error('Error updating product:', error);
+      alert('Failed to update product. Please try again.');
+    } finally {
+      this.updatingProduct = false;
+    }
+  }
+},
+    
     closeEditModal() {
       this.showEditProductModal = false;
       this.editingProduct = {};
       this.editingProductIndex = null;
-    },
-    showMenu(index) {
-      alert(`Action menu for product at index: ${index}`);
     },
   },
 };
@@ -703,6 +956,10 @@ export default {
   font-size: 0.85rem;
   border-radius: 12px;
   padding: 6px 10px;
+}
+#bin{
+  background-color: white !important;
+  color:black;
 }
 
 /* Responsive */

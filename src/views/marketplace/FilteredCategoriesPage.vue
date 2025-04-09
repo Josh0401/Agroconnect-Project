@@ -58,7 +58,7 @@
   <script setup>
   import { ref, computed, watch } from "vue";
   import { useRoute } from "vue-router";
-  import img from "../../assets/cowpea.jpg";
+  import img from "../../assets/cowpea.jpg"; // Example image
   
   // Get the route object in order to read query parameters
   const route = useRoute();

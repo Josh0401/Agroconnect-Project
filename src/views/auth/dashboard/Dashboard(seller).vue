@@ -98,7 +98,7 @@ export default {
       keyMetrics: [
         {
           title: "Total Sales",
-          value: "₦4,000,000",
+          value: "Rs 4,000,000",
           color: "card-total-sales",
         },
         {
@@ -118,7 +118,7 @@ export default {
         },
       ],
       ordersLast7days: 25,
-      profitLast7days: "₦50,000",
+      profitLast7days: "Rs 50,000",
       recentSales: [
         { id: "#SKU5755", product: "Rice", date: "12th Feb, 2025 9:00 AM" },
         { id: "#SKU5756", product: "Beans", date: "13th Feb, 2025 10:30 AM" },

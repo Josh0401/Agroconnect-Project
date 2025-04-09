@@ -10,6 +10,11 @@ import "bootstrap-icons/font/bootstrap-icons.css"; // Import Bootstrap Icons
 import { createPinia } from "pinia"; // Import Pinia for state management
 import { createLanguageContext } from './context/LanguageContext';
 import { translations } from './translations'; // Import translations
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { fas } from '@fortawesome/free-solid-svg-icons'
+import { far } from '@fortawesome/free-regular-svg-icons'
+import { fab } from '@fortawesome/free-brands-svg-icons'
 
 const app = createApp(App);
 const pinia = createPinia(); // Create a Pinia instance
@@ -20,6 +25,8 @@ createLanguageContext();
 
 // Add global language properties
 app.config.globalProperties.$translations = translations;
+
+library.add(fas, far, fab)
 
 // Create a global event bus for language changes using provide/inject pattern
 app.provide('setLanguage', (lang) => {
@@ -35,6 +42,8 @@ app.provide('setLanguage', (lang) => {
 app.config.globalProperties.$getLanguage = () => {
   return localStorage.getItem('preferredLanguage') || 'en';
 };
+
+app.component('font-awesome-icon', FontAwesomeIcon)
 
 app.use(router);
 app.mount("#app");
