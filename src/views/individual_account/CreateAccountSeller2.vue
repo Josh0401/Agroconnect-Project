@@ -28,10 +28,39 @@
         <div class="mb-3">
           <label class="form-label fw-semibold">Phone Number</label>
           <input
-            type="number"
+            type="tel"
             class="form-control form-control-lg"
             placeholder="Enter Your Phone Number"
             v-model="authStore.phone_number"
+            required
+          />
+          <small class="text-muted"
+            >Will also be used as your business phone number</small
+          >
+        </div>
+
+        <!-- Business Name -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Business Name</label>
+          <input
+            type="text"
+            class="form-control form-control-lg"
+            placeholder="Enter Your Business Name"
+            v-model="authStore.businessName"
+            required
+          />
+        </div>
+
+        <!-- Business Registration Number -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold"
+            >Business Registration Number</label
+          >
+          <input
+            type="text"
+            class="form-control form-control-lg"
+            placeholder="Enter Business Registration Number"
+            v-model="authStore.businessRegistrationNumber"
             required
           />
         </div>
@@ -89,6 +118,20 @@
             placeholder="Enter Your Address"
             v-model="authStore.address"
           />
+          <small class="text-muted"
+            >Will also be used as your business address</small
+          >
+        </div>
+
+        <!-- Business Logo -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Business Logo (Optional)</label>
+          <input
+            type="file"
+            class="form-control form-control-lg"
+            accept="image/*"
+            @change="handleLogoUpload"
+          />
         </div>
       </form>
 
@@ -137,9 +180,15 @@ export default {
       router.push("/create-account-seller");
     };
 
+    const handleLogoUpload = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        authStore.businessLogo = file;
+      }
+    };
+
     const continueSignup = () => {
-      // Here, the form fields are already bound to the store:
-      // authStore.phone_number, authStore.productName, authStore.productCategory, authStore.address
+      // Here, the form fields are already bound to the store
       // Optionally, you could add validation before moving on.
       router.push("/create-seller3");
     };
@@ -149,6 +198,7 @@ export default {
       goBack,
       previousSignup,
       continueSignup,
+      handleLogoUpload,
     };
   },
 };

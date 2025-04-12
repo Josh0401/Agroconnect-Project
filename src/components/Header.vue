@@ -1,13 +1,8 @@
 <template>
   <nav class="navbar navbar-expand-lg sticky-top bg-white shadow-sm py-3">
     <div class="container">
-      <a class="navbar-brand d-flex align-items-center" href="/market">
-        <img
-          src="../assets/Agroconnect.png"
-          alt=""
-          height="40"
-          class="me-2"
-        />
+      <a class="navbar-brand d-flex align-items-center" href="/">
+        <img src="../assets/Agroconnect.png" alt="" height="40" class="me-2" />
       </a>
       <button
         class="navbar-toggler"

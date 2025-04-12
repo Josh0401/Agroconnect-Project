@@ -37,6 +37,9 @@
               {{ country }}
             </option>
           </select>
+          <small class="text-muted"
+            >Will also be used as your business country</small
+          >
         </div>
         <!-- City Dropdown -->
         <div class="mb-3">
@@ -51,6 +54,19 @@
               {{ city }}
             </option>
           </select>
+          <small class="text-muted"
+            >Will also be used as your business city</small
+          >
+        </div>
+        <!-- Profile Image -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Profile Image (Optional)</label>
+          <input
+            type="file"
+            class="form-control form-control-lg"
+            accept="image/*"
+            @change="handleProfileUpload"
+          />
         </div>
         <!-- Password -->
         <div class="mb-3">
@@ -97,8 +113,9 @@
         <button
           class="btn btn-success w-100 py-2 px-2 mx-2 mb-3"
           @click="submitForm"
+          :disabled="passwordError !== '' || isSubmitting"
         >
-          Submit
+          {{ isSubmitting ? "Submitting..." : "Submit" }}
         </button>
       </div>
       <!-- Login Link -->
@@ -116,13 +133,16 @@
 import { computed, ref } from "vue";
 import { useAuthStore } from "../../stores/auth";
 import { useRouter } from "vue-router";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "CreateAccountSeller3",
   setup() {
     const authStore = useAuthStore();
     const router = useRouter();
+    const toast = useToast();
     const passwordError = ref("");
+    const isSubmitting = ref(false);
 
     const countries = ["Nigeria", "Mauritius"];
     const cities = {
@@ -169,6 +189,13 @@ export default {
       }
     };
 
+    const handleProfileUpload = (event) => {
+      const file = event.target.files[0];
+      if (file) {
+        authStore.profile = file;
+      }
+    };
+
     const goBack = () => {
       router.push("/create-seller2");
     };
@@ -180,38 +207,92 @@ export default {
     const submitForm = async () => {
       // Validate that password fields are not empty
       if (!authStore.password || !authStore.confirmPassword) {
-        alert("Please fill in both password fields.");
+        toast.error("Please fill in both password fields.");
         return;
       }
 
       // Validate password
+      if (passwordError.value) {
+        toast.error(passwordError.value);
+        return;
+      }
 
-      // Build the payload from the store's state
-      const payload = {
-        firstName: authStore.firstName,
-        lastName: authStore.lastName,
-        email: authStore.email,
-        phone_number: authStore.phone_number,
-        address: authStore.address,
-        selectedCountry: authStore.selectedCountry,
-        selectedCity: authStore.selectedCity,
-        password: authStore.password,
-        userType: authStore.userType, // should be "seller"
-        productName: authStore.productName,
-        productCategory: authStore.productCategory,
-      };
+      // Set submitting state
+      isSubmitting.value = true;
+
+      // Create a FormData object for the submission
+      const formData = new FormData();
+
+      // Add all text fields
+      formData.append("first_name", authStore.firstName);
+      formData.append("last_name", authStore.lastName);
+      formData.append("email", authStore.email);
+      formData.append("phone_no", authStore.phone_number.toString());
+      formData.append("address", authStore.address);
+      formData.append("country", authStore.selectedCountry);
+      formData.append("city", authStore.selectedCity);
+      formData.append("password", authStore.password);
+      formData.append("account_type", "seller");
+      formData.append("business_name", authStore.businessName);
+      formData.append("business_email", authStore.email);
+      formData.append("business_reg_no", authStore.businessRegistrationNumber);
+      formData.append("business_phone_no", authStore.phone_number.toString());
+      formData.append("business_address", authStore.address);
+      formData.append("product_name", authStore.productName);
+      formData.append("product_category", authStore.productCategory);
+      formData.append("business_country", authStore.selectedCountry);
+      formData.append("business_city", authStore.selectedCity);
+
+      // Add file fields (if they exist)
+      if (authStore.profile) {
+        formData.append("profile", authStore.profile);
+      }
+
+      if (authStore.businessLogo) {
+        formData.append("business_logo", authStore.businessLogo);
+      }
 
       try {
-        const result = await authStore.submitSignup(payload);
-        console.log("Signup successful:", result);
-        alert("Signup successful!");
-        router.push("/login");
+        // Use the modified store method to submit the form data
+        const result = await authStore.submitSellerSignup(formData);
+        console.log("Seller signup successful:", result);
+
+        // Show success toast
+        toast.success("Account created successfully! Redirecting to login...", {
+          timeout: 3000,
+        });
+
+        // Small delay before redirecting to allow user to see the message
+        setTimeout(() => {
+          router.push("/login");
+        }, 2000);
       } catch (error) {
         console.error("Signup error:", error);
 
-        alert(
-          "There was an error submitting your signup. Please check your details and try again."
-        );
+        // Handle various error types
+        if (error.response && error.response.data) {
+          // If there are validation errors from the server
+          if (
+            typeof error.response.data === "object" &&
+            error.response.data.errors
+          ) {
+            const errorMessages = Object.values(error.response.data.errors)
+              .flat()
+              .join("\n");
+            toast.error(errorMessages);
+          } else if (error.response.data.message) {
+            // If the server sends a message
+            toast.error(error.response.data.message);
+          } else {
+            // Generic error
+            toast.error("Failed to create account. Please try again.");
+          }
+        } else {
+          toast.error("Network or server error. Please try again later.");
+        }
+      } finally {
+        // Reset submitting state
+        isSubmitting.value = false;
       }
     };
 
@@ -220,10 +301,12 @@ export default {
       countries,
       filteredCities,
       passwordError,
+      isSubmitting,
       goBack,
       previousSignup,
       submitForm,
       validatePassword,
+      handleProfileUpload,
     };
   },
 };

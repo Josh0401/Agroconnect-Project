@@ -89,7 +89,7 @@
 
             <!-- Sign Up Link -->
             <p class="text-center mb-0">
-              Don’t have an account?
+              Don't have an account?
               <router-link to="/signup" class="text-decoration-none">
                 Create Account
               </router-link>
@@ -103,6 +103,7 @@
 
 <script>
 import { useAuthStore } from "../../stores/auth";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "LoginComponent",
@@ -110,9 +111,14 @@ export default {
     return {
       email: "",
       password: "",
+      rememberMe: false,
       loading: false,
       errorMessage: "",
     };
+  },
+  setup() {
+    const toast = useToast();
+    return { toast };
   },
   methods: {
     goBack() {
@@ -120,6 +126,13 @@ export default {
       this.$router ? this.$router.go(-1) : window.history.back();
     },
     async onLogin() {
+      // Basic form validation
+      if (!this.email || !this.password) {
+        this.errorMessage = "Please enter both email and password";
+        this.toast.error("Please enter both email and password");
+        return;
+      }
+
       this.loading = true;
       this.errorMessage = "";
       const authStore = useAuthStore();
@@ -130,20 +143,28 @@ export default {
           password: this.password,
         });
 
+        // Show success toast
+        this.toast.success("Login successful! Redirecting...");
+
         // Redirect based on userType
-        if (authStore.userType === "seller") {
-          this.$router.push("/dashboard-seller");
-        } else if (authStore.userType === "buyer") {
-          this.$router.push("/dashboard-buyer");
-        } else {
-          // Fallback route if userType is missing or unrecognized
-          this.$router.push("/dashboard");
-        }
+        setTimeout(() => {
+          if (authStore.account_type === "seller") {
+            this.$router.push("/dashboard-seller");
+          } else if (authStore.account_type === "buyer") {
+            this.$router.push("/dashboard-buyer");
+          } else {
+            // Fallback route if userType is missing or unrecognized
+            this.$router.push("/dashboard-seller");
+          }
+        }, 1000); // Short delay to show the toast before redirect
       } catch (error) {
-        this.errorMessage =
+        const errorMsg =
           error.response?.data?.message ||
           error.message ||
           "Login failed. Please try again.";
+
+        this.errorMessage = errorMsg;
+        this.toast.error(errorMsg);
       } finally {
         this.loading = false;
       }
