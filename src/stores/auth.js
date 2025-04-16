@@ -24,6 +24,19 @@ export const useAuthStore = defineStore("auth", {
   }),
 
   actions: {
+    async fetchSellerProfile() {
+      try {
+        // Simple direct request without authentication headers
+        const response = await axios.get(
+          "https://agroconnect.shop/api/seller-register"
+        );
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching seller profile:", error);
+        throw error;
+      }
+    },
+
     async submitSellerSignup(formData) {
       try {
         // If formData is already a FormData object, use it directly

@@ -9,14 +9,20 @@
         <h2 class="fw-bold mb-0">Profile Settings</h2>
       </div>
 
-      <!-- Image Upload / Delete Buttons -->
-      <!-- <div class="mb-4">
-        <button class="btn btn-outline-success me-2">Upload Image</button>
-        <button class="btn btn-outline-danger">Delete</button>
-      </div> -->
+      <!-- Loading and Error States -->
+      <div v-if="loading" class="text-center py-5">
+        <div class="spinner-border text-success" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Loading profile data...</p>
+      </div>
+
+      <div v-else-if="error" class="alert alert-danger">
+        {{ error }}
+      </div>
 
       <!-- Profile Form -->
-      <form @submit.prevent="saveChanges">
+      <form v-else @submit.prevent="saveChanges">
         <!-- First Row -->
         <div class="row mb-3">
           <div class="col-md-6 mb-3 mb-md-0">
@@ -138,8 +144,9 @@
 </template>
 
 <script>
-// import axios from "axios"; // Uncomment if you're using axios for API calls
+import axios from "axios";
 import Sidebar from "../../../components/DashboardSidebar.vue";
+import { useAuthStore } from "../../../stores/auth"; // Update path if needed
 
 export default {
   name: "ProfileSettings",
@@ -157,22 +164,63 @@ export default {
         state: "",
         zipCode: "",
       },
+      loading: true,
+      error: null,
     };
   },
   async created() {
-    try {
-      // Example API call (uncomment if using axios):
-      // const response = await axios.get("/api/profile");
-      // this.profile = response.data;
-    } catch (error) {
-      console.error("Error fetching profile data:", error);
-    }
+    await this.fetchProfileData();
   },
   methods: {
+    async fetchProfileData() {
+      try {
+        this.loading = true;
+        const authStore = useAuthStore();
+        const response = await authStore.fetchSellerProfile();
+
+        // Map the API response to your component's data structure
+        // This mapping depends on what your API returns
+        this.profile = {
+          businessName: response.business_name || "",
+          productSold: response.product_name || "",
+          regNumber: response.business_reg_no || "",
+          email: response.business_email || "",
+          phoneNumber: response.business_phone_no || "",
+          country: response.business_country || "",
+          address: response.business_address || "",
+          state: response.business_city || "", // Assuming city and state are the same
+          zipCode: response.zip_code || "",
+        };
+
+        this.loading = false;
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+        this.error = "Failed to load profile data. Please try again later.";
+        this.loading = false;
+      }
+    },
+
     async saveChanges() {
       try {
-        // Example API call (uncomment if using axios):
-        // await axios.put("/api/profile", this.profile);
+        // Format the data according to your API's expectations
+        const updatedData = {
+          business_name: this.profile.businessName,
+          product_name: this.profile.productSold,
+          business_reg_no: this.profile.regNumber,
+          business_email: this.profile.email,
+          business_phone_no: this.profile.phoneNumber,
+          business_country: this.profile.country,
+          business_address: this.profile.address,
+          business_city: this.profile.state, // Assuming city and state are the same
+          zip_code: this.profile.zipCode,
+        };
+
+        // Send the update request without authentication headers
+        await axios.put(
+          "https://agroconnect.shop/api/update-seller-profile",
+          updatedData
+        );
+
         alert("Profile updated successfully!");
       } catch (error) {
         console.error("Error saving profile changes:", error);
