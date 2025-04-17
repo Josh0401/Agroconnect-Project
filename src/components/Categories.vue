@@ -3,9 +3,9 @@
     <section class="newproduct">
       <div class="container">
         <div class="categories-header">
-          <p class="h1">Categories</p>
+          <p class="h1">{{ $t('categories') }}</p>
           <router-link to="/allcategory" class="view-all">
-            View All <span class="arrow">&rarr;</span>
+            {{ $t('viewAll') }} <span class="arrow">&rarr;</span>
           </router-link>
         </div>
         <div class="container my-5">
@@ -27,7 +27,7 @@
                   alt="Herbs and Spices"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Herbs and Spices</h5>
+                  <h5 class="card-title">{{ $t('herbsAndSpices') }}</h5>
                 </div>
               </router-link>
             </div>
@@ -47,7 +47,7 @@
                   alt="Fresh Fruits"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Fresh Fruits</h5>
+                  <h5 class="card-title">{{ $t('freshFruits') }}</h5>
                 </div>
               </router-link>
             </div>
@@ -67,7 +67,7 @@
                   alt="Grains"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Grains</h5>
+                  <h5 class="card-title">{{ $t('grains') }}</h5>
                 </div>
               </router-link>
             </div>
@@ -87,7 +87,7 @@
                   alt="Roots and Tubers"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Roots and Tubers</h5>
+                  <h5 class="card-title">{{ $t('rootsAndTubers') }}</h5>
                 </div>
               </router-link>
             </div>
@@ -107,7 +107,7 @@
                   alt="Nuts and Seeds"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Nuts and Seeds</h5>
+                  <h5 class="card-title">{{ $t('nutsAndSeeds') }}</h5>
                 </div>
               </router-link>
             </div>
@@ -127,7 +127,7 @@
                   alt="Cooking"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Cooking</h5>
+                  <h5 class="card-title">{{ $t('cooking') }}</h5>
                 </div>
               </router-link>
             </div>
@@ -147,7 +147,7 @@
                   alt="Dairy Products"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Dairy Products</h5>
+                  <h5 class="card-title">{{ $t('dairyProducts') }}</h5>
                 </div>
               </router-link>
             </div>
@@ -167,7 +167,7 @@
                   alt="Processed Foods"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Processed Foods</h5>
+                  <h5 class="card-title">{{ $t('processedFoods') }}</h5>
                 </div>
               </router-link>
             </div>
@@ -187,7 +187,7 @@
                   alt="Agro Chemicals"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Agro Chemicals</h5>
+                  <h5 class="card-title">{{ $t('agroChemicals') }}</h5>
                 </div>
               </router-link>
             </div>
@@ -207,7 +207,7 @@
                   alt="Diabetics"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Diabetics</h5>
+                  <h5 class="card-title">{{ $t('diabetics') }}</h5>
                 </div>
               </router-link>
             </div>
@@ -227,7 +227,7 @@
                   alt="Proteins"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Proteins</h5>
+                  <h5 class="card-title">{{ $t('proteins') }}</h5>
                 </div>
               </router-link>
             </div>
@@ -247,7 +247,7 @@
                   alt="Baking Ingredients"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Baking Ingredients</h5>
+                  <h5 class="card-title">{{ $t('bakingIngredients') }}</h5>
                 </div>
               </router-link>
             </div>
@@ -267,7 +267,7 @@
                   alt="Snacks and Pastries"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Snacks and Pastries</h5>
+                  <h5 class="card-title">{{ $t('snacksAndPastries') }}</h5>
                 </div>
               </router-link>
             </div>
@@ -287,7 +287,7 @@
                   alt="Cereals"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Cereals and Beverages</h5>
+                  <h5 class="card-title">{{ $t('cerealsAndBeverages') }}</h5>
                 </div>
               </router-link>
             </div>
@@ -307,7 +307,7 @@
                   alt="Fresh Vegetables"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">Fresh Vegetables</h5>
+                  <h5 class="card-title">{{ $t('freshVegetables') }}</h5>
                 </div>
               </router-link>
             </div>
@@ -319,8 +319,14 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
   name: "Categories",
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  },
   data() {
     return {
       categories: [

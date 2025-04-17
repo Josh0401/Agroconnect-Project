@@ -21,33 +21,33 @@
           <ul class="nav justify-content-center">
             <li class="nav-item">
               <router-link class="nav-link text-dark px-2 fw-bold" to="/"
-                >Home</router-link
+                >{{ $t('home', 'Home') }}</router-link
               >
             </li>
             <li class="nav-item">
               <router-link
                 class="nav-link text-dark px-2 fw-bold"
                 to="/about-us"
-                >About Us</router-link
+                >{{ $t('aboutUs', 'About Us') }}</router-link
               >
             </li>
             <li class="nav-item">
               <router-link
                 class="nav-link text-dark px-2 fw-bold"
                 to="/individuals"
-                >Services</router-link
+                >{{ $t('services', 'Services') }}</router-link
               >
             </li>
             <li class="nav-item">
               <router-link class="nav-link text-dark px-2 fw-bold" to="/faq"
-                >FAQs</router-link
+                >{{ $t('faqs', 'FAQs') }}</router-link
               >
             </li>
             <li class="nav-item">
               <router-link
                 class="nav-link text-dark px-2 fw-bold"
                 to="/contact-support"
-                >Contact Support</router-link
+                >{{ $t('contactSupport', 'Contact Support') }}</router-link
               >
             </li>
           </ul>
@@ -101,15 +101,15 @@
       <div class="row">
         <!-- Left: Copyright -->
         <div class="col-md-6 text-md-start text-center mb-2 mb-md-0">
-          &copy; 2025 All rights reserved
+          &copy; 2025 {{ $t('allRightsReserved', 'All rights reserved') }}
         </div>
 
         <!-- Right: Footer Links -->
         <div class="col-md-6 text-md-end text-center">
-          <a href="#" class="text-dark me-3">Privacy Policy</a>
-          <a href="#" class="text-dark me-3">Terms & Conditions</a>
-          <a href="#" class="text-dark me-3">Legal</a>
-          <a href="#" class="text-dark">Help</a>
+          <a href="#" class="text-dark me-3">{{ $t('privacyPolicy', 'Privacy Policy') }}</a>
+          <a href="#" class="text-dark me-3">{{ $t('termsConditions', 'Terms & Conditions') }}</a>
+          <a href="#" class="text-dark me-3">{{ $t('legal', 'Legal') }}</a>
+          <a href="#" class="text-dark">{{ $t('help', 'Help') }}</a>
         </div>
       </div>
     </div>
@@ -117,8 +117,14 @@
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
+
 export default {
   name: "FooterComponent",
+  setup() {
+    const { t } = useI18n();
+    return { t };
+  }
 };
 </script>
 
