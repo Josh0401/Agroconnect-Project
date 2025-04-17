@@ -84,6 +84,11 @@
                   >
                 </li>
                 <li>
+                  <router-link class="dropdown-item" to="/account/groups-communities"
+                    >Groups</router-link
+                  >
+                </li>
+                <li>
                   <router-link class="dropdown-item" to="/account/profile"
                     >Profile</router-link
                   >
