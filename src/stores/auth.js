@@ -24,12 +24,28 @@ export const useAuthStore = defineStore("auth", {
   }),
 
   actions: {
+    // In auth.js
+    // In auth.js
     async fetchSellerProfile() {
       try {
-        // Simple direct request without authentication headers
+        const token = this.token || localStorage.getItem("authToken");
+
+        if (!token) {
+          return Promise.reject({
+            isAuthError: true,
+            message: "No authentication token found. Please log in again.",
+          });
+        }
+
         const response = await axios.get(
-          "https://agroconnect.shop/api/seller-register"
+          "https://agroconnect.shop/api/fetch-profile",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
+
         return response.data;
       } catch (error) {
         console.error("Error fetching seller profile:", error);

@@ -172,25 +172,32 @@ export default {
     await this.fetchProfileData();
   },
   methods: {
+    // In Profile(seller).vue fetchProfileData method
     async fetchProfileData() {
       try {
         this.loading = true;
         const authStore = useAuthStore();
-        const response = await authStore.fetchSellerProfile();
 
-        // Map the API response to your component's data structure
-        // This mapping depends on what your API returns
-        this.profile = {
-          businessName: response.business_name || "",
-          productSold: response.product_name || "",
-          regNumber: response.business_reg_no || "",
-          email: response.business_email || "",
-          phoneNumber: response.business_phone_no || "",
-          country: response.business_country || "",
-          address: response.business_address || "",
-          state: response.business_city || "", // Assuming city and state are the same
-          zipCode: response.zip_code || "",
-        };
+        try {
+          const response = await authStore.fetchSellerProfile();
+
+          this.profile = {
+            businessName: response.business_name || "",
+            // ... rest of your mapping
+          };
+        } catch (error) {
+          if (error.isAuthError) {
+            this.error = error.message;
+
+            // Optional: Redirect to login
+            // setTimeout(() => {
+            //   this.$router.push("/login"); // Adjust path as needed
+            // }, 2000);
+
+            return;
+          }
+          throw error; // Re-throw if it's not an auth error
+        }
 
         this.loading = false;
       } catch (error) {
@@ -200,25 +207,29 @@ export default {
       }
     },
 
+    // In Profile(seller).vue saveChanges method
     async saveChanges() {
       try {
-        // Format the data according to your API's expectations
+        const token = localStorage.getItem("authToken");
+
+        if (!token) {
+          throw new Error(
+            "No authentication token found. Please log in again."
+          );
+        }
+
         const updatedData = {
-          business_name: this.profile.businessName,
-          product_name: this.profile.productSold,
-          business_reg_no: this.profile.regNumber,
-          business_email: this.profile.email,
-          business_phone_no: this.profile.phoneNumber,
-          business_country: this.profile.country,
-          business_address: this.profile.address,
-          business_city: this.profile.state, // Assuming city and state are the same
-          zip_code: this.profile.zipCode,
+          // ... your data here
         };
 
-        // Send the update request without authentication headers
         await axios.put(
           "https://agroconnect.shop/api/update-seller-profile",
-          updatedData
+          updatedData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         alert("Profile updated successfully!");
@@ -226,6 +237,22 @@ export default {
         console.error("Error saving profile changes:", error);
         alert("An error occurred while saving. Please try again.");
       }
+    },
+    async created() {
+      const token = localStorage.getItem("authToken");
+      if (!token) {
+        this.error = "Please log in to view your profile";
+        this.loading = false;
+
+        // Optional: Redirect to login page after a short delay
+        setTimeout(() => {
+          this.$router.push("/login"); // Adjust the path as needed
+        }, 2000);
+
+        return;
+      }
+
+      await this.fetchProfileData();
     },
   },
 };
