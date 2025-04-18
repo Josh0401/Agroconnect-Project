@@ -238,6 +238,11 @@
                   >
                 </li>
                 <li>
+                  <router-link class="dropdown-item" to="/account/groups-communities"
+                    >Groups</router-link
+                  >
+                </li>
+                <li>
                   <a
                     class="dropdown-item"
                     href="/login"

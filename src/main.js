@@ -10,21 +10,35 @@ import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
 import "bootstrap/dist/js/bootstrap.bundle.min.js"; // Import Bootstrap JS
 import "bootstrap-icons/font/bootstrap-icons.css"; // Import Bootstrap Icons
 import { createPinia } from "pinia"; // Import Pinia for state management
-import { createLanguageContext } from "./context/LanguageContext";
 import { translations } from "./translations"; // Import translations
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 import { fab } from "@fortawesome/free-brands-svg-icons";
+import { createI18n } from 'vue-i18n'; // Import vue-i18n
 
+// Initialize the Pinia store
+const pinia = createPinia();
+
+// Setup FontAwesome
+library.add(fas, far, fab);
+
+// Get user's preferred language from localStorage or default to English
+const savedLanguage = localStorage.getItem("userLanguage") || "en";
+
+// Create i18n instance with options
+const i18n = createI18n({
+  legacy: false, // Use Composition API mode
+  locale: savedLanguage, // Use saved language or default
+  fallbackLocale: 'en',
+  messages: translations
+});
+
+// Create the Vue application instance
 const app = createApp(App);
-const pinia = createPinia(); // Create a Pinia instance
-app.use(pinia); // Use Pinia in the Vue app
 
-// Create language context
-createLanguageContext();
-
+// Configure toast notifications
 const toastOptions = {
   position: "top-right",
   timeout: 5000,
@@ -39,31 +53,16 @@ const toastOptions = {
   icon: true,
   rtl: false,
 };
-app.use(Toast, toastOptions); // Use Toastification for notifications
 
-// Add global language properties
-app.config.globalProperties.$translations = translations;
-
-library.add(fas, far, fab);
-
-// Create a global event bus for language changes using provide/inject pattern
-app.provide("setLanguage", (lang) => {
-  // Store the language preference
-  localStorage.setItem("preferredLanguage", lang);
-
-  // Create a custom event that components can listen for
-  const event = new CustomEvent("language-changed", { detail: lang });
-  window.dispatchEvent(event);
-});
-
-// Add global method to get current language
-app.config.globalProperties.$getLanguage = () => {
-  return localStorage.getItem("preferredLanguage") || "en";
-};
-
+// Register components and plugins
 app.component("font-awesome-icon", FontAwesomeIcon);
-
-app.use(router);
-app.mount("#app");
 app.component("FooterTag", FooterTag);
 app.component("HeaderTag", HeaderTag);
+
+app.use(pinia);
+app.use(router);
+app.use(Toast, toastOptions);
+app.use(i18n);
+
+// Mount the app
+app.mount("#app");

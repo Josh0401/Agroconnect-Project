@@ -7,11 +7,13 @@ export const translations = {
     orders: 'Orders',
     transactions: 'Transactions',
     logout: 'Logout',
+    groupsCommunities: 'Groups',
     
     // Section headers
     products: 'Products',
     newProducts: 'New Products',
     viewAll: 'View All',
+    categories: 'Categories',
     
     // Product names
     hybridCoconutSeedlings: 'Hybrid Coconut Seedlings',
@@ -25,6 +27,35 @@ export const translations = {
     redKidneyBeans: 'Red Kidney Beans',
     soursopTea: 'Soursop Tea with Ginger',
     
+    // Categories
+    herbsAndSpices: 'Herbs and Spices',
+    freshFruits: 'Fresh Fruits',
+    grains: 'Grains',
+    rootsAndTubers: 'Roots and Tubers',
+    nutsAndSeeds: 'Nuts and Seeds',
+    cooking: 'Cooking',
+    dairyProducts: 'Dairy Products',
+    processedFoods: 'Processed Foods',
+    agroChemicals: 'Agro Chemicals',
+    diabetics: 'Diabetics',
+    proteins: 'Proteins',
+    bakingIngredients: 'Baking Ingredients',
+    snacksAndPastries: 'Snacks and Pastries',
+    cerealsAndBeverages: 'Cereals and Beverages',
+    freshVegetables: 'Fresh Vegetables',
+    
+    // Footer
+    home: 'Home',
+    aboutUs: 'About Us',
+    services: 'Services',
+    faqs: 'FAQs',
+    contactSupport: 'Contact Support',
+    allRightsReserved: 'All rights reserved',
+    privacyPolicy: 'Privacy Policy',
+    termsConditions: 'Terms & Conditions',
+    legal: 'Legal',
+    help: 'Help',
+    
     // Currency
     currency: 'Rs'
   },
@@ -35,11 +66,13 @@ export const translations = {
     orders: 'Commandes',
     transactions: 'Transactions',
     logout: 'Déconnexion',
+    groupsCommunities: 'Groupes',
     
     // Section headers
     products: 'Produits',
     newProducts: 'Nouveaux Produits',
     viewAll: 'Voir Tout',
+    categories: 'Catégories',
     
     // Product names
     hybridCoconutSeedlings: 'Plants de Cocotier Hybride',
@@ -53,6 +86,35 @@ export const translations = {
     redKidneyBeans: 'Haricots Rouges',
     soursopTea: 'Thé de Corossol au Gingembre',
     
+    // Categories
+    herbsAndSpices: 'Herbes et Épices',
+    freshFruits: 'Fruits Frais',
+    grains: 'Céréales',
+    rootsAndTubers: 'Racines et Tubercules',
+    nutsAndSeeds: 'Noix et Graines',
+    cooking: 'Cuisine',
+    dairyProducts: 'Produits Laitiers',
+    processedFoods: 'Aliments Transformés',
+    agroChemicals: 'Produits Agrochimiques',
+    diabetics: 'Diabétiques',
+    proteins: 'Protéines',
+    bakingIngredients: 'Ingrédients de Pâtisserie',
+    snacksAndPastries: 'Collations et Pâtisseries',
+    cerealsAndBeverages: 'Céréales et Boissons',
+    freshVegetables: 'Légumes Frais',
+    
+    // Footer
+    home: 'Accueil',
+    aboutUs: 'À Propos',
+    services: 'Services',
+    faqs: 'FAQs',
+    contactSupport: 'Support Client',
+    allRightsReserved: 'Tous droits réservés',
+    privacyPolicy: 'Politique de Confidentialité',
+    termsConditions: 'Conditions Générales',
+    legal: 'Mentions Légales',
+    help: 'Aide',
+    
     // Currency
     currency: 'Rs'
   },
@@ -63,11 +125,13 @@ export const translations = {
     orders: 'Pedidos',
     transactions: 'Transacciones',
     logout: 'Cerrar Sesión',
+    groupsCommunities: 'Grupos',
     
     // Section headers
     products: 'Productos',
     newProducts: 'Nuevos Productos',
     viewAll: 'Ver Todo',
+    categories: 'Categorías',
     
     // Product names
     hybridCoconutSeedlings: 'Plántulas de Coco Híbrido',
@@ -81,6 +145,35 @@ export const translations = {
     redKidneyBeans: 'Frijoles Rojos',
     soursopTea: 'Té de Guanábana con Jengibre',
     
+    // Categories
+    herbsAndSpices: 'Hierbas y Especias',
+    freshFruits: 'Frutas Frescas',
+    grains: 'Granos',
+    rootsAndTubers: 'Raíces y Tubérculos',
+    nutsAndSeeds: 'Nueces y Semillas',
+    cooking: 'Cocina',
+    dairyProducts: 'Productos Lácteos',
+    processedFoods: 'Alimentos Procesados',
+    agroChemicals: 'Agroquímicos',
+    diabetics: 'Diabéticos',
+    proteins: 'Proteínas',
+    bakingIngredients: 'Ingredientes para Hornear',
+    snacksAndPastries: 'Snacks y Pasteles',
+    cerealsAndBeverages: 'Cereales y Bebidas',
+    freshVegetables: 'Verduras Frescas',
+    
+    // Footer
+    home: 'Inicio',
+    aboutUs: 'Sobre Nosotros',
+    services: 'Servicios',
+    faqs: 'Preguntas Frecuentes',
+    contactSupport: 'Contactar Soporte',
+    allRightsReserved: 'Todos los derechos reservados',
+    privacyPolicy: 'Política de Privacidad',
+    termsConditions: 'Términos y Condiciones',
+    legal: 'Legal',
+    help: 'Ayuda',
+    
     // Currency
     currency: 'Rs'
   },
@@ -91,11 +184,13 @@ export const translations = {
     orders: 'Komand',
     transactions: 'Tranzaksion',
     logout: 'Dekonekte',
+    groupsCommunities: 'Grup',
     
     // Section headers
     products: 'Prodwi',
     newProducts: 'Nouvo Prodwi',
     viewAll: 'Get Tou',
+    categories: 'Kategori',
     
     // Product names
     hybridCoconutSeedlings: 'Plan Koko Ibrid',
@@ -109,9 +204,36 @@ export const translations = {
     redKidneyBeans: 'Pwa Rouj',
     soursopTea: 'Dite Korosol ak Jenjanm',
     
+    // Categories
+    herbsAndSpices: 'Zèb ak Epis',
+    freshFruits: 'Fwi Fre',
+    grains: 'Grenn',
+    rootsAndTubers: 'Rasin ak Tibèkil',
+    nutsAndSeeds: 'Nwa ak Grenn',
+    cooking: 'Kwit Manje',
+    dairyProducts: 'Pwodwi Letye',
+    processedFoods: 'Manje Transforme',
+    agroChemicals: 'Pwodwi Chimik Agrikòl',
+    diabetics: 'Dyabetik',
+    proteins: 'Pwoteyin',
+    bakingIngredients: 'Engredyan pou Boulanje',
+    snacksAndPastries: 'Kolasyon ak Patisri',
+    cerealsAndBeverages: 'Sereal ak Bwason',
+    freshVegetables: 'Legim Fre',
+    
+    // Footer
+    home: 'Akèy',
+    aboutUs: 'Apropo Nou',
+    services: 'Sèvis',
+    faqs: 'Kesyon Frekan',
+    contactSupport: 'Kontakte Sipò',
+    allRightsReserved: 'Tout dwa rezève',
+    privacyPolicy: 'Politik Konfidansyalite',
+    termsConditions: 'Tèm ak Kondisyon',
+    legal: 'Legal',
+    help: 'Èd',
+    
     // Currency
     currency: 'Rs'
   }
-
-  
 };

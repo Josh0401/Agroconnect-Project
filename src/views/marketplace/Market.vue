@@ -40,7 +40,7 @@
             <input
               id="searchInput"
               type="text"
-              :placeholder="t.search || 'Search'"
+              :placeholder="$t('search')"
               @keydown.enter="handleSearch"
               v-model="searchQuery"
               class="d-none d-lg-block form-control me-2"
@@ -50,13 +50,13 @@
               @click="handleSearch"
               class="d-none d-lg-block btn btn-outline-secondary"
             >
-              {{ t.search || 'Search' }}
+              {{ $t('search') }}
             </button>
           </div>
         </ul>
         <div class="d-flex align-items-center py-1">
           <!-- Language Selector Dropdown - New Component -->
-          <LanguageDropdown class="me-3" @language-changed="handleLanguageChange" />
+          <LanguageDropdown class="me-3" />
 
           <!-- Wishlist Icon -->
           <button class="btn position-relative me-3" @click="goToWishlist">
@@ -141,27 +141,27 @@
             >
               <li>
                 <router-link class="dropdown-item" to="/account/profile">
-                  {{ t.profile || 'Profile' }}
+                  {{ $t('profile') }}
                 </router-link>
               </li>
               <li>
                 <router-link class="dropdown-item" to="/account/orders">
-                  {{ t.orders || 'Orders' }}
+                  {{ $t('orders') }}
                 </router-link>
               </li>
               <li>
                 <router-link class="dropdown-item" to="/account/transactions">
-                  {{ t.transactions || 'Transactions' }}
+                  {{ $t('transactions') }}
                 </router-link>
               </li>
               <li>
-    <router-link class="dropdown-item" to="/account/groups-communities">
-      {{ t.groupsCommunities || 'Groups' }}
-    </router-link>
-  </li>
+                <router-link class="dropdown-item" to="/account/groups-communities">
+                  {{ $t('groupsCommunities', 'Groups') }}
+                </router-link>
+              </li>
               <li>
                 <a class="dropdown-item" href="/login" @click.prevent="logout()">
-                  {{ t.logout || 'Logout' }}
+                  {{ $t('logout') }}
                 </a>
               </li>
             </ul>
@@ -216,9 +216,9 @@
     <section class="newproduct">
       <div class="container">
         <div class="categories-header">
-          <p class="h1">{{ t.products || 'Products' }}</p>
+          <p class="h1">{{ $t('products') }}</p>
           <router-link to="/allproduct" class="view-all">
-            {{ t.viewAll || 'View All' }} <span class="arrow">&rarr;</span>
+            {{ $t('viewAll') }} <span class="arrow">&rarr;</span>
           </router-link>
         </div>
         <div class="container my-5">
@@ -235,11 +235,11 @@
                   <img
                     src="../../assets/hybrid-coconut.jpg"
                     class="card-img-top"
-                    :alt="t.hybridCoconutSeedlings || 'Hybrid Coconut Seedlings'"
+                    :alt="$t('hybridCoconutSeedlings')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.hybridCoconutSeedlings || 'Hybrid Coconut Seedlings' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}10</p>
+                    <h5 class="card-title">{{ $t('hybridCoconutSeedlings') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}10</p>
                   </div>
                 </div>
               </router-link>
@@ -255,11 +255,11 @@
                   <img
                     src="../../assets/hybrid_tenera_oil_palm.jpg"
                     class="card-img-top"
-                    :alt="t.hybridTeneraOilPalmSeedlings || 'Hybrid Tenera Oil Palm Seedlings'"
+                    :alt="$t('hybridTeneraOilPalmSeedlings')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.hybridTeneraOilPalmSeedlings || 'Hybrid Tenera Oil Palm Seedlings' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}15</p>
+                    <h5 class="card-title">{{ $t('hybridTeneraOilPalmSeedlings') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}15</p>
                   </div>
                 </div>
               </router-link>
@@ -275,11 +275,11 @@
                   <img
                     src="../../assets/tenera_oil_palm_sprouted_seeds.jpg"
                     class="card-img-top"
-                    :alt="t.teneraOilPalmSproutedSeeds || 'Tenera Oil Palm Sprouted Seeds'"
+                    :alt="$t('teneraOilPalmSproutedSeeds')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.teneraOilPalmSproutedSeeds || 'Tenera Oil Palm Sprouted Seeds' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}20</p>
+                    <h5 class="card-title">{{ $t('teneraOilPalmSproutedSeeds') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}20</p>
                   </div>
                 </div>
               </router-link>
@@ -295,11 +295,11 @@
                   <img
                     src="../../assets/cowpea.jpg"
                     class="card-img-top"
-                    :alt="t.blackEyedPeaCowpea || 'Black-Eyed Pea (Cowpea)'"
+                    :alt="$t('blackEyedPeaCowpea')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.blackEyedPeaCowpea || 'Black-Eyed Pea (Cowpea)' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}25</p>
+                    <h5 class="card-title">{{ $t('blackEyedPeaCowpea') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}25</p>
                   </div>
                 </div>
               </router-link>
@@ -315,11 +315,11 @@
                   <img
                     src="../../assets/white-maize.jpg"
                     class="card-img-top"
-                    :alt="t.whiteMaize || 'White Maize'"
+                    :alt="$t('whiteMaize')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.whiteMaize || 'White Maize' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}30</p>
+                    <h5 class="card-title">{{ $t('whiteMaize') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}30</p>
                   </div>
                 </div>
               </router-link>
@@ -335,11 +335,11 @@
                   <img
                     src="../../assets/white-beans.jpg"
                     class="card-img-top"
-                    :alt="t.whiteBeans || 'White Beans'"
+                    :alt="$t('whiteBeans')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.whiteBeans || 'White Beans' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}35</p>
+                    <h5 class="card-title">{{ $t('whiteBeans') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}35</p>
                   </div>
                 </div>
               </router-link>
@@ -355,11 +355,11 @@
                   <img
                     src="../../assets/cassava.jpeg"
                     class="card-img-top"
-                    :alt="t.cassava || 'Cassava'"
+                    :alt="$t('cassava')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.cassava || 'Cassava' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}40</p>
+                    <h5 class="card-title">{{ $t('cassava') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}40</p>
                   </div>
                 </div>
               </router-link>
@@ -375,11 +375,11 @@
                   <img
                     src="../../assets/mung-beans.jpg"
                     class="card-img-top"
-                    :alt="t.mungBeans || 'Mung Beans'"
+                    :alt="$t('mungBeans')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.mungBeans || 'Mung Beans' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}45</p>
+                    <h5 class="card-title">{{ $t('mungBeans') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}45</p>
                   </div>
                 </div>
               </router-link>
@@ -395,11 +395,11 @@
                   <img
                     src="../../assets/red-kidney-beans.jpg"
                     class="card-img-top"
-                    :alt="t.redKidneyBeans || 'Red Kidney Beans'"
+                    :alt="$t('redKidneyBeans')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.redKidneyBeans || 'Red Kidney Beans' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}50</p>
+                    <h5 class="card-title">{{ $t('redKidneyBeans') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}50</p>
                   </div>
                 </div>
               </router-link>
@@ -415,11 +415,11 @@
                   <img
                     src="../../assets/soursop-tea.jpg"
                     class="card-img-top"
-                    :alt="t.soursopTea || 'Soursop Tea with Ginger'"
+                    :alt="$t('soursopTea')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.soursopTea || 'Soursop Tea with Ginger' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}55</p>
+                    <h5 class="card-title">{{ $t('soursopTea') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}55</p>
                   </div>
                 </div>
               </router-link>
@@ -435,7 +435,7 @@
     <section class="newproduct">
       <div class="container">
         <div class="categories-header">
-          <p class="h1">{{ t.newProducts || 'New Products' }}</p>
+          <p class="h1">{{ $t('newProducts') }}</p>
         </div>
         <div class="container my-5">
           <div
@@ -451,11 +451,11 @@
                   <img
                     src="../../assets/hybrid-coconut.jpg"
                     class="card-img-top"
-                    :alt="t.hybridCoconutSeedlings || 'Hybrid Coconut Seedlings'"
+                    :alt="$t('hybridCoconutSeedlings')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.hybridCoconutSeedlings || 'Hybrid Coconut Seedlings' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}10</p>
+                    <h5 class="card-title">{{ $t('hybridCoconutSeedlings') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}10</p>
                   </div>
                 </div>
               </router-link>
@@ -471,11 +471,11 @@
                   <img
                     src="../../assets/hybrid_tenera_oil_palm.jpg"
                     class="card-img-top"
-                    :alt="t.hybridTeneraOilPalmSeedlings || 'Hybrid Tenera Oil Palm Seedlings'"
+                    :alt="$t('hybridTeneraOilPalmSeedlings')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.hybridTeneraOilPalmSeedlings || 'Hybrid Tenera Oil Palm Seedlings' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}15</p>
+                    <h5 class="card-title">{{ $t('hybridTeneraOilPalmSeedlings') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}15</p>
                   </div>
                 </div>
               </router-link>
@@ -491,11 +491,11 @@
                   <img
                     src="../../assets/tenera_oil_palm_sprouted_seeds.jpg"
                     class="card-img-top"
-                    :alt="t.teneraOilPalmSproutedSeeds || 'Tenera Oil Palm Sprouted Seeds'"
+                    :alt="$t('teneraOilPalmSproutedSeeds')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.teneraOilPalmSproutedSeeds || 'Tenera Oil Palm Sprouted Seeds' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}20</p>
+                    <h5 class="card-title">{{ $t('teneraOilPalmSproutedSeeds') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}20</p>
                   </div>
                 </div>
               </router-link>
@@ -511,11 +511,11 @@
                   <img
                     src="../../assets/cowpea.jpg"
                     class="card-img-top"
-                    :alt="t.blackEyedPeaCowpea || 'Black-Eyed Pea (Cowpea)'"
+                    :alt="$t('blackEyedPeaCowpea')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.blackEyedPeaCowpea || 'Black-Eyed Pea (Cowpea)' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}25</p>
+                    <h5 class="card-title">{{ $t('blackEyedPeaCowpea') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}25</p>
                   </div>
                 </div>
               </router-link>
@@ -531,11 +531,11 @@
                   <img
                     src="../../assets/white-maize.jpg"
                     class="card-img-top"
-                    :alt="t.whiteMaize || 'White Maize'"
+                    :alt="$t('whiteMaize')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.whiteMaize || 'White Maize' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}30</p>
+                    <h5 class="card-title">{{ $t('whiteMaize') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}30</p>
                   </div>
                 </div>
               </router-link>
@@ -551,11 +551,11 @@
                   <img
                     src="../../assets/white-beans.jpg"
                     class="card-img-top"
-                    :alt="t.whiteBeans || 'White Beans'"
+                    :alt="$t('whiteBeans')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.whiteBeans || 'White Beans' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}35</p>
+                    <h5 class="card-title">{{ $t('whiteBeans') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}35</p>
                   </div>
                 </div>
               </router-link>
@@ -571,11 +571,11 @@
                   <img
                     src="../../assets/cassava.jpeg"
                     class="card-img-top"
-                    :alt="t.cassava || 'Cassava'"
+                    :alt="$t('cassava')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.cassava || 'Cassava' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}40</p>
+                    <h5 class="card-title">{{ $t('cassava') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}40</p>
                   </div>
                 </div>
               </router-link>
@@ -591,11 +591,11 @@
                   <img
                     src="../../assets/mung-beans.jpg"
                     class="card-img-top"
-                    :alt="t.mungBeans || 'Mung Beans'"
+                    :alt="$t('mungBeans')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.mungBeans || 'Mung Beans' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}45</p>
+                    <h5 class="card-title">{{ $t('mungBeans') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}45</p>
                   </div>
                 </div>
               </router-link>
@@ -611,11 +611,11 @@
                   <img
                     src="../../assets/red-kidney-beans.jpg"
                     class="card-img-top"
-                    :alt="t.redKidneyBeans || 'Red Kidney Beans'"
+                    :alt="$t('redKidneyBeans')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.redKidneyBeans || 'Red Kidney Beans' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}50</p>
+                    <h5 class="card-title">{{ $t('redKidneyBeans') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}50</p>
                   </div>
                 </div>
               </router-link>
@@ -631,11 +631,11 @@
                   <img
                     src="../../assets/soursop-tea.jpg"
                     class="card-img-top"
-                    :alt="t.soursopTea || 'Soursop Tea with Ginger'"
+                    :alt="$t('soursopTea')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ t.soursopTea || 'Soursop Tea with Ginger' }}</h5>
-                    <p class="card-text">{{ t.currency || 'Rs' }}55</p>
+                    <h5 class="card-title">{{ $t('soursopTea') }}</h5>
+                    <p class="card-text">{{ $t('currency') }}55</p>
                   </div>
                 </div>
               </router-link>
@@ -645,15 +645,15 @@
       </div>
     </section>
   </div>
-  <ChatBot :t="t" />
+  <ChatBot />
   <Footer />
 </template>
 
 <script>
+import { useI18n } from 'vue-i18n';
 import Footer from "../../components/MarketFooter.vue";
 import Categories from "../../components/Categories.vue";
 import LanguageDropdown from "../../components/LanguageDropdown.vue";
-import { translations } from "../../translations";
 import ChatBot from "../../components/ChatBot.vue";
 
 export default {
@@ -663,6 +663,10 @@ export default {
     Categories,
     LanguageDropdown,
     ChatBot
+  },
+  setup() {
+    const { t } = useI18n();
+    return { t };
   },
   data() {
     return {
@@ -676,11 +680,7 @@ export default {
       // Cart and wishlist properties  
       cartItemCount: 0,
       wishlistItemCount: 0,
-      cartItems: [],
-      
-      // Language properties
-      currentLanguage: 'en',
-      t: translations.en
+      cartItems: []
     };
   },
   methods: {
@@ -717,29 +717,11 @@ export default {
     },
     goToWishlist() {
       this.$router.push("/wishlist");
-    },
-    
-    // Language methods
-    handleLanguageChange(langCode) {
-      if (translations[langCode]) {
-        this.currentLanguage = langCode;
-        this.t = translations[langCode];
-        // Save to localStorage for persistence
-        localStorage.setItem('preferredLanguage', langCode);
-      }
     }
   },
   computed: {
     cartItemCount() {
       return this.cartItems.reduce((total, item) => total + item.quantity, 0);
-    }
-  },
-  mounted() {
-    // Load saved language preference if available
-    const savedLang = localStorage.getItem('preferredLanguage');
-    if (savedLang && translations[savedLang]) {
-      this.currentLanguage = savedLang;
-      this.t = translations[savedLang];
     }
   }
 };
