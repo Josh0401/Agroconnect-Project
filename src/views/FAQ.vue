@@ -2,13 +2,10 @@
   <section class="faq-section">
     <div class="container">
       <h1 class="faq-title">Frequently Asked Questions</h1>
-      <div class="faq-grid">
-        <FaqCard
-          v-for="(item, index) in faqItems"
-          :key="index"
-          :title="item.title"
-          :description="item.description"
-        />
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="col" v-for="(item, index) in faqItems" :key="index">
+          <FaqCard :title="item.title" :description="item.description" />
+        </div>
       </div>
     </div>
   </section>
@@ -73,11 +70,5 @@ export default {
   font-size: 2.5rem;
   margin-bottom: 2rem;
   font-weight: bold;
-}
-
-.faq-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
 }
 </style>
