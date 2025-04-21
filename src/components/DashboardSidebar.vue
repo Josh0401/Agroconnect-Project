@@ -78,7 +78,7 @@ export default {
         name: "Loading...",
         profileImage: null,
       },
-      defaultAvatar: "../../src/assets/tiny-profile.png", // Default avatar path
+      defaultAvatar: "https://i.imgur.com/aq39RMA.jpg", // Default avatar path
       isLoading: true,
     };
   },

@@ -41,7 +41,7 @@
               <input
                 id="searchInput"
                 type="text"
-                placeholder="Search"
+                :placeholder="$t('search')"
                 @keydown.enter="handleSearch"
                 v-model="searchQuery"
                 class="d-none d-lg-block form-control me-2"
@@ -51,11 +51,14 @@
                 @click="handleSearch"
                 class="d-none d-lg-block btn btn-outline-secondary"
               >
-                Search
+                {{ $t("search") }}
               </button>
             </div>
           </ul>
           <div class="d-flex align-items-center py-1">
+            <!-- Language Selector Dropdown - New Component -->
+            <LanguageDropdown class="me-3" />
+
             <!-- Wishlist Icon -->
             <button class="btn position-relative me-3" @click="goToWishlist">
               <svg
@@ -138,34 +141,36 @@
                 aria-labelledby="accountDropdown"
               >
                 <li>
-                  <router-link class="dropdown-item" to="/account/profile"
-                    >Profile</router-link
-                  >
+                  <router-link class="dropdown-item" to="/account/profile">
+                    {{ $t("profile") }}
+                  </router-link>
                 </li>
                 <li>
-                  <router-link class="dropdown-item" to="/account/orders"
-                    >Orders</router-link
-                  >
+                  <router-link class="dropdown-item" to="/account/orders">
+                    {{ $t("orders") }}
+                  </router-link>
                 </li>
                 <li>
-                  <router-link class="dropdown-item" to="/account/transactions"
-                    >Transactions</router-link
-                  >
+                  <router-link class="dropdown-item" to="/account/transactions">
+                    {{ $t("transactions") }}
+                  </router-link>
                 </li>
                 <li>
                   <router-link
                     class="dropdown-item"
                     to="/account/groups-communities"
-                    >Groups</router-link
                   >
+                    {{ $t("groupsCommunities", "Groups") }}
+                  </router-link>
                 </li>
                 <li>
                   <a
                     class="dropdown-item"
                     href="/login"
                     @click.prevent="logout()"
-                    >Logout</a
                   >
+                    {{ $t("logout") }}
+                  </a>
                 </li>
               </ul>
             </div>
@@ -675,6 +680,12 @@ export default {
       // Other UI state
       searchQuery: "",
       cartItems: [],
+
+      cartItemCount: 0,
+      wishlistItemCount: 0,
+
+      dropdownOpen: false,
+      dropdownTimeout: null,
     };
   },
 
@@ -700,6 +711,39 @@ export default {
   },
 
   methods: {
+    openDropdown() {
+      if (this.dropdownTimeout) {
+        clearTimeout(this.dropdownTimeout);
+        this.dropdownTimeout = null;
+      }
+      this.dropdownOpen = true;
+    },
+    closeDropdown() {
+      this.dropdownTimeout = setTimeout(() => {
+        this.dropdownOpen = false;
+      }, 300);
+    },
+    // Navigation methods
+    logout() {
+      console.log("Logging out...");
+      this.$router.push("/login");
+    },
+    handleSearch() {
+      const query = this.searchQuery.trim();
+      if (query) {
+        this.$router.push({
+          name: "SearchResults",
+          query: { q: query },
+        });
+      }
+    },
+    goToCart() {
+      this.$router.push("/cart");
+    },
+    goToWishlist() {
+      this.$router.push("/wishlist");
+    },
+
     async fetchProfileData() {
       this.isLoading = true;
       try {
@@ -932,6 +976,20 @@ export default {
 
 <style scoped>
 /* Common styles */
+
+.nav-item.dropdown:hover .dropdown-menu {
+  display: block;
+  margin-top: 0;
+}
+.navbar-nav .nav-link {
+  color: #333;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  color: black;
+}
 body {
   font-family: "Inter", sans-serif;
 }
@@ -964,7 +1022,9 @@ body {
 .navbar {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
+.green {
+  background-color: rgb(25, 135, 84);
+}
 .search-container {
   display: inline-flex;
   align-items: center;

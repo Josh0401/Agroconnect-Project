@@ -50,7 +50,7 @@
               @click="handleSearch"
               class="d-none d-lg-block btn btn-outline-secondary"
             >
-              {{ $t('search') }}
+              {{ $t("search") }}
             </button>
           </div>
         </ul>
@@ -141,27 +141,34 @@
             >
               <li>
                 <router-link class="dropdown-item" to="/account/profile">
-                  {{ $t('profile') }}
+                  {{ $t("profile") }}
                 </router-link>
               </li>
               <li>
                 <router-link class="dropdown-item" to="/account/orders">
-                  {{ $t('orders') }}
+                  {{ $t("orders") }}
                 </router-link>
               </li>
               <li>
                 <router-link class="dropdown-item" to="/account/transactions">
-                  {{ $t('transactions') }}
+                  {{ $t("transactions") }}
                 </router-link>
               </li>
               <li>
-                <router-link class="dropdown-item" to="/account/groups-communities">
-                  {{ $t('groupsCommunities', 'Groups') }}
+                <router-link
+                  class="dropdown-item"
+                  to="/account/groups-communities"
+                >
+                  {{ $t("groupsCommunities", "Groups") }}
                 </router-link>
               </li>
               <li>
-                <a class="dropdown-item" href="/login" @click.prevent="logout()">
-                  {{ $t('logout') }}
+                <a
+                  class="dropdown-item"
+                  href="/login"
+                  @click.prevent="logout()"
+                >
+                  {{ $t("logout") }}
                 </a>
               </li>
             </ul>
@@ -207,18 +214,18 @@
       </div>
     </div>
   </section>
-  
+
   <!-- Categories Section -->
   <Categories />
-  
+
   <!-- Products Section with Clickable Cards -->
   <div class="products">
     <section class="newproduct">
       <div class="container">
         <div class="categories-header">
-          <p class="h1">{{ $t('products') }}</p>
+          <p class="h1">{{ $t("products") }}</p>
           <router-link to="/allproduct" class="view-all">
-            {{ $t('viewAll') }} <span class="arrow">&rarr;</span>
+            {{ $t("viewAll") }} <span class="arrow">&rarr;</span>
           </router-link>
         </div>
         <div class="container my-5">
@@ -238,8 +245,10 @@
                     :alt="$t('hybridCoconutSeedlings')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('hybridCoconutSeedlings') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}10</p>
+                    <h5 class="card-title">
+                      {{ $t("hybridCoconutSeedlings") }}
+                    </h5>
+                    <p class="card-text">{{ $t("currency") }}10</p>
                   </div>
                 </div>
               </router-link>
@@ -258,8 +267,10 @@
                     :alt="$t('hybridTeneraOilPalmSeedlings')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('hybridTeneraOilPalmSeedlings') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}15</p>
+                    <h5 class="card-title">
+                      {{ $t("hybridTeneraOilPalmSeedlings") }}
+                    </h5>
+                    <p class="card-text">{{ $t("currency") }}15</p>
                   </div>
                 </div>
               </router-link>
@@ -278,8 +289,10 @@
                     :alt="$t('teneraOilPalmSproutedSeeds')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('teneraOilPalmSproutedSeeds') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}20</p>
+                    <h5 class="card-title">
+                      {{ $t("teneraOilPalmSproutedSeeds") }}
+                    </h5>
+                    <p class="card-text">{{ $t("currency") }}20</p>
                   </div>
                 </div>
               </router-link>
@@ -298,8 +311,8 @@
                     :alt="$t('blackEyedPeaCowpea')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('blackEyedPeaCowpea') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}25</p>
+                    <h5 class="card-title">{{ $t("blackEyedPeaCowpea") }}</h5>
+                    <p class="card-text">{{ $t("currency") }}25</p>
                   </div>
                 </div>
               </router-link>
@@ -318,8 +331,8 @@
                     :alt="$t('whiteMaize')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('whiteMaize') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}30</p>
+                    <h5 class="card-title">{{ $t("whiteMaize") }}</h5>
+                    <p class="card-text">{{ $t("currency") }}30</p>
                   </div>
                 </div>
               </router-link>
@@ -338,8 +351,8 @@
                     :alt="$t('whiteBeans')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('whiteBeans') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}35</p>
+                    <h5 class="card-title">{{ $t("whiteBeans") }}</h5>
+                    <p class="card-text">{{ $t("currency") }}35</p>
                   </div>
                 </div>
               </router-link>
@@ -358,8 +371,8 @@
                     :alt="$t('cassava')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('cassava') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}40</p>
+                    <h5 class="card-title">{{ $t("cassava") }}</h5>
+                    <p class="card-text">{{ $t("currency") }}40</p>
                   </div>
                 </div>
               </router-link>
@@ -378,8 +391,8 @@
                     :alt="$t('mungBeans')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('mungBeans') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}45</p>
+                    <h5 class="card-title">{{ $t("mungBeans") }}</h5>
+                    <p class="card-text">{{ $t("currency") }}45</p>
                   </div>
                 </div>
               </router-link>
@@ -398,8 +411,8 @@
                     :alt="$t('redKidneyBeans')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('redKidneyBeans') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}50</p>
+                    <h5 class="card-title">{{ $t("redKidneyBeans") }}</h5>
+                    <p class="card-text">{{ $t("currency") }}50</p>
                   </div>
                 </div>
               </router-link>
@@ -418,8 +431,8 @@
                     :alt="$t('soursopTea')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('soursopTea') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}55</p>
+                    <h5 class="card-title">{{ $t("soursopTea") }}</h5>
+                    <p class="card-text">{{ $t("currency") }}55</p>
                   </div>
                 </div>
               </router-link>
@@ -435,7 +448,7 @@
     <section class="newproduct">
       <div class="container">
         <div class="categories-header">
-          <p class="h1">{{ $t('newProducts') }}</p>
+          <p class="h1">{{ $t("newProducts") }}</p>
         </div>
         <div class="container my-5">
           <div
@@ -454,8 +467,10 @@
                     :alt="$t('hybridCoconutSeedlings')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('hybridCoconutSeedlings') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}10</p>
+                    <h5 class="card-title">
+                      {{ $t("hybridCoconutSeedlings") }}
+                    </h5>
+                    <p class="card-text">{{ $t("currency") }}10</p>
                   </div>
                 </div>
               </router-link>
@@ -474,8 +489,10 @@
                     :alt="$t('hybridTeneraOilPalmSeedlings')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('hybridTeneraOilPalmSeedlings') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}15</p>
+                    <h5 class="card-title">
+                      {{ $t("hybridTeneraOilPalmSeedlings") }}
+                    </h5>
+                    <p class="card-text">{{ $t("currency") }}15</p>
                   </div>
                 </div>
               </router-link>
@@ -494,8 +511,10 @@
                     :alt="$t('teneraOilPalmSproutedSeeds')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('teneraOilPalmSproutedSeeds') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}20</p>
+                    <h5 class="card-title">
+                      {{ $t("teneraOilPalmSproutedSeeds") }}
+                    </h5>
+                    <p class="card-text">{{ $t("currency") }}20</p>
                   </div>
                 </div>
               </router-link>
@@ -514,8 +533,8 @@
                     :alt="$t('blackEyedPeaCowpea')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('blackEyedPeaCowpea') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}25</p>
+                    <h5 class="card-title">{{ $t("blackEyedPeaCowpea") }}</h5>
+                    <p class="card-text">{{ $t("currency") }}25</p>
                   </div>
                 </div>
               </router-link>
@@ -534,8 +553,8 @@
                     :alt="$t('whiteMaize')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('whiteMaize') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}30</p>
+                    <h5 class="card-title">{{ $t("whiteMaize") }}</h5>
+                    <p class="card-text">{{ $t("currency") }}30</p>
                   </div>
                 </div>
               </router-link>
@@ -554,8 +573,8 @@
                     :alt="$t('whiteBeans')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('whiteBeans') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}35</p>
+                    <h5 class="card-title">{{ $t("whiteBeans") }}</h5>
+                    <p class="card-text">{{ $t("currency") }}35</p>
                   </div>
                 </div>
               </router-link>
@@ -574,8 +593,8 @@
                     :alt="$t('cassava')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('cassava') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}40</p>
+                    <h5 class="card-title">{{ $t("cassava") }}</h5>
+                    <p class="card-text">{{ $t("currency") }}40</p>
                   </div>
                 </div>
               </router-link>
@@ -594,8 +613,8 @@
                     :alt="$t('mungBeans')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('mungBeans') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}45</p>
+                    <h5 class="card-title">{{ $t("mungBeans") }}</h5>
+                    <p class="card-text">{{ $t("currency") }}45</p>
                   </div>
                 </div>
               </router-link>
@@ -614,8 +633,8 @@
                     :alt="$t('redKidneyBeans')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('redKidneyBeans') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}50</p>
+                    <h5 class="card-title">{{ $t("redKidneyBeans") }}</h5>
+                    <p class="card-text">{{ $t("currency") }}50</p>
                   </div>
                 </div>
               </router-link>
@@ -634,8 +653,8 @@
                     :alt="$t('soursopTea')"
                   />
                   <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t('soursopTea') }}</h5>
-                    <p class="card-text">{{ $t('currency') }}55</p>
+                    <h5 class="card-title">{{ $t("soursopTea") }}</h5>
+                    <p class="card-text">{{ $t("currency") }}55</p>
                   </div>
                 </div>
               </router-link>
@@ -650,7 +669,7 @@
 </template>
 
 <script>
-import { useI18n } from 'vue-i18n';
+import { useI18n } from "vue-i18n";
 import Footer from "../../components/MarketFooter.vue";
 import Categories from "../../components/Categories.vue";
 import LanguageDropdown from "../../components/LanguageDropdown.vue";
@@ -662,7 +681,7 @@ export default {
     Footer,
     Categories,
     LanguageDropdown,
-    ChatBot
+    ChatBot,
   },
   setup() {
     const { t } = useI18n();
@@ -673,14 +692,14 @@ export default {
       // Account dropdown properties
       dropdownOpen: false,
       dropdownTimeout: null,
-      
+
       // Search properties
       searchQuery: "",
-      
-      // Cart and wishlist properties  
+
+      // Cart and wishlist properties
       cartItemCount: 0,
       wishlistItemCount: 0,
-      cartItems: []
+      cartItems: [],
     };
   },
   methods: {
@@ -697,7 +716,7 @@ export default {
         this.dropdownOpen = false;
       }, 300);
     },
-    
+
     // Navigation methods
     logout() {
       console.log("Logging out...");
@@ -717,156 +736,154 @@ export default {
     },
     goToWishlist() {
       this.$router.push("/wishlist");
-    }
+    },
   },
   computed: {
     cartItemCount() {
       return this.cartItems.reduce((total, item) => total + item.quantity, 0);
-    }
-  }
+    },
+  },
 };
 </script>
 
 <style scoped>
-  .nav-item.dropdown:hover .dropdown-menu {
-    display: block;
-    margin-top: 0;
-  }
-  .card-img-top {
-    object-fit: cover;
-    height: 200px;
-  }
-  .card {
-    border: none;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .navbar-nav .nav-link {
-    color: #333;
-    font-weight: 500;
-    transition: color 0.3s ease;
-  }
-  .navbar-nav .nav-link:hover,
-  .navbar-nav .nav-link.active {
-    color: black;
-  }
-  a {
-    text-decoration: none;
-  }
-  body {
-    width: 200% !important;
-  }
-  .green {
-    background-color: rgb(25, 135, 84);
-  }
-  
-  /* CSS */
-  .search-container {
-    display: inline-flex;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 9999px; /* makes it fully rounded */
-    overflow: hidden; /* ensures children respect the rounded border */
-    background-color: #fff;
-    max-width: 400px; /* optional: control the max width */
-    flex-wrap: wrap;
-  }
-  .account-dropdown .dropdown-menu {
-    margin-top: 0.5rem;
-  }
-  /* Search icon styling */
-  .search-icon {
-    width: 16px;
-    height: 16px;
-    margin-left: 12px;
-    margin-right: 8px; /* optional spacing between icon & input */
-    color: #aaa;
-  }
-  
-  /* Search input styling */
-  .search-container input {
-    flex: 1; /* expands to fill remaining space */
-    border: none; /* remove default border */
-    outline: none; /* remove focus outline */
-    padding: 8px 0; /* vertical padding; no horizontal since .search-container has it */
-    color: #555;
-    font-size: 14px;
-  }
-  
-  /* Search button styling */
+.nav-item.dropdown:hover .dropdown-menu {
+  display: block;
+  margin-top: 0;
+}
+.card-img-top {
+  object-fit: cover;
+  height: 200px;
+}
+.card {
+  border: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-nav .nav-link {
+  color: #333;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  color: black;
+}
+a {
+  text-decoration: none;
+}
+body {
+  width: 200% !important;
+}
+.green {
+  background-color: rgb(25, 135, 84);
+}
+
+.search-container {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 9999px; /* makes it fully rounded */
+  overflow: hidden; /* ensures children respect the rounded border */
+  background-color: #fff;
+  max-width: 400px; /* optional: control the max width */
+  flex-wrap: wrap;
+}
+.account-dropdown .dropdown-menu {
+  margin-top: 0.5rem;
+}
+/* Search icon styling */
+.search-icon {
+  width: 16px;
+  height: 16px;
+  margin-left: 12px;
+  margin-right: 8px; /* optional spacing between icon & input */
+  color: #aaa;
+}
+
+/* Search input styling */
+.search-container input {
+  flex: 1; /* expands to fill remaining space */
+  border: none; /* remove default border */
+  outline: none; /* remove focus outline */
+  padding: 8px 0; /* vertical padding; no horizontal since .search-container has it */
+  color: #555;
+  font-size: 14px;
+}
+
+/* Search button styling */
+.search-container button {
+  background-color: rgb(25, 135, 84); /* green */
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* Hover state for the button */
+.search-container button:hover {
+  background-color: #007f68;
+  color: #fff;
+}
+.card {
+  border: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.btn:hover {
+  /* background-color: #fff; */
+  color: #198754;
+}
+.categories-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* pushes "View All →" to the right */
+  margin-bottom: 1rem; /* optional spacing */
+}
+
+.categories-header h2 {
+  margin: 0;
+  font-size: 1.25rem; /* adjust as needed */
+}
+
+.view-all {
+  color: #009879; /* green color */
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.view-all:hover {
+  color: #007f68; /* darker green on hover */
+}
+
+.arrow {
+  margin-left: 4px; /* small spacing before arrow */
+}
+.card {
+  position: relative;
+  overflow: hidden; /* ensures the zoomed image doesn't exceed the card bounds */
+  transition: transform 0.3s ease;
+}
+
+.card-img-top {
+  transition: transform 0.3s ease;
+}
+
+.card:hover .card-img-top {
+  transform: scale(1.05); /* zoom in the image */
+}
+
+.card:hover .card-title {
+  color: rgb(25, 135, 84); /* change text color on hover */
+}
+.card:hover {
+  cursor: pointer;
+}
+@media (max-width: 992px) {
+  .search-container input,
   .search-container button {
-    background-color: rgb(25, 135, 84); /* green */
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-size: 14px;
+    display: none !important;
   }
-  
-  /* Hover state for the button */
-  .search-container button:hover {
-    background-color: #007f68;
-    color: #fff;
-  }
-  .card {
-    border: none;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  .btn:hover {
-    /* background-color: #fff; */
-    color: #198754;
-  }
-  .categories-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* pushes "View All →" to the right */
-    margin-bottom: 1rem; /* optional spacing */
-  }
-  
-  .categories-header h2 {
-    margin: 0;
-    font-size: 1.25rem; /* adjust as needed */
-  }
-  
-  .view-all {
-    color: #009879; /* green color */
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s ease;
-  }
-  
-  .view-all:hover {
-    color: #007f68; /* darker green on hover */
-  }
-  
-  .arrow {
-    margin-left: 4px; /* small spacing before arrow */
-  }
-  .card {
-    position: relative;
-    overflow: hidden; /* ensures the zoomed image doesn't exceed the card bounds */
-    transition: transform 0.3s ease;
-  }
-  
-  .card-img-top {
-    transition: transform 0.3s ease;
-  }
-  
-  .card:hover .card-img-top {
-    transform: scale(1.05); /* zoom in the image */
-  }
-  
-  .card:hover .card-title {
-    color: rgb(25, 135, 84); /* change text color on hover */
-  }
-  .card:hover {
-    cursor: pointer;
-  }
-  @media (max-width: 992px) {
-    .search-container input,
-    .search-container button {
-      display: none !important;
-    }
-  }
-  </style>
-  
+}
+</style>
