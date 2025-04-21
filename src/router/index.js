@@ -6,6 +6,7 @@ import Login from "../views/auth/Login.vue";
 import ResetPassword from "../views/auth/ResetPassword.vue";
 import SignUp from "../views/SignUp.vue";
 import FAQ from "../views/FAQ.vue";
+import FaqDetail from "../views/FaqDetail.vue"; // Import the new FaqDetail component
 import CreateAccountSeller from "../views/individual_account/CreateAccountSeller.vue";
 import CreateAccountSeller2 from "../views/individual_account/CreateAccountSeller2.vue";
 import CreateAccountSeller3 from "../views/individual_account/CreateAccountSeller3.vue";
@@ -85,7 +86,13 @@ const routes = [
     path: "/faq",
     component: FAQ,
   },
-
+  // Add the new route for FAQ detail page
+  {
+    path: "/faq-detail/:id",
+    name: "FaqDetail",
+    component: FaqDetail,
+    props: true,
+  },
   {
     path: "/create-account-seller",
     component: CreateAccountSeller,
