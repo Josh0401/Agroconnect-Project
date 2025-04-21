@@ -34,7 +34,7 @@
               id="businessName"
               v-model="profile.businessName"
               class="form-control"
-              placeholder="Sellermart"
+              placeholder="Enter Business Name"
             />
           </div>
           <div class="col-md-6">
@@ -46,7 +46,7 @@
               id="productSold"
               v-model="profile.productSold"
               class="form-control"
-              placeholder="Rice"
+              placeholder="Enter Product Type"
             />
           </div>
         </div>
@@ -62,7 +62,7 @@
               id="regNumber"
               v-model="profile.regNumber"
               class="form-control"
-              placeholder="3546482-LLC"
+              placeholder="Enter Registration Number"
             />
           </div>
           <div class="col-md-6">
@@ -74,7 +74,7 @@
               id="email"
               v-model="profile.email"
               class="form-control"
-              placeholder="AgroConnect@gmail.com"
+              placeholder="Enter Business Email"
             />
           </div>
         </div>
@@ -86,13 +86,13 @@
               >Business Phone Number</label
             >
             <div class="input-group">
-              <span class="input-group-text" id="basic-addon1">+230</span>
+              <span class="input-group-text" id="basic-addon1">+</span>
               <input
                 type="tel"
                 id="phoneNumber"
                 v-model="profile.phoneNumber"
                 class="form-control"
-                placeholder="123 4567"
+                placeholder="Enter Phone Number"
               />
             </div>
           </div>
@@ -103,7 +103,7 @@
               id="country"
               v-model="profile.country"
               class="form-control"
-              placeholder="Mauritius"
+              placeholder="Enter Country"
             />
           </div>
         </div>
@@ -117,17 +117,17 @@
               id="address"
               v-model="profile.address"
               class="form-control"
-              placeholder="15, Aketiba Street"
+              placeholder="Enter Business Address"
             />
           </div>
           <div class="col-md-6 mb-3 mb-md-0">
-            <label for="state" class="form-label fw-semibold">State</label>
+            <label for="state" class="form-label fw-semibold">State/City</label>
             <input
               type="text"
               id="state"
               v-model="profile.state"
               class="form-control"
-              placeholder="Port Louis"
+              placeholder="Enter State or City"
             />
           </div>
         </div>
@@ -164,42 +164,97 @@ export default {
         state: "",
         zipCode: "",
       },
+      originalUserData: null, // Add this to store the original user data
       loading: true,
       error: null,
     };
   },
   async created() {
+    console.log("ProfileSettings created hook running");
+    const token = localStorage.getItem("authToken");
+    console.log("Token exists:", !!token);
+
+    const accountType = localStorage.getItem("account_type");
+    console.log("Account type from localStorage:", accountType);
+
+    if (!token) {
+      console.log("No token found, showing error and redirecting");
+      this.error = "Please log in to view your profile";
+      this.loading = false;
+
+      // Redirect to login page after a short delay
+      setTimeout(() => {
+        this.$router.push("/login");
+      }, 2000);
+
+      return;
+    }
+
+    if (accountType !== "seller") {
+      console.log("Not a seller account, redirecting");
+      this.error = "This page is only available for seller accounts";
+      this.loading = false;
+
+      setTimeout(() => {
+        this.$router.push("/dashboard");
+      }, 2000);
+
+      return;
+    }
+
+    console.log("Token found, attempting to fetch profile data");
     await this.fetchProfileData();
   },
   methods: {
-    // In Profile(seller).vue fetchProfileData method
     async fetchProfileData() {
+      console.log("fetchProfileData method called");
       try {
         this.loading = true;
         const authStore = useAuthStore();
 
         try {
+          console.log("Calling fetchSellerProfile");
           const response = await authStore.fetchSellerProfile();
+          console.log("Profile data received:", response);
 
+          // Get user data from the response
+          const userData = response.user || {};
+          console.log("User data:", userData);
+
+          // Map user data to profile fields as a fallback
+          // Since business-specific fields aren't available, use the user's personal info
           this.profile = {
-            businessName: response.business_name || "",
-            // ... rest of your mapping
+            // Try to use business fields first, fall back to user fields
+            businessName:
+              userData.business_name ||
+              userData.first_name + " " + userData.last_name ||
+              "",
+            productSold: userData.product_name || "Not specified",
+            regNumber: userData.business_reg_no || "Not specified",
+            email: userData.business_email || userData.email || "",
+            phoneNumber: userData.business_phone_no || userData.phone_no || "",
+            country: userData.business_country || userData.country || "",
+            address: userData.business_address || userData.address || "",
+            state: userData.business_city || userData.city || "",
+            zipCode: userData.zip_code || userData.zip_code || "",
           };
+
+          console.log("Profile data mapped:", this.profile);
+
+          // Store the original user data for later comparison
+          this.originalUserData = { ...userData };
         } catch (error) {
+          console.error("Error in fetchSellerProfile:", error);
           if (error.isAuthError) {
+            console.log("Auth error detected:", error.message);
             this.error = error.message;
-
-            // Optional: Redirect to login
-            // setTimeout(() => {
-            //   this.$router.push("/login"); // Adjust path as needed
-            // }, 2000);
-
             return;
           }
           throw error; // Re-throw if it's not an auth error
         }
 
         this.loading = false;
+        console.log("Profile data loaded successfully");
       } catch (error) {
         console.error("Error fetching profile data:", error);
         this.error = "Failed to load profile data. Please try again later.";
@@ -207,52 +262,59 @@ export default {
       }
     },
 
-    // In Profile(seller).vue saveChanges method
     async saveChanges() {
+      console.log("saveChanges method called");
       try {
-        const token = localStorage.getItem("authToken");
+        const authStore = useAuthStore();
 
-        if (!token) {
-          throw new Error(
-            "No authentication token found. Please log in again."
-          );
-        }
+        // Get the original user data for comparison
+        const userData = this.originalUserData || {};
 
+        // Prepare the data to be sent to the server, including both business and user fields
         const updatedData = {
-          // ... your data here
+          // Business fields
+          business_name: this.profile.businessName,
+          product_name: this.profile.productSold,
+          business_reg_no: this.profile.regNumber,
+          business_email: this.profile.email,
+          business_phone_no: this.profile.phoneNumber,
+          business_country: this.profile.country,
+          business_address: this.profile.address,
+          business_city: this.profile.state,
+          zip_code: this.profile.zipCode,
+
+          // Also include user fields that might be needed
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          email: userData.email,
+          phone_no: userData.phone_no,
+          address: this.profile.address, // Use the updated address
+          country: this.profile.country, // Use the updated country
+          city: this.profile.state, // Use the updated state/city
         };
 
-        await axios.put(
-          "https://agroconnect.shop/api/update-seller-profile",
-          updatedData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
+        console.log("Sending update with data:", updatedData);
+        await authStore.updateSellerProfile(updatedData);
+        console.log("Profile updated successfully");
         alert("Profile updated successfully!");
+
+        // Refresh the data to reflect changes
+        await this.fetchProfileData();
       } catch (error) {
         console.error("Error saving profile changes:", error);
+
+        if (error.isAuthError) {
+          this.error = error.message;
+
+          setTimeout(() => {
+            this.$router.push("/login");
+          }, 2000);
+
+          return;
+        }
+
         alert("An error occurred while saving. Please try again.");
       }
-    },
-    async created() {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        this.error = "Please log in to view your profile";
-        this.loading = false;
-
-        // Optional: Redirect to login page after a short delay
-        setTimeout(() => {
-          this.$router.push("/login"); // Adjust the path as needed
-        }, 2000);
-
-        return;
-      }
-
-      await this.fetchProfileData();
     },
   },
 };

@@ -1,90 +1,5 @@
 <template>
   <div class="profile-page">
-    <!-- Navbar component - reusing the one we established -->
-    <!-- <nav class="navbar navbar-expand-lg sticky-top bg-white shadow-sm py-3">
-      <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="/market">
-          <img
-            src="../../assets/Agroconnect.png"
-            alt="AgroEase Logo"
-            height="40"
-            class="me-2"
-          />
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav mx-auto">
-         
-            <div class="search-container d-flex align-items-center">
-         
-              <svg
-                class="search-icon me-2"
-                fill="currentColor"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85.708-.708-3.85-3.85zm-5.242.656
-                     a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"
-                />
-              </svg>
-         
-              <input
-                id="searchInput"
-                type="text"
-                placeholder="Search"
-                @keydown.enter="handleSearch"
-                v-model="searchQuery"
-                class="d-none d-lg-block form-control me-2"
-              />
-              <button
-                type="button"
-                @click="handleSearch"
-                class="d-none d-lg-block btn btn-outline-secondary"
-              >
-                Search
-              </button>
-            </div>
-          </ul>
-          <div class="d-flex align-items-center py-1">
-         
-            <span class="me-2">Account</span>
-            <button class="btn dropdown-toggle" type="button">
-              <i class="bi bi-chevron-down"></i>
-            </button>
-
-         
-            <button class="btn ms-3">
-              <i class="bi bi-heart"></i>
-            </button>
-
-         
-            <div class="position-relative ms-3">
-              <button class="btn position-relative">
-                <i class="bi bi-cart3"></i>
-                <span
-                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success"
-                >
-                  2
-                </span>
-              </button>
-              <span class="ms-2">Rs 5,000</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </nav> -->
-
     <nav class="navbar navbar-expand-lg sticky-top bg-white shadow-sm py-3">
       <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="/market">
@@ -238,7 +153,9 @@
                   >
                 </li>
                 <li>
-                  <router-link class="dropdown-item" to="/account/groups-communities"
+                  <router-link
+                    class="dropdown-item"
+                    to="/account/groups-communities"
                     >Groups</router-link
                   >
                 </li>
@@ -265,12 +182,23 @@
         style="border-radius: 0"
       />
       <!-- Added breadcrumb navigation with home icon on the banner -->
-      <div class="breadcrumb-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center">
+      <div
+        class="breadcrumb-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center"
+      >
         <div class="container">
           <div class="d-flex align-items-center">
             <router-link to="/market" class="text-white me-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
-                <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146Z"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                fill="currentColor"
+                class="bi bi-house-door"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146Z"
+                />
               </svg>
             </router-link>
             <span class="text-white mx-2">&gt;</span>
@@ -279,358 +207,407 @@
         </div>
       </div>
     </div>
-    <!-- Banner with breadcrumb -->
 
-    <!-- <div class="banner bg-dark text-white py-4" style="background-image: url('../../assets/profile-banner.jpg'); background-size: cover; background-position: center;">
-      <div class="container">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item">
-              <router-link to="/market" class="text-white">
-                <i class="bi bi-house-door"></i>
-              </router-link>
-            </li>
-            <li class="breadcrumb-item">
-              <router-link to="/account/profile" class="text-white">Profile</router-link>
-            </li>
-          </ol>
-        </nav>
-      </div>
-    </div> -->
+    <div>
+      <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h1 class="profile-title mb-0">Profile</h1>
+        </div>
 
-    <!-- Main content -->
-    <div class="container my-5">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="profile-title mb-0">Profile</h1>
-      </div>
+        <!-- Loading indicator while data is being fetched -->
+        <div v-if="isLoading" class="text-center my-5">
+          <div class="spinner-border text-success" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Loading your profile information...</p>
+        </div>
 
-      <!-- Account Settings Section -->
-      <div class="card mb-5 border rounded">
-        <div class="card-body p-4">
-          <h2 class="card-title mb-4">Account Settings</h2>
+        <div v-else>
+          <!-- Account Settings Section -->
+          <div class="card mb-5 border rounded">
+            <div class="card-body p-4">
+              <h2 class="card-title mb-4">Account Settings</h2>
 
-          <div class="row">
-            <div class="col-md-8">
-              <form @submit.prevent="saveAccountSettings">
-                <div class="mb-3">
-                  <label for="firstName" class="form-label">First name</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="firstName"
-                    v-model="user.firstName"
-                    placeholder="Joshua"
-                  />
+              <div class="row">
+                <div class="col-md-8">
+                  <form @submit.prevent="saveAccountSettings">
+                    <div class="mb-3">
+                      <label for="firstName" class="form-label"
+                        >First name</label
+                      >
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="firstName"
+                        v-model="user.firstName"
+                        placeholder="First Name"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="lastName" class="form-label">Last Name</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="lastName"
+                        v-model="user.lastName"
+                        placeholder="Last Name"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="email" class="form-label">Email</label>
+                      <input
+                        type="email"
+                        class="form-control"
+                        id="email"
+                        v-model="user.email"
+                        placeholder="Email"
+                        :disabled="true"
+                      />
+                    </div>
+
+                    <div class="mb-3">
+                      <label for="phoneNumber" class="form-label"
+                        >Phone Number</label
+                      >
+                      <input
+                        type="tel"
+                        class="form-control"
+                        id="phoneNumber"
+                        v-model="user.phoneNumber"
+                        placeholder="Phone Number"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      class="btn btn-success px-4 mt-2"
+                      :disabled="isSubmitting"
+                    >
+                      {{ isSubmitting ? "Saving..." : "Save Changes" }}
+                    </button>
+                    <div
+                      v-if="updateMessage"
+                      class="alert mt-3"
+                      :class="updateStatus ? 'alert-success' : 'alert-danger'"
+                    >
+                      {{ updateMessage }}
+                    </div>
+                  </form>
                 </div>
 
-                <div class="mb-3">
-                  <label for="lastName" class="form-label">Last Name</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="lastName"
-                    v-model="user.lastName"
-                    placeholder="Joseph"
-                  />
+                <div class="col-md-4 text-center">
+                  <div class="profile-image-container">
+                    <img
+                      :src="profileImageUrl"
+                      alt="Profile Image"
+                      class="rounded-circle profile-image img-fluid"
+                    />
+
+                    <div class="mt-3">
+                      <button
+                        @click="chooseImage"
+                        class="btn btn-outline-success rounded-pill px-3"
+                      >
+                        Choose Image
+                      </button>
+                      <input
+                        type="file"
+                        ref="fileInput"
+                        class="d-none"
+                        accept="image/*"
+                        @change="handleImageUpload"
+                      />
+                    </div>
+                    <button
+                      @click="deleteImage"
+                      class="btn btn-link text-muted small mt-2"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
-
-                <div class="mb-3">
-                  <label for="email" class="form-label">Email</label>
-                  <input
-                    type="email"
-                    class="form-control"
-                    id="email"
-                    v-model="user.email"
-                    placeholder="JoshuaJoseph@gmail.com"
-                  />
-                </div>
-
-                <div class="mb-3">
-                  <label for="phoneNumber" class="form-label"
-                    >Phone Number</label
-                  >
-                  <input
-                    type="tel"
-                    class="form-control"
-                    id="phoneNumber"
-                    v-model="user.phoneNumber"
-                    placeholder="+234 804 5555 7789"
-                  />
-                </div>
-
-                <button type="submit" class="btn btn-success px-4 mt-2">
-                  Save Changes
-                </button>
-              </form>
-            </div>
-
-            <div class="col-md-4 text-center">
-              <div class="profile-image-container">
-                <img
-                  :src="user.profileImage"
-                  alt="Profile Image"
-                  class="rounded-circle profile-image img-fluid"
-                />
-
-                <div class="mt-3">
-                  <button
-                    @click="chooseImage"
-                    class="btn btn-outline-success rounded-pill px-3"
-                  >
-                    Choose Image
-                  </button>
-                  <input
-                    type="file"
-                    ref="fileInput"
-                    class="d-none"
-                    accept="image/*"
-                    @change="handleImageUpload"
-                  />
-                </div>
-                <button
-                  @click="deleteImage"
-                  class="btn btn-link text-muted small mt-2"
-                >
-                  Delete
-                </button>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- Billing Address Section -->
-      <div class="card mb-5 border rounded">
-        <div class="card-body p-4">
-          <h2 class="card-title mb-4">Billing Address</h2>
+          <!-- Billing Address Section -->
+          <div class="card mb-5 border rounded">
+            <div class="card-body p-4">
+              <h2 class="card-title mb-4">Billing Address</h2>
 
-          <form @submit.prevent="saveBillingAddress">
-            <div class="row">
-              <div class="col-md-4 mb-3">
-                <label for="billingFirstName" class="form-label"
-                  >First name</label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="billingFirstName"
-                  v-model="billing.firstName"
-                  placeholder="Joshua"
-                />
-              </div>
+              <form @submit.prevent="saveBillingAddress">
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label for="billingFirstName" class="form-label"
+                      >First name</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="billingFirstName"
+                      v-model="billing.firstName"
+                      placeholder="First Name"
+                    />
+                  </div>
 
-              <div class="col-md-4 mb-3">
-                <label for="billingLastName" class="form-label"
-                  >Last name</label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="billingLastName"
-                  v-model="billing.lastName"
-                  placeholder="Joseph"
-                />
-              </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="billingLastName" class="form-label"
+                      >Last name</label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="billingLastName"
+                      v-model="billing.lastName"
+                      placeholder="Last Name"
+                    />
+                  </div>
 
-              <div class="col-md-4 mb-3">
-                <label for="companyName" class="form-label"
-                  >Company Name
-                  <span class="text-muted">(optional)</span></label
-                >
-                <input
-                  type="text"
-                  class="form-control"
-                  id="companyName"
-                  v-model="billing.companyName"
-                  placeholder="Zakisoft"
-                />
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <label for="streetAddress" class="form-label"
-                >Street Address</label
-              >
-              <input
-                type="text"
-                class="form-control"
-                id="streetAddress"
-                v-model="billing.streetAddress"
-                placeholder="6140 Pari"
-              />
-            </div>
-
-            <div class="row">
-              <div class="col-md-4 mb-3">
-                <label for="country" class="form-label">Country / Region</label>
-                <div class="position-relative">
-                  <select
-                    class="form-select"
-                    id="country"
-                    v-model="billing.country"
-                  >
-                    <option value="United States">United States</option>
-                    <option value="Nigeria">Nigeria</option>
-                    <option value="Canada">Canada</option>
-                    <option value="United Kingdom">United Kingdom</option>
-                  </select>
-                  <span
-                    class="position-absolute end-0 top-50 translate-middle-y pe-2"
-                  >
-                    <i class="bi bi-chevron-down"></i>
-                  </span>
+                  <div class="col-md-4 mb-3">
+                    <label for="companyName" class="form-label"
+                      >Company Name
+                      <span class="text-muted">(optional)</span></label
+                    >
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="companyName"
+                      v-model="billing.companyName"
+                      placeholder="Company Name"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              <div class="col-md-4 mb-3">
-                <label for="state" class="form-label">States</label>
-                <div class="position-relative">
-                  <select
-                    class="form-select"
-                    id="state"
-                    v-model="billing.state"
+                <div class="mb-3">
+                  <label for="streetAddress" class="form-label"
+                    >Street Address</label
                   >
-                    <option value="Washington DC">Washington DC</option>
-                    <option value="New York">New York</option>
-                    <option value="California">California</option>
-                    <option value="Texas">Texas</option>
-                  </select>
-                  <span
-                    class="position-absolute end-0 top-50 translate-middle-y pe-2"
-                  >
-                    <i class="bi bi-chevron-down"></i>
-                  </span>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="streetAddress"
+                    v-model="billing.streetAddress"
+                    placeholder="Street Address"
+                  />
                 </div>
-              </div>
 
-              <div class="col-md-4 mb-3">
-                <label for="zipCode" class="form-label">Zip Code</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="zipCode"
-                  v-model="billing.zipCode"
-                  placeholder="20033"
-                />
-              </div>
-            </div>
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label for="country" class="form-label"
+                      >Country / Region</label
+                    >
+                    <div class="position-relative">
+                      <select
+                        class="form-select"
+                        id="country"
+                        v-model="billing.country"
+                      >
+                        <option value="United States">Mauritius</option>
+                        <option value="Nigeria">Nigeria</option>
+                      </select>
+                      <span
+                        class="position-absolute end-0 top-50 translate-middle-y pe-2"
+                      >
+                        <i class="bi bi-chevron-down"></i>
+                      </span>
+                    </div>
+                  </div>
 
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="billingEmail" class="form-label">Email</label>
-                <input
-                  type="email"
-                  class="form-control"
-                  id="billingEmail"
-                  v-model="billing.email"
-                  placeholder="JoshuaJoseph@gmail.com"
-                />
-              </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="state" class="form-label">States</label>
+                    <div class="position-relative">
+                      <select
+                        class="form-select"
+                        id="state"
+                        v-model="billing.state"
+                      >
+                        <option value="Lagos">Lagos</option>
+                        <option value="Abuja">Abuja</option>
+                        <option value="Kano">Kano</option>
+                        <option value="Port Harcourt">Port Harcourt</option>
+                        <option value="Ibadan">Ibadan</option>
+                        <option value="Benin City">Benin City</option>
+                        <option value="Kaduna">Kaduna</option>
+                        <option value="Jos">Jos</option>
+                        <option value="Enugu">Enugu</option>
+                        <option value="Owerri">Owerri</option>
+                        <option value="Port Louis">Port Louis</option>
+                        <option value="Curepipe">Curepipe</option>
+                        <option value="Quatre Bornes">Quatre Bornes</option>
+                        <option value="Vacoas">Vacoas</option>
+                        <option value="Beau Bassin">Beau Bassin</option>
+                        <option value="Rose Hill">Rose Hill</option>
+                        <option value="Mahebourg">Mahebourg</option>
+                        <option value="Goodlands">Goodlands</option>
+                        <option value="Triolet">Triolet</option>
+                        <option value="Souillac">Souillac</option>
+                      </select>
+                      <span
+                        class="position-absolute end-0 top-50 translate-middle-y pe-2"
+                      >
+                        <i class="bi bi-chevron-down"></i>
+                      </span>
+                    </div>
+                  </div>
 
-              <div class="col-md-6 mb-3">
-                <label for="billingPhone" class="form-label">Phone</label>
-                <input
-                  type="tel"
-                  class="form-control"
-                  id="billingPhone"
-                  v-model="billing.phone"
-                  placeholder="+234 804 5555 7789"
-                />
-              </div>
-            </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="zipCode" class="form-label">Zip Code</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="zipCode"
+                      v-model="billing.zipCode"
+                      placeholder="ZIP Code"
+                    />
+                  </div>
+                </div>
 
-            <button type="submit" class="btn btn-success px-4 mt-2">
-              Save Changes
-            </button>
-          </form>
-        </div>
-      </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="billingEmail" class="form-label">Email</label>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="billingEmail"
+                      v-model="billing.email"
+                      placeholder="Email"
+                    />
+                  </div>
 
-      <!-- Change Password Section -->
-      <div class="card mb-5 border rounded">
-        <div class="card-body p-4">
-          <h2 class="card-title mb-4">Change Password</h2>
+                  <div class="col-md-6 mb-3">
+                    <label for="billingPhone" class="form-label">Phone</label>
+                    <input
+                      type="tel"
+                      class="form-control"
+                      id="billingPhone"
+                      v-model="billing.phone"
+                      placeholder="Phone Number"
+                    />
+                  </div>
+                </div>
 
-          <form @submit.prevent="changePassword">
-            <div class="mb-3">
-              <label for="currentPassword" class="form-label"
-                >Current Password</label
-              >
-              <div class="position-relative">
-                <input
-                  :type="showCurrentPassword ? 'text' : 'password'"
-                  class="form-control"
-                  id="currentPassword"
-                  v-model="passwords.current"
-                  placeholder="Enter Current Password"
-                />
                 <button
-                  class="btn position-absolute end-0 top-50 translate-middle-y"
-                  type="button"
-                  @click="showCurrentPassword = !showCurrentPassword"
+                  type="submit"
+                  class="btn btn-success px-4 mt-2"
+                  :disabled="isSubmitting"
                 >
-                  <i
-                    class="bi"
-                    :class="showCurrentPassword ? 'bi-eye-slash' : 'bi-eye'"
-                  ></i>
+                  {{ isSubmitting ? "Saving..." : "Save Changes" }}
                 </button>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="newPassword" class="form-label">New Password</label>
-                <div class="position-relative">
-                  <input
-                    :type="showNewPassword ? 'text' : 'password'"
-                    class="form-control"
-                    id="newPassword"
-                    v-model="passwords.new"
-                    placeholder="Enter New Password"
-                  />
-                  <button
-                    class="btn position-absolute end-0 top-50 translate-middle-y"
-                    type="button"
-                    @click="showNewPassword = !showNewPassword"
-                  >
-                    <i
-                      class="bi"
-                      :class="showNewPassword ? 'bi-eye-slash' : 'bi-eye'"
-                    ></i>
-                  </button>
-                </div>
-              </div>
-
-              <div class="col-md-6 mb-3">
-                <label for="confirmPassword" class="form-label"
-                  >Confirm Password</label
+                <div
+                  v-if="billingUpdateMessage"
+                  class="alert mt-3"
+                  :class="
+                    billingUpdateStatus ? 'alert-success' : 'alert-danger'
+                  "
                 >
-                <div class="position-relative">
-                  <input
-                    :type="showConfirmPassword ? 'text' : 'password'"
-                    class="form-control"
-                    id="confirmPassword"
-                    v-model="passwords.confirm"
-                    placeholder="Confirm Password"
-                  />
-                  <button
-                    class="btn position-absolute end-0 top-50 translate-middle-y"
-                    type="button"
-                    @click="showConfirmPassword = !showConfirmPassword"
-                  >
-                    <i
-                      class="bi"
-                      :class="showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'"
-                    ></i>
-                  </button>
+                  {{ billingUpdateMessage }}
                 </div>
-              </div>
+              </form>
             </div>
+          </div>
 
-            <button type="submit" class="btn btn-success px-4 mt-2">
-              Change Password
-            </button>
-          </form>
+          <!-- Change Password Section -->
+          <div class="card mb-5 border rounded">
+            <div class="card-body p-4">
+              <h2 class="card-title mb-4">Change Password</h2>
+
+              <form @submit.prevent="changePassword">
+                <div class="mb-3">
+                  <label for="currentPassword" class="form-label"
+                    >Current Password</label
+                  >
+                  <div class="position-relative">
+                    <input
+                      :type="showCurrentPassword ? 'text' : 'password'"
+                      class="form-control"
+                      id="currentPassword"
+                      v-model="passwords.current"
+                      placeholder="Enter Current Password"
+                    />
+                    <button
+                      class="btn position-absolute end-0 top-50 translate-middle-y"
+                      type="button"
+                      @click="showCurrentPassword = !showCurrentPassword"
+                    >
+                      <i
+                        class="bi"
+                        :class="showCurrentPassword ? 'bi-eye-slash' : 'bi-eye'"
+                      ></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="newPassword" class="form-label"
+                      >New Password</label
+                    >
+                    <div class="position-relative">
+                      <input
+                        :type="showNewPassword ? 'text' : 'password'"
+                        class="form-control"
+                        id="newPassword"
+                        v-model="passwords.new"
+                        placeholder="Enter New Password"
+                      />
+                      <button
+                        class="btn position-absolute end-0 top-50 translate-middle-y"
+                        type="button"
+                        @click="showNewPassword = !showNewPassword"
+                      >
+                        <i
+                          class="bi"
+                          :class="showNewPassword ? 'bi-eye-slash' : 'bi-eye'"
+                        ></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 mb-3">
+                    <label for="confirmPassword" class="form-label"
+                      >Confirm Password</label
+                    >
+                    <div class="position-relative">
+                      <input
+                        :type="showConfirmPassword ? 'text' : 'password'"
+                        class="form-control"
+                        id="confirmPassword"
+                        v-model="passwords.confirm"
+                        placeholder="Confirm Password"
+                      />
+                      <button
+                        class="btn position-absolute end-0 top-50 translate-middle-y"
+                        type="button"
+                        @click="showConfirmPassword = !showConfirmPassword"
+                      >
+                        <i
+                          class="bi"
+                          :class="
+                            showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'
+                          "
+                        ></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-success px-4 mt-2">
+                  Change Password
+                </button>
+                <div
+                  v-if="passwordUpdateMessage"
+                  class="alert mt-3"
+                  :class="
+                    passwordUpdateStatus ? 'alert-success' : 'alert-danger'
+                  "
+                >
+                  {{ passwordUpdateMessage }}
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -642,6 +619,7 @@
 
 <script>
 import Footer from "../../components/MarketFooter.vue";
+import { useAuthStore } from "../../stores/auth"; // Update path if needed
 
 export default {
   name: "ProfilePage",
@@ -650,32 +628,39 @@ export default {
   },
   data() {
     return {
-      // For navbar
-      searchQuery: "",
+      isLoading: true,
+      isSubmitting: false,
+      updateMessage: "",
+      updateStatus: false,
+      billingUpdateMessage: "",
+      billingUpdateStatus: false,
+      passwordUpdateMessage: "",
+      passwordUpdateStatus: false,
+      defaultProfileImage: "https://i.imgur.com/aq39RMA.jpg", // Default avatar
 
       // User account data
       user: {
-        firstName: "Joshua",
-        lastName: "Joseph",
-        email: "JoshuaJoseph@gmail.com",
-        phoneNumber: "+234 804 5555 7789",
-        profileImage: "https://i.imgur.com/aq39RMA.jpg", // Using a placeholder image
+        firstName: "",
+        lastName: "",
+        email: "",
+        phoneNumber: "",
+        profileImage: null,
       },
 
       // Billing address data
       billing: {
-        firstName: "Joshua",
-        lastName: "Joseph",
-        companyName: "Zakisoft",
-        streetAddress: "6140 Pari",
+        firstName: "",
+        lastName: "",
+        companyName: "",
+        streetAddress: "",
         country: "United States",
         state: "Washington DC",
-        zipCode: "20033",
-        email: "JoshuaJoseph@gmail.com",
-        phone: "+234 804 5555 7789",
+        zipCode: "",
+        email: "",
+        phone: "",
       },
 
-      // Password change data
+      // Password change data (keeping as is per request)
       passwords: {
         current: "",
         new: "",
@@ -687,17 +672,19 @@ export default {
       showNewPassword: false,
       showConfirmPassword: false,
 
-      dropdownOpen: false,
-      dropdownTimeout: null,
+      // Other UI state
       searchQuery: "",
-      cartItemCount: 0, // This should be updated based on your cart data
-      wishlistItemCount: 0, // This should be updated based on your wishlist data
-      dropdownOpen: false,
-      cartItems: [
-        // { name: "Product 1", quantity: 2 },
-        // { name: "Product 2", quantity: 1 },
-      ],
+      cartItems: [],
     };
+  },
+
+  computed: {
+    profileImageUrl() {
+      return this.user.profileImage || this.defaultProfileImage;
+    },
+    cartItemCount() {
+      return this.cartItems.reduce((total, item) => total + item.quantity, 0);
+    },
   },
 
   mounted() {
@@ -707,49 +694,110 @@ export default {
     link.href =
       "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css";
     document.head.appendChild(link);
+
+    // Fetch user profile data when component mounts
+    this.fetchProfileData();
   },
 
   methods: {
-    // Navbar methods
-    handleSearch() {
-      const query = this.searchQuery.trim();
-      if (query) {
-        // Handle search
-        console.log("Searching for:", query);
+    async fetchProfileData() {
+      this.isLoading = true;
+      try {
+        const authStore = useAuthStore();
+        const profileData = await authStore.fetchSellerProfile();
+
+        if (profileData && profileData.user) {
+          const userData = profileData.user;
+
+          // Populate user account data
+          this.user.firstName = userData.first_name || "";
+          this.user.lastName = userData.last_name || "";
+          this.user.email = userData.email || "";
+          this.user.phoneNumber = userData.phone_no || "";
+
+          // Set profile image if available
+          if (userData.profile_image_url) {
+            this.user.profileImage = userData.profile_image_url;
+          }
+
+          // Populate billing address with available data
+          // This assumes the API returns these fields; adjust based on actual API response
+          this.billing.firstName = userData.first_name || "";
+          this.billing.lastName = userData.last_name || "";
+          this.billing.email = userData.email || "";
+          this.billing.phone = userData.phone_no || "";
+
+          if (userData.address) {
+            this.billing.streetAddress = userData.address;
+          }
+
+          if (userData.country) {
+            this.billing.country = userData.country;
+          }
+
+          if (userData.city) {
+            this.billing.state = userData.city;
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+
+        // Handle authentication errors
+        if (error.isAuthError) {
+          this.$router.push("/login");
+        }
+      } finally {
+        this.isLoading = false;
       }
     },
 
-    openDropdown() {
-      if (this.dropdownTimeout) {
-        clearTimeout(this.dropdownTimeout);
-        this.dropdownTimeout = null;
+    async saveAccountSettings() {
+      this.isSubmitting = true;
+      this.updateMessage = "";
+
+      try {
+        const authStore = useAuthStore();
+
+        // Prepare the data for the update API call
+        const profileData = {
+          first_name: this.user.firstName,
+          last_name: this.user.lastName,
+          phone_no: this.user.phoneNumber,
+          // We're not updating email as it's typically a more complex process requiring verification
+        };
+
+        // If there's a new profile image that's not the default
+        if (
+          this.user.profileImage &&
+          this.user.profileImage !== this.defaultProfileImage
+        ) {
+          // This depends on how your API expects the image
+          // For base64 images (from FileReader)
+          if (this.user.profileImage.startsWith("data:image")) {
+            // You may need to convert this to a file/blob based on your API requirements
+            // This is just a placeholder for that logic
+            profileData.profile_image = this.user.profileImage;
+          }
+        }
+
+        // Call the API to update the profile
+        const response = await authStore.updateSellerProfile(profileData);
+
+        this.updateStatus = true;
+        this.updateMessage = "Account settings saved successfully!";
+      } catch (error) {
+        console.error("Error saving account settings:", error);
+        this.updateStatus = false;
+        this.updateMessage =
+          "Failed to save account settings. Please try again.";
+
+        // Handle authentication errors
+        if (error.isAuthError) {
+          this.$router.push("/login");
+        }
+      } finally {
+        this.isSubmitting = false;
       }
-      this.dropdownOpen = true;
-    },
-    closeDropdown() {
-      // Delay closing the dropdown to allow the user to move the mouse to the menu
-      this.dropdownTimeout = setTimeout(() => {
-        this.dropdownOpen = false;
-      }, 300); // Adjust delay (in ms) as needed
-    },
-    goToCart() {
-      // Navigate to the cart page
-      this.$router.push("/cart");
-    },
-    goToWishlist() {
-      // Redirect to the wishlist page
-      this.$router.push("/wishlist");
-    },
-    logout() {
-      console.log("Logging out...");
-
-      this.$router.push("/login");
-    },
-
-    // Profile methods
-    saveAccountSettings() {
-      console.log("Saving account settings:", this.user);
-      alert("Account settings saved successfully!");
     },
 
     chooseImage() {
@@ -768,22 +816,66 @@ export default {
     },
 
     deleteImage() {
-      this.user.profileImage = "https://i.imgur.com/aq39RMA.jpg"; // Reset to default avatar
+      this.user.profileImage = null; // Reset to null to use default image
     },
 
-    saveBillingAddress() {
-      console.log("Saving billing address:", this.billing);
-      alert("Billing address saved successfully!");
+    async saveBillingAddress() {
+      this.isSubmitting = true;
+      this.billingUpdateMessage = "";
+
+      try {
+        const authStore = useAuthStore();
+
+        // Prepare the data for the update API call
+        // Note: This depends on how your API expects billing address data
+        // You might need to adjust the field names to match your API
+        const billingData = {
+          billing_first_name: this.billing.firstName,
+          billing_last_name: this.billing.lastName,
+          company_name: this.billing.companyName,
+          address: this.billing.streetAddress,
+          country: this.billing.country,
+          city: this.billing.state, // Using state as city based on your form
+          zip_code: this.billing.zipCode,
+          billing_email: this.billing.email,
+          billing_phone: this.billing.phone,
+        };
+
+        // Call the API to update the billing address
+        // This assumes your updateSellerProfile method can handle billing address updates
+        // You might need a separate API endpoint for this
+        const response = await authStore.updateSellerProfile(billingData);
+
+        this.billingUpdateStatus = true;
+        this.billingUpdateMessage = "Billing address saved successfully!";
+      } catch (error) {
+        console.error("Error saving billing address:", error);
+        this.billingUpdateStatus = false;
+        this.billingUpdateMessage =
+          "Failed to save billing address. Please try again.";
+
+        // Handle authentication errors
+        if (error.isAuthError) {
+          this.$router.push("/login");
+        }
+      } finally {
+        this.isSubmitting = false;
+      }
     },
 
+    // Keeping the password change method as is, per your request
     changePassword() {
+      this.passwordUpdateMessage = "";
+
       if (this.passwords.new !== this.passwords.confirm) {
-        alert("Passwords do not match!");
+        this.passwordUpdateStatus = false;
+        this.passwordUpdateMessage = "Passwords do not match!";
         return;
       }
 
       if (!this.passwords.current) {
-        alert("Please enter your current password!");
+        this.passwordUpdateStatus = false;
+        this.passwordUpdateMessage = "Please enter your current password!";
         return;
       }
 
@@ -793,16 +885,50 @@ export default {
       this.passwords.new = "";
       this.passwords.confirm = "";
 
-      alert("Password changed successfully!");
+      this.passwordUpdateStatus = true;
+      this.passwordUpdateMessage = "Password changed successfully!";
     },
-  },
-  computed: {
-    cartItemCount() {
-      return this.cartItems.reduce((total, item) => total + item.quantity, 0);
+
+    // Navigation methods
+    handleSearch() {
+      const query = this.searchQuery.trim();
+      if (query) {
+        console.log("Searching for:", query);
+      }
+    },
+
+    logout() {
+      const authStore = useAuthStore();
+      authStore.logout();
+      this.$router.push("/login");
     },
   },
 };
 </script>
+
+<style scoped>
+.profile-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border: 3px solid #f8f9fa;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-title {
+  color: #20b2aa;
+  font-weight: bold;
+}
+
+.card {
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+}
+
+.card-title {
+  color: #20b2aa;
+  font-weight: bold;
+}
+</style>
 
 <style scoped>
 /* Common styles */

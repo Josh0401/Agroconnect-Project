@@ -27,15 +27,11 @@
     <!-- User Info -->
     <div class="user-profile">
       <router-link to="/profile">
-        <img
-          src="../../src/assets/tiny-profile.png"
-          alt="User Avatar"
-          class="avatar"
-        />
+        <img :src="userAvatar" alt="User Avatar" class="avatar" />
       </router-link>
       <div class="user-info">
-        <p class="user-name">{{ user.name }}</p>
-        <p class="user-role">{{ user.role }}</p>
+        <p class="user-name">{{ user.name || "Loading..." }}</p>
+        <p class="user-role">SELLER</p>
       </div>
       <i class="fa-solid fa-chevron-down"></i>
     </div>
@@ -49,6 +45,8 @@
 </template>
 
 <script>
+import { useAuthStore } from "../stores/auth"; // Update the path if needed
+
 export default {
   name: "Sidebar",
   data() {
@@ -77,23 +75,61 @@ export default {
         { label: "Profile", icon: "fa-solid fa-user", route: "/profile" },
       ],
       user: {
-        name: "Joshua Raji",
-        role: "SELLER",
-        avatar: "https://via.placeholder.com/40",
+        name: "Loading...",
+        profileImage: null,
       },
+      defaultAvatar: "../../src/assets/tiny-profile.png", // Default avatar path
+      isLoading: true,
     };
+  },
+  computed: {
+    userAvatar() {
+      return this.user.profileImage || this.defaultAvatar;
+    },
   },
   methods: {
     isActive(route) {
       return this.$route.path === route;
     },
     logout() {
-      // Remove auth token or any user data from local storage
-      localStorage.removeItem("authToken");
-      // Optionally, perform any additional cleanup, such as calling an API endpoint
+      // Get auth store and call its logout method
+      const authStore = useAuthStore();
+      authStore.logout();
 
+      // Navigate to login page
       this.$router.push("/login");
     },
+    async fetchUserProfile() {
+      try {
+        this.isLoading = true;
+        const authStore = useAuthStore();
+        const profileData = await authStore.fetchSellerProfile();
+
+        if (profileData && profileData.user) {
+          // Set user name from API response
+          this.user.name = `${profileData.user.first_name || ""} ${
+            profileData.user.last_name || ""
+          }`.trim();
+
+          // Set profile image if available
+          if (profileData.user.profile_image_url) {
+            this.user.profileImage = profileData.user.profile_image_url;
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+        // Handle authentication errors
+        if (error.isAuthError) {
+          this.$router.push("/login");
+        }
+      } finally {
+        this.isLoading = false;
+      }
+    },
+  },
+  mounted() {
+    // Fetch user profile when component is mounted
+    this.fetchUserProfile();
   },
 };
 </script>
@@ -173,6 +209,7 @@ export default {
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  object-fit: cover;
 }
 
 .user-info {

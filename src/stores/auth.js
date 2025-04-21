@@ -4,7 +4,8 @@ import axios from "axios";
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     token: null,
-    userType: "",
+    account_type: "", // Changed from userType to account_type
+    user: null, // Store complete user data
     firstName: "",
     lastName: "",
     email: "",
@@ -24,18 +25,24 @@ export const useAuthStore = defineStore("auth", {
   }),
 
   actions: {
-    // In auth.js
-    // In auth.js
     async fetchSellerProfile() {
+      console.log("[Auth Store] fetchSellerProfile called");
       try {
         const token = this.token || localStorage.getItem("authToken");
+        console.log("[Auth Store] Token exists:", !!token);
 
         if (!token) {
+          console.log("[Auth Store] No token found, rejecting");
           return Promise.reject({
             isAuthError: true,
             message: "No authentication token found. Please log in again.",
           });
         }
+
+        console.log(
+          "[Auth Store] Calling API:",
+          "https://agroconnect.shop/api/fetch-profile"
+        );
 
         const response = await axios.get(
           "https://agroconnect.shop/api/fetch-profile",
@@ -46,9 +53,65 @@ export const useAuthStore = defineStore("auth", {
           }
         );
 
+        console.log("[Auth Store] API response received:", response.data);
         return response.data;
       } catch (error) {
-        console.error("Error fetching seller profile:", error);
+        console.error("[Auth Store] Error fetching seller profile:", error);
+
+        if (error.response) {
+          console.log("[Auth Store] API error status:", error.response.status);
+          console.log("[Auth Store] API error data:", error.response.data);
+
+          if (error.response.status === 401 || error.response.status === 403) {
+            return Promise.reject({
+              isAuthError: true,
+              message: "Your session has expired. Please log in again.",
+            });
+          }
+        }
+
+        throw error;
+      }
+    },
+
+    async updateSellerProfile(profileData) {
+      console.log(
+        "[Auth Store] updateSellerProfile called with data:",
+        profileData
+      );
+      try {
+        const token = this.token || localStorage.getItem("authToken");
+        console.log("[Auth Store] Token exists:", !!token);
+
+        if (!token) {
+          console.log("[Auth Store] No token found, rejecting");
+          return Promise.reject({
+            isAuthError: true,
+            message: "No authentication token found. Please log in again.",
+          });
+        }
+
+        console.log("[Auth Store] Sending update to API");
+        const response = await axios.post(
+          "https://agroconnect.shop/api/update-seller-profile",
+          profileData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        console.log("[Auth Store] Update successful:", response.data);
+        return response.data;
+      } catch (error) {
+        console.error("[Auth Store] Error updating seller profile:", error);
+
+        if (error.response) {
+          console.log("[Auth Store] API error status:", error.response.status);
+          console.log("[Auth Store] API error data:", error.response.data);
+        }
+
         throw error;
       }
     },
@@ -145,7 +208,7 @@ export const useAuthStore = defineStore("auth", {
           country: selectedCountry,
           city: selectedCity,
           password,
-          userType,
+          account_type: userType, // Changed to account_type
           ...(userType === "seller" && {
             productName,
             productCategory,
@@ -163,6 +226,7 @@ export const useAuthStore = defineStore("auth", {
     },
 
     async login({ email, password }) {
+      console.log("[Auth Store] Login attempted for:", email);
       try {
         const response = await axios.post(
           "https://agroconnect.shop/api/login",
@@ -172,39 +236,68 @@ export const useAuthStore = defineStore("auth", {
           }
         );
 
-        const { token, user } = response.data;
+        console.log("[Auth Store] Login response:", response.data);
+
+        // IMPORTANT FIX: Get access_token instead of token
+        const token = response.data.access_token;
+        const user = response.data.user;
+
+        console.log("[Auth Store] Login successful, token received:", !!token);
+        console.log("[Auth Store] User data:", user);
 
         this.token = token;
         this.user = user;
-        this.userType = user?.userType || ""; // Save userType
+
+        // Updated to use account_type
+        this.account_type = user?.account_type || "";
+        console.log("[Auth Store] Account type set to:", this.account_type);
 
         if (token) {
           localStorage.setItem("authToken", token);
-          localStorage.setItem("userType", this.userType); // Optional: Persist userType
+          localStorage.setItem("account_type", this.account_type);
+          console.log(
+            "[Auth Store] Token and account_type saved to localStorage"
+          );
         }
 
         return response.data;
       } catch (error) {
+        console.error("[Auth Store] Login error:", error);
         throw error;
       }
     },
 
     logout() {
+      console.log("[Auth Store] Logout called");
       this.token = null;
       this.user = null;
-      this.userType = "";
+      this.account_type = "";
       localStorage.removeItem("authToken");
-      localStorage.removeItem("userType");
+      localStorage.removeItem("account_type");
+      console.log("[Auth Store] Auth data cleared");
     },
 
     setAuth({ token, user }) {
-      this.token = token;
-      this.user = user;
-      this.userType = user?.userType || "";
+      console.log("[Auth Store] setAuth called");
 
-      if (token) {
-        localStorage.setItem("authToken", token);
-        localStorage.setItem("userType", this.userType);
+      // For backwards compatibility, check if we're receiving access_token
+      // instead of token (in case the method is called with response.data)
+      const authToken = token?.access_token || token;
+
+      this.token = authToken;
+      this.user = user;
+
+      // Updated to use account_type
+      this.account_type = user?.account_type || "";
+      console.log(
+        "[Auth Store] Auth state set, account type:",
+        this.account_type
+      );
+
+      if (authToken) {
+        localStorage.setItem("authToken", authToken);
+        localStorage.setItem("account_type", this.account_type);
+        console.log("[Auth Store] Auth data saved to localStorage");
       }
     },
   },
