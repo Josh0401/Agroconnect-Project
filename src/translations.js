@@ -8,12 +8,22 @@ export const translations = {
     transactions: 'Transactions',
     logout: 'Logout',
     groupsCommunities: 'Groups',
+    login: 'Login',
+    signup: 'Sign Up',
+    register: 'Register',
     
     // Section headers
     products: 'Products',
     newProducts: 'New Products',
     viewAll: 'View All',
     categories: 'Categories',
+    
+    // Search related
+    searchResults: 'Search Results',
+    noResultsFound: 'No results found for your search.',
+    tryDifferentKeywords: 'Please try different keywords or browse our categories.',
+    browseCategories: 'Browse Categories',
+    backToMarketplace: 'Back to Marketplace',
     
     // Product names
     hybridCoconutSeedlings: 'Hybrid Coconut Seedlings',
@@ -67,12 +77,22 @@ export const translations = {
     transactions: 'Transactions',
     logout: 'Déconnexion',
     groupsCommunities: 'Groupes',
+    login: 'Connexion',
+    signup: 'S\'inscrire',
+    register: 'S\'enregistrer',
     
     // Section headers
     products: 'Produits',
     newProducts: 'Nouveaux Produits',
     viewAll: 'Voir Tout',
     categories: 'Catégories',
+    
+    // Search related
+    searchResults: 'Résultats de recherche',
+    noResultsFound: 'Aucun résultat trouvé pour votre recherche.',
+    tryDifferentKeywords: 'Veuillez essayer d\'autres mots-clés ou parcourir nos catégories.',
+    browseCategories: 'Parcourir les catégories',
+    backToMarketplace: 'Retour au marché',
     
     // Product names
     hybridCoconutSeedlings: 'Plants de Cocotier Hybride',
@@ -126,12 +146,22 @@ export const translations = {
     transactions: 'Transacciones',
     logout: 'Cerrar Sesión',
     groupsCommunities: 'Grupos',
+    login: 'Iniciar Sesión',
+    signup: 'Registrarse',
+    register: 'Registrarse',
     
     // Section headers
     products: 'Productos',
     newProducts: 'Nuevos Productos',
     viewAll: 'Ver Todo',
     categories: 'Categorías',
+    
+    // Search related
+    searchResults: 'Resultados de búsqueda',
+    noResultsFound: 'No se encontraron resultados para su búsqueda.',
+    tryDifferentKeywords: 'Por favor, intente con diferentes palabras clave o explore nuestras categorías.',
+    browseCategories: 'Explorar categorías',
+    backToMarketplace: 'Volver al mercado',
     
     // Product names
     hybridCoconutSeedlings: 'Plántulas de Coco Híbrido',
@@ -185,12 +215,22 @@ export const translations = {
     transactions: 'Tranzaksion',
     logout: 'Dekonekte',
     groupsCommunities: 'Grup',
+    login: 'Konekte',
+    signup: 'Enskri',
+    register: 'Anrejistre',
     
     // Section headers
     products: 'Prodwi',
     newProducts: 'Nouvo Prodwi',
     viewAll: 'Get Tou',
     categories: 'Kategori',
+    
+    // Search related
+    searchResults: 'Rezilta Rechèch',
+    noResultsFound: 'Pa gen rezilta pou rechèch ou a.',
+    tryDifferentKeywords: 'Tanpri eseye lòt mo kle oubyen gade kategori nou yo.',
+    browseCategories: 'Gade Kategori yo',
+    backToMarketplace: 'Retounen nan Mache a',
     
     // Product names
     hybridCoconutSeedlings: 'Plan Koko Ibrid',

@@ -1,6 +1,6 @@
 <template>
   <div class="product-detail-wrapper">
-    <!-- Header/Navbar from Market.vue -->
+    <!-- Header/Navbar with login state -->
     <nav class="navbar navbar-expand-lg sticky-top bg-white shadow-sm py-3">
       <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="/market">
@@ -57,108 +57,121 @@
             </div>
           </ul>
           <div class="d-flex align-items-center py-1">
-            <!-- Wishlist Icon -->
-            <button class="btn position-relative me-3" @click="goToWishlist">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="currentColor"
-                class="bi bi-heart"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  d="M8 2.748c-1.1-1.176-2.785-1.103-3.95.285-1.168 1.395-.593 3.247 1.12 4.722C6.2 9.8 8 11.4 8 11.4s1.8-1.6 3.78-4.095c1.714-1.475 2.288-3.327 1.12-4.722C10.785 1.645 9.1 1.572 8 2.748z"
-                />
-              </svg>
-              <!-- Optional badge for wishlist count -->
-              <span
-                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                v-if="wishlistItemCount > 0"
-              >
-                {{ wishlistItemCount }}
-              </span>
-            </button>
+            <!-- Logged out state -->
+            <div v-if="!isLoggedIn" class="d-flex align-items-center">
+              <router-link to="/login" class="btn btn-outline-success me-2">
+                Login
+              </router-link>
+              <router-link to="/register" class="btn btn-success">
+                Register
+              </router-link>
+            </div>
 
-            <!-- Shopping Cart Icon -->
-            <button class="btn position-relative me-3" @click="goToCart">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="currentColor"
-                class="bi bi-cart"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 
-                     .485.379L2.89 5H14.5a.5.5 0 0 1 
-                     .49.598l-1.5 7A.5.5 0 0 1 
-                     13 13H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM3.102 6l1.313 6h7.17l1.313-6H3.102zM5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"
-                />
-              </svg>
-              <span
-                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                v-if="cartItemCount > 0"
-              >
-                {{ cartItemCount }}
-              </span>
-            </button>
-
-            <!-- Account Icon with Dropdown -->
-            <div
-              class="dropdown account-dropdown me-3"
-              @mouseenter="openDropdown"
-              @mouseleave="closeDropdown"
-            >
-              <button
-                class="btn dropdown-toggle p-0"
-                type="button"
-                id="accountDropdown"
-                aria-expanded="dropdownOpen"
-              >
-                <!-- Account SVG Icon -->
+            <!-- Logged in state -->
+            <div v-else class="d-flex align-items-center">
+              <!-- Wishlist Icon -->
+              <button class="btn position-relative me-3" @click="goToWishlist">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
                   height="24"
                   fill="currentColor"
-                  class="bi bi-person"
+                  class="bi bi-heart"
                   viewBox="0 0 16 16"
                 >
-                  <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
                   <path
-                    fill-rule="evenodd"
-                    d="M8 9a5 5 0 0 0-4.546 2.916.5.5 0 0 0 .832.554A4 4 0 0 1 8 10a4 4 0 0 1 3.714 2.37.5.5 0 0 0 .832-.554A5 5 0 0 0 8 9z"
+                    d="M8 2.748c-1.1-1.176-2.785-1.103-3.95.285-1.168 1.395-.593 3.247 1.12 4.722C6.2 9.8 8 11.4 8 11.4s1.8-1.6 3.78-4.095c1.714-1.475 2.288-3.327 1.12-4.722C10.785 1.645 9.1 1.572 8 2.748z"
                   />
                 </svg>
+                <!-- Optional badge for wishlist count -->
+                <span
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  v-if="wishlistItemCount > 0"
+                >
+                  {{ wishlistItemCount }}
+                </span>
               </button>
-              <ul
-                class="dropdown-menu"
-                :class="{ show: dropdownOpen }"
-                aria-labelledby="accountDropdown"
+
+              <!-- Shopping Cart Icon -->
+              <button class="btn position-relative me-3" @click="goToCart">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="currentColor"
+                  class="bi bi-cart"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 
+                     .485.379L2.89 5H14.5a.5.5 0 0 1 
+                     .49.598l-1.5 7A.5.5 0 0 1 
+                     13 13H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM3.102 6l1.313 6h7.17l1.313-6H3.102zM5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"
+                  />
+                </svg>
+                <span
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  v-if="cartItemCount > 0"
+                >
+                  {{ cartItemCount }}
+                </span>
+              </button>
+
+              <!-- Account Icon with Dropdown -->
+              <div
+                class="dropdown account-dropdown me-3"
+                @mouseenter="openDropdown"
+                @mouseleave="closeDropdown"
               >
-                <li>
-                  <router-link class="dropdown-item" to="/account/profile"
-                    >Profile</router-link
+                <button
+                  class="btn dropdown-toggle p-0"
+                  type="button"
+                  id="accountDropdown"
+                  aria-expanded="dropdownOpen"
+                >
+                  <!-- Account SVG Icon -->
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    fill="currentColor"
+                    class="bi bi-person"
+                    viewBox="0 0 16 16"
                   >
-                </li>
-                <li>
-                  <router-link class="dropdown-item" to="/account/orders"
-                    >Orders</router-link
-                  >
-                </li>
-                <li>
-                  <router-link class="dropdown-item" to="/account/transactions"
-                    >Transactions</router-link
-                  >
-                </li>
-                <li>
-                  <a class="dropdown-item" href="#" @click.prevent="logout"
-                    >Logout</a
-                  >
-                </li>
-              </ul>
+                    <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                    <path
+                      fill-rule="evenodd"
+                      d="M8 9a5 5 0 0 0-4.546 2.916.5.5 0 0 0 .832.554A4 4 0 0 1 8 10a4 4 0 0 1 3.714 2.37.5.5 0 0 0 .832-.554A5 5 0 0 0 8 9z"
+                    />
+                  </svg>
+                </button>
+                <ul
+                  class="dropdown-menu"
+                  :class="{ show: dropdownOpen }"
+                  aria-labelledby="accountDropdown"
+                >
+                  <li>
+                    <router-link class="dropdown-item" to="/account/profile"
+                      >Profile</router-link
+                    >
+                  </li>
+                  <li>
+                    <router-link class="dropdown-item" to="/account/orders"
+                      >Orders</router-link
+                    >
+                  </li>
+                  <li>
+                    <router-link class="dropdown-item" to="/account/transactions"
+                      >Transactions</router-link
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="#" @click.prevent="logout"
+                      >Logout</a
+                    >
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -167,6 +180,11 @@
 
     <!-- Breadcrumb -->
     <div class="container mt-3 mb-1">
+      <div class="container mt-3">
+    <router-link to="/market" class="back-to-market">
+      <span class="arrow-left">&#8592;</span> Back to Marketplace
+    </router-link>
+  </div>
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
           <li class="breadcrumb-item">
@@ -276,20 +294,20 @@
             <!-- Quantity selector and Add to Cart - IMPROVED VERSION -->
             <div class="d-flex align-items-center my-4">
               <div class="quantity-selector d-flex align-items-center border rounded me-3">
-    <button class="quantity-btn" @click="decreaseQuantity">
-      <i class="bi bi-dash"></i>
-    </button>
-    <input 
-      type="number" 
-      class="form-control border-0 text-center quantity-input" 
-      v-model="quantity" 
-      min="1" 
-      @input="validateQuantity"
-    />
-    <button class="quantity-btn" @click="increaseQuantity">
-      <i class="bi bi-plus"></i>
-    </button>
-  </div>
+                <button class="quantity-btn" @click="decreaseQuantity">
+                  <i class="bi bi-dash"></i>
+                </button>
+                <input 
+                  type="number" 
+                  class="form-control border-0 text-center quantity-input" 
+                  v-model="quantity" 
+                  min="1" 
+                  @input="validateQuantity"
+                />
+                <button class="quantity-btn" @click="increaseQuantity">
+                  <i class="bi bi-plus"></i>
+                </button>
+              </div>
               
               <button class="btn btn-success d-flex align-items-center px-4" @click="addToCart">
                 <i class="bi bi-cart-plus me-2"></i>
@@ -337,7 +355,7 @@
             <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
               <div class="row">
                 <div class="col-md-8">
-                  <p class="mb-4">{{ product.longDescription || 'Sed commodo aliquam dictum porta. Fusce ipsum felis, imperdiet at posuere ac, viverra at mauris. Maecenas tincidunt ligula a sem vestibulum pharetra. Praesent auctor tortor lacus, nec laoreet nisi porttitor vel.' }}</p>
+                  <p class="mb-4">{{ product.longDescription || 'Sed commodo aliquam dictum porta. Fusce ipsum felis, imperdiet at posuere ac, viverra at mauris. Maecenas tincidunt ligula a sem vestibulum pharetra. Praesent auctor tortor lacus, nec laoreet nisi porttitor vel. Etiam finibus eros vel dui interdum sollicitudin. Mauris sem orci, vestibulum nec dui vitae dignissim mollis lacus.' }}</p>
                   
                   <ul class="list-unstyled">
                     <li class="mb-2">
@@ -492,10 +510,10 @@
                   <i class="bi bi-star text-warning"></i>
                 </div>
                 <div class="mt-auto d-flex">
-                  <button class="btn btn-sm btn-outline-secondary flex-grow-1 me-2">
+                  <button class="btn btn-sm btn-outline-secondary flex-grow-1 me-2" @click="addRelatedToCart(product, $event)">
                     <i class="bi bi-cart-plus"></i>
                   </button>
-                  <button class="btn btn-sm btn-outline-secondary">
+                  <button class="btn btn-sm btn-outline-secondary" @click="toggleRelatedWishlist(product, $event)">
                     <i class="bi bi-heart"></i>
                   </button>
                 </div>
@@ -565,6 +583,29 @@
     <!-- Modal backdrop -->
     <div class="modal-backdrop fade show" v-if="showReviewModal"></div>
 
+    <!-- Login Required Modal -->
+    <div class="modal fade" id="loginRequiredModal" tabindex="-1" aria-labelledby="loginRequiredModalLabel" 
+         aria-hidden="true" v-if="showLoginRequiredModal" :class="{ 'show': showLoginRequiredModal }" 
+         style="display: block;">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="loginRequiredModalLabel">Login Required</h5>
+            <button type="button" class="btn-close" aria-label="Close" @click="showLoginRequiredModal = false"></button>
+          </div>
+          <div class="modal-body">
+            <p>Please login to continue with this action.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="showLoginRequiredModal = false">Cancel</button>
+            <router-link to="/login" class="btn btn-success">Login</router-link>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal backdrop for login required -->
+    <div class="modal-backdrop fade show" v-if="showLoginRequiredModal"></div>
+
     <!-- Footer component -->
     <Footer />
   </div>
@@ -580,6 +621,10 @@ export default {
   },
   data() {
     return {
+      // Authentication state
+      isLoggedIn: false,
+      showLoginRequiredModal: false,
+      
       loading: true,
       quantity: 1,
       productId: '',
@@ -648,153 +693,241 @@ export default {
         mainImage,
         mainImage,
         mainImage,
-          mainImage
-        ];
-      },
-      currentImage() {
-        return this.productImages[this.currentImageIndex];
-      },
-      productTags() {
-        return ["Vegetables", "Healthy", "Chinese", "Cabbage", "Green Cabbage"];
-      },
-      // Added from Market.vue navbar
-      cartItemCount() {
-        return this.cartItems.reduce((total, item) => total + item.quantity, 0);
+        mainImage
+      ];
+    },
+    currentImage() {
+      return this.productImages[this.currentImageIndex];
+    },
+    productTags() {
+      return ["Vegetables", "Healthy", "Chinese", "Cabbage", "Green Cabbage"];
+    },
+    // Added from Market.vue navbar
+    cartItemCount() {
+      return this.cartItems.reduce((total, item) => total + item.quantity, 0);
+    }
+  },
+  mounted() {
+    this.loadProduct();
+    this.checkLoginStatus();
+    
+    // Add Bootstrap icons CSS
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css';
+    document.head.appendChild(link);
+  },
+  methods: {
+    // Check login status
+    checkLoginStatus() {
+      // In a real application, you would check with your authentication service
+      // For now, we'll use localStorage as a simple example
+      const token = localStorage.getItem('authToken');
+      this.isLoggedIn = !!token;
+    },
+    
+    // Login method (for development purposes)
+    login() {
+      localStorage.setItem('authToken', 'sample-token');
+      this.isLoggedIn = true;
+    },
+    
+    loadProduct() {
+      // Get the product ID from the route
+      this.productId = this.$route.params.id;
+      console.log("Loading product with ID:", this.productId);
+      
+      // Simple product mapping for testing
+      const products = {
+        'chinese-cabbage': {
+          name: 'Chinese Cabbage',
+          price: 10000,
+          originalPrice: 18000,
+          sku: 'SKU4321',
+          description: 'Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla nibh diam, blandit vel consequat nec, aliquam et ipsum. Nulla varius magna a consequat pulvinar.',
+          longDescription: 'Sed commodo aliquam dictum porta. Fusce ipsum felis, imperdiet at posuere ac, viverra at mauris. Maecenas tincidunt ligula a sem vestibulum pharetra. Praesent auctor tortor lacus, nec laoreet nisi porttitor vel. Etiam finibus eros vel dui interdum sollicitudin. Mauris sem orci, vestibulum nec dui vitae dignissim mollis lacus.',
+          category: 'Vegetables',
+          benefits: [
+            'Rich in vitamins and minerals',
+            'Low in calories',
+            'High in fiber'
+          ],
+          variety: 'Chinese'
+        },
+        'hybrid-coconut-seedlings': {
+          name: 'Hybrid Coconut Seedlings',
+          price: 10000,
+          originalPrice: 18000,
+          description: 'High-yielding hybrid coconut seedlings that are disease-resistant and perfect for plantation.',
+          longDescription: 'Our hybrid coconut seedlings are known for their excellent growth rate and high yield potential. They are carefully cultivated to ensure maximum viability and productivity.',
+          category: 'Seedlings',
+          benefits: [
+            'Early fruiting within 3-4 years',
+            'High yield potential',
+            'Disease and pest resistant'
+          ],
+          variety: 'Hybrid'
+        },
+        'hybrid-tenera-oil-palm-seedlings': {
+          name: 'Hybrid Tenera Oil Palm Seedlings',
+          price: 15000,
+          originalPrice: 22000,
+          description: 'Premium quality Tenera oil palm seedlings with high oil content and excellent yield potential.',
+          category: 'Seedlings',
+          benefits: [
+            'High oil content',
+            'Early fruiting',
+            'Disease resistant'
+          ],
+          variety: 'Tenera'
+        },
+      };
+  
+      // Simulate API call
+      setTimeout(() => {
+        if (products[this.productId]) {
+          this.product = products[this.productId];
+        } else {
+          // If product not found, create a default product based on ID
+          // or use the Chinese Cabbage as default
+          this.product = products['chinese-cabbage'];
+          this.product.name = this.productId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        }
+        
+        // Set loading to false
+        this.loading = false;
+      }, 500);
+    },
+    
+    increaseQuantity() {
+      this.quantity++;
+    },
+    
+    decreaseQuantity() {
+      if (this.quantity > 1) {
+        this.quantity--;
       }
     },
-    mounted() {
-      this.loadProduct();
-      
-      // Add Bootstrap icons CSS
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css';
-      document.head.appendChild(link);
-    },
-    methods: {
-      loadProduct() {
-        // Get the product ID from the route
-        this.productId = this.$route.params.id;
-        console.log("Loading product with ID:", this.productId);
-        
-        // Simple product mapping for testing
-        const products = {
-          'chinese-cabbage': {
-            name: 'Chinese Cabbage',
-            price: 10000,
-            originalPrice: 18000,
-            sku: 'SKU4321',
-            description: 'Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla nibh diam, blandit vel consequat nec, aliquam et ipsum. Nulla varius magna a consequat pulvinar.',
-            longDescription: 'Sed commodo aliquam dictum porta. Fusce ipsum felis, imperdiet at posuere ac, viverra at mauris. Maecenas tincidunt ligula a sem vestibulum pharetra. Praesent auctor tortor lacus, nec laoreet nisi porttitor vel. Etiam finibus eros vel dui interdum sollicitudin. Mauris sem orci, vestibulum nec dui vitae dignissim mollis lacus.',
-            category: 'Vegetables',
-            benefits: [
-              'Rich in vitamins and minerals',
-              'Low in calories',
-              'High in fiber'
-            ],
-            variety: 'Chinese'
-          },
-          'hybrid-coconut-seedlings': {
-            name: 'Hybrid Coconut Seedlings',
-            price: 10000,
-            originalPrice: 18000,
-            description: 'High-yielding hybrid coconut seedlings that are disease-resistant and perfect for plantation.',
-            longDescription: 'Our hybrid coconut seedlings are known for their excellent growth rate and high yield potential. They are carefully cultivated to ensure maximum viability and productivity.',
-            category: 'Seedlings',
-            benefits: [
-              'Early fruiting within 3-4 years',
-              'High yield potential',
-              'Disease and pest resistant'
-            ],
-            variety: 'Hybrid'
-          },
-          'hybrid-tenera-oil-palm-seedlings': {
-            name: 'Hybrid Tenera Oil Palm Seedlings',
-            price: 15000,
-            originalPrice: 22000,
-            description: 'Premium quality Tenera oil palm seedlings with high oil content and excellent yield potential.',
-            category: 'Seedlings',
-            benefits: [
-              'High oil content',
-              'Early fruiting',
-              'Disease resistant'
-            ],
-            variety: 'Tenera'
-          },
-        };
     
-        // Simulate API call
-        setTimeout(() => {
-          if (products[this.productId]) {
-            this.product = products[this.productId];
-          } else {
-            // If product not found, create a default product based on ID
-            // or use the Chinese Cabbage as default
-            this.product = products['chinese-cabbage'];
-            this.product.name = this.productId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-          }
-          
-          // Set loading to false
-          this.loading = false;
-        }, 500);
-      },
-      
-      increaseQuantity() {
-        this.quantity++;
-      },
-      
-      decreaseQuantity() {
-        if (this.quantity > 1) {
-          this.quantity--;
-        }
-      },
-      
-      addToCart() {
+    validateQuantity() {
+      if (this.quantity < 1) {
+        this.quantity = 1;
+      }
+    },
+    
+    addToCart() {
+      if (this.isLoggedIn) {
+        // Add to cart logic
         alert(`Added ${this.quantity} ${this.product.name} to cart!`);
-      },
-      
-      selectImage(index) {
-        this.currentImageIndex = index;
-      },
-      
-      formatPrice(price) {
-        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      },
-      
-      getProductImage() {
-        if (this.productId === 'hybrid-coconut-seedlings') {
-          return '../../assets/hybrid-coconut.jpg';
-        } else if (this.productId === 'hybrid-tenera-oil-palm-seedlings') {
-          return '../../assets/hybrid_tenera_oil_palm.jpg';
-        } else if (this.productId === 'tenera-oil-palm-sprouted-seeds') {
-          return '../../assets/tenera_oil_palm_sprouted_seeds.jpg';
-        } else if (this.productId === 'black-eyed-pea-cowpea') {
-          return '../../assets/cowpea.jpg';
-        } else if (this.productId === 'white-maize') {
-          return '../../assets/white-maize.jpg';
-        } else if (this.productId === 'white-beans') {
-          return '../../assets/white-beans.jpg';
-        } else if (this.productId === 'cassava') {
-          return '../../assets/cassava.jpeg';
-        } else if (this.productId === 'mung-beans') {
-          return '../../assets/mung-beans.jpg';
-        } else if (this.productId === 'red-kidney-beans') {
-          return '../../assets/red-kidney-beans.jpg';
-        } else if (this.productId === 'soursop-tea') {
-          return '../../assets/soursop-tea.jpg';
-        } else if (this.productId === 'chinese-cabbage') {
-          return '../../assets/chinese-cabbage.jpg';
-        } else {
-          return '../../assets/Agroconnect.png';
-        }
-      },
+        // Add to cart items array for the badge count
+        this.cartItems.push({
+          id: this.productId,
+          quantity: this.quantity,
+          name: this.product.name,
+          price: this.product.price
+        });
+      } else {
+        // Show login required modal
+        this.showLoginRequiredModal = true;
+      }
+    },
+    
+    toggleWishlist() {
+      if (this.isLoggedIn) {
+        // Toggle wishlist logic
+        this.wishlistItemCount = this.wishlistItemCount > 0 ? 0 : 1;
+        alert(this.wishlistItemCount > 0 ? 'Added to wishlist!' : 'Removed from wishlist!');
+      } else {
+        // Show login required modal
+        this.showLoginRequiredModal = true;
+      }
+    },
+    
+    addRelatedToCart(product, event) {
+      event.preventDefault();
+      if (this.isLoggedIn) {
+        // Add related product to cart
+        alert(`Added ${product.name} to cart!`);
+        this.cartItems.push({
+          id: product.id,
+          quantity: 1,
+          name: product.name,
+          price: product.price
+        });
+      } else {
+        // Show login required modal
+        this.showLoginRequiredModal = true;
+      }
+    },
+    
+    toggleRelatedWishlist(product, event) {
+      event.preventDefault();
+      if (this.isLoggedIn) {
+        // Toggle wishlist for related product
+        this.wishlistItemCount = this.wishlistItemCount > 0 ? 0 : 1;
+        alert(this.wishlistItemCount > 0 ? 
+          `Added ${product.name} to wishlist!` : 
+          `Removed ${product.name} from wishlist!`
+        );
+      } else {
+        // Show login required modal
+        this.showLoginRequiredModal = true;
+      }
+    },
+    
+    selectImage(index) {
+      this.currentImageIndex = index;
+    },
+    
+    formatPrice(price) {
+      return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+    
+    getProductImage() {
+      if (this.productId === 'hybrid-coconut-seedlings') {
+        return '../../assets/hybrid-coconut.jpg';
+      } else if (this.productId === 'hybrid-tenera-oil-palm-seedlings') {
+        return '../../assets/hybrid_tenera_oil_palm.jpg';
+      } else if (this.productId === 'tenera-oil-palm-sprouted-seeds') {
+        return '../../assets/tenera_oil_palm_sprouted_seeds.jpg';
+      } else if (this.productId === 'black-eyed-pea-cowpea') {
+        return '../../assets/cowpea.jpg';
+      } else if (this.productId === 'white-maize') {
+        return '../../assets/white-maize.jpg';
+      } else if (this.productId === 'white-beans') {
+        return '../../assets/white-beans.jpg';
+      } else if (this.productId === 'cassava') {
+        return '../../assets/cassava.jpeg';
+      } else if (this.productId === 'mung-beans') {
+        return '../../assets/mung-beans.jpg';
+      } else if (this.productId === 'red-kidney-beans') {
+        return '../../assets/red-kidney-beans.jpg';
+      } else if (this.productId === 'soursop-tea') {
+        return '../../assets/soursop-tea.jpg';
+      } else if (this.productId === 'chinese-cabbage') {
+        return '../../assets/chinese-cabbage.jpg';
+      } else {
+        return '../../assets/Agroconnect.png';
+      }
+    },
 
-      // UPDATED Review modal methods
+    // UPDATED Review modal methods
     setRating(rating) {
-      this.reviewForm.rating = rating;
+      if (this.isLoggedIn) {
+        this.reviewForm.rating = rating;
+      } else {
+        this.showReviewModal = false;
+        this.showLoginRequiredModal = true;
+      }
     },
     
     submitReview() {
+      if (!this.isLoggedIn) {
+        this.showReviewModal = false;
+        this.showLoginRequiredModal = true;
+        return;
+      }
+      
       // Validate rating is set
       if (this.reviewForm.rating === 0) {
         alert('Please select a star rating');
@@ -815,50 +948,67 @@ export default {
       this.showReviewModal = false;
     },
       
-      // Added from Market.vue navbar
-      handleSearch() {
-        const query = this.searchQuery.trim();
-        if (query) {
-          this.$router.push({
-            name: "SearchResults",
-            query: { q: query },
-          });
-        }
-      },
-      goToCart() {
-        this.$router.push("/cart");
-      },
-      goToWishlist() {
-        this.$router.push("/wishlist");
-      },
-      openDropdown() {
-        if (this.dropdownTimeout) {
-          clearTimeout(this.dropdownTimeout);
-          this.dropdownTimeout = null;
-        }
-        this.dropdownOpen = true;
-      },
-      closeDropdown() {
-        this.dropdownTimeout = setTimeout(() => {
-          this.dropdownOpen = false;
-        }, 300);
-      },
-      logout() {
-        console.log("Logging out...");
-        this.$router.push("/login");
+    // Added from Market.vue navbar
+    handleSearch() {
+      const query = this.searchQuery.trim();
+      if (query) {
+        this.$router.push({
+          name: "SearchResults",
+          query: { q: query },
+        });
       }
+    },
+    
+    goToCart() {
+      if (this.isLoggedIn) {
+        this.$router.push("/cart");
+      } else {
+        // Show login required modal
+        this.showLoginRequiredModal = true;
+      }
+    },
+    
+    goToWishlist() {
+      if (this.isLoggedIn) {
+        this.$router.push("/wishlist");
+      } else {
+        // Show login required modal
+        this.showLoginRequiredModal = true;
+      }
+    },
+    
+    openDropdown() {
+      if (this.dropdownTimeout) {
+        clearTimeout(this.dropdownTimeout);
+        this.dropdownTimeout = null;
+      }
+      this.dropdownOpen = true;
+    },
+    
+    closeDropdown() {
+      this.dropdownTimeout = setTimeout(() => {
+        this.dropdownOpen = false;
+      }, 300);
+    },
+    
+    logout() {
+      console.log("Logging out...");
+      localStorage.removeItem('authToken');
+      this.isLoggedIn = false;
+      this.$router.push("/login");
     }
-  };
-  </script>
-  
-  <style scoped>
-  .main-product-image {
-    max-height: 400px;
-    width: 100%;
-    object-fit: contain;
   }
+};
+</script>
   
-  .quantity-selector {
+<style scoped>
+.main-product-image {
+  max-height: 400px;
+  width: 100%;
+  object-fit: contain;
+}
+
+.quantity-selector {
   width: 120px;
   height: 42px;
   border-radius: 5px;
@@ -916,145 +1066,145 @@ export default {
 .star-container:hover {
   transform: scale(1.2);
 }
-  
-  .thumbnail-image {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    cursor: pointer;
-  }
-  
-  .thumbnail-wrapper {
-    transition: all 0.2s ease;
-  }
-  
-  .thumbnail-wrapper:hover {
-    border-color: #198754 !important;
-  }
-  
-  .product-thumbnail {
-    height: 180px;
-    object-fit: contain;
-    padding: 10px;
-  }
-  
-  .benefit-card {
-    transition: all 0.3s ease;
-  }
-  
-  .benefit-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  }
-  
-  .play-button .btn {
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .play-button .bi-play-fill {
-    font-size: 24px;
-    margin-left: 3px;
-  }
-  
-  /* Tab styling */
-  .nav-tabs .nav-link {
-    color: #495057;
-    border: none;
-    border-bottom: 2px solid transparent;
-    padding: 10px 20px;
-  }
-  
-  .nav-tabs .nav-link.active {
-    color: #198754;
-    background-color: transparent;
-    border-bottom: 2px solid #198754;
-  }
-  
-  /* Make product cards same height */
-  .product-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Added from Market.vue navbar */
-  .nav-item.dropdown:hover .dropdown-menu {
-    display: block;
-    margin-top: 0;
-  }
 
-  .navbar-nav .nav-link {
-    color: #333;
-    font-weight: 500;
-    transition: color 0.3s ease;
-  }
+.thumbnail-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  cursor: pointer;
+}
 
-  .navbar-nav .nav-link:hover,
-  .navbar-nav .nav-link.active {
-    color: black;
-  }
+.thumbnail-wrapper {
+  transition: all 0.2s ease;
+}
 
-  .search-container {
-    display: inline-flex;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 9999px;
-    overflow: hidden;
-    background-color: #fff;
-    max-width: 400px;
-    flex-wrap: wrap;
-  }
+.thumbnail-wrapper:hover {
+  border-color: #198754 !important;
+}
 
-  .account-dropdown .dropdown-menu {
-    margin-top: 0.5rem;
-  }
+.product-thumbnail {
+  height: 180px;
+  object-fit: contain;
+  padding: 10px;
+}
 
-  .search-icon {
-    width: 16px;
-    height: 16px;
-    margin-left: 12px;
-    margin-right: 8px;
-    color: #aaa;
-  }
+.benefit-card {
+  transition: all 0.3s ease;
+}
 
-  .search-container input {
-    flex: 1;
-    border: none;
-    outline: none;
-    padding: 8px 0;
-    color: #555;
-    font-size: 14px;
-  }
+.benefit-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
 
+.play-button .btn {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play-button .bi-play-fill {
+  font-size: 24px;
+  margin-left: 3px;
+}
+
+/* Tab styling */
+.nav-tabs .nav-link {
+  color: #495057;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 20px;
+}
+
+.nav-tabs .nav-link.active {
+  color: #198754;
+  background-color: transparent;
+  border-bottom: 2px solid #198754;
+}
+
+/* Make product cards same height */
+.product-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Added from Market.vue navbar */
+.nav-item.dropdown:hover .dropdown-menu {
+  display: block;
+  margin-top: 0;
+}
+
+.navbar-nav .nav-link {
+  color: #333;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  color: black;
+}
+
+.search-container {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 9999px;
+  overflow: hidden;
+  background-color: #fff;
+  max-width: 400px;
+  flex-wrap: wrap;
+}
+
+.account-dropdown .dropdown-menu {
+  margin-top: 0.5rem;
+}
+
+.search-icon {
+  width: 16px;
+  height: 16px;
+  margin-left: 12px;
+  margin-right: 8px;
+  color: #aaa;
+}
+
+.search-container input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 8px 0;
+  color: #555;
+  font-size: 14px;
+}
+
+.search-container button {
+  background-color: rgb(25, 135, 84);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.search-container button:hover {
+  background-color: #007f68;
+  color: #fff;
+}
+
+.btn:hover {
+  color: #e5e9e7;
+}
+
+@media (max-width: 992px) {
+  .search-container input,
   .search-container button {
-    background-color: rgb(25, 135, 84);
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-size: 14px;
+    display: none !important;
   }
-
-  .search-container button:hover {
-    background-color: #007f68;
-    color: #fff;
-  }
-
-  .btn:hover {
-    color: #fff;
-  }
-
-  @media (max-width: 992px) {
-    .search-container input,
-    .search-container button {
-      display: none !important;
-    }
-  }
-  </style>
+}
+</style>

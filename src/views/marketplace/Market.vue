@@ -24,160 +24,151 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav mx-auto">
           <!-- Search container -->
-          <div class="search-container d-flex align-items-center">
-            <!-- Search Icon (always visible) -->
-            <svg
-              class="search-icon me-2"
-              fill="currentColor"
-              viewBox="0 0 16 16"
-            >
-              <path
-                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85.708-.708-3.85-3.85zm-5.242.656
-                   a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"
-              />
-            </svg>
-            <!-- Search input & button visible only on larger screens -->
-            <input
-              id="searchInput"
-              type="text"
-              :placeholder="$t('search')"
-              @keydown.enter="handleSearch"
-              v-model="searchQuery"
-              class="d-none d-lg-block form-control me-2"
-            />
-            <button
-              type="button"
-              @click="handleSearch"
-              class="d-none d-lg-block btn btn-outline-secondary"
-            >
-              {{ $t("search") }}
-            </button>
-          </div>
+          <SearchBar 
+  :current-language="$i18n.locale"
+  :custom-placeholder="$t('search')"
+  :custom-button-text="$t('search')"
+/>
+
         </ul>
         <div class="d-flex align-items-center py-1">
-          <!-- Language Selector Dropdown - New Component -->
+          <!-- Language Selector Dropdown - Always Visible -->
           <LanguageDropdown class="me-3" />
 
-          <!-- Wishlist Icon -->
-          <button class="btn position-relative me-3" @click="goToWishlist">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              fill="currentColor"
-              class="bi bi-heart"
-              viewBox="0 0 16 16"
-            >
-              <path
-                d="M8 2.748c-1.1-1.176-2.785-1.103-3.95.285-1.168 1.395-.593 3.247 1.12 4.722C6.2 9.8 8 11.4 8 11.4s1.8-1.6 3.78-4.095c1.714-1.475 2.288-3.327 1.12-4.722C10.785 1.645 9.1 1.572 8 2.748z"
-              />
-            </svg>
-            <!-- Optional badge for wishlist count -->
-            <span
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-              v-if="wishlistItemCount > 0"
-            >
-              {{ wishlistItemCount }}
-            </span>
-          </button>
+          <!-- Logged Out UI Elements -->
+          <div v-if="!isLoggedIn" class="d-flex align-items-center">
+            <router-link to="/login" class="btn btn-outline-success me-2">
+              {{ $t("login") }}
+            </router-link>
+            <router-link to="/signup" class="btn btn-success">
+              {{ $t("signup") }}
+            </router-link>
+          </div>
 
-          <!-- Shopping Cart Icon -->
-          <button class="btn position-relative me-3" @click="goToCart">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              fill="currentColor"
-              class="bi bi-cart"
-              viewBox="0 0 16 16"
-            >
-              <path
-                d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 
-                   .485.379L2.89 5H14.5a.5.5 0 0 1 
-                   .49.598l-1.5 7A.5.5 0 0 1 
-                   13 13H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM3.102 6l1.313 6h7.17l1.313-6H3.102zM5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"
-              />
-            </svg>
-            <span
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-              v-if="cartItemCount > 0"
-            >
-              {{ cartItemCount }}
-            </span>
-          </button>
-
-          <!-- Account Icon with Dropdown -->
-          <div
-            class="dropdown account-dropdown me-3"
-            @mouseenter="openDropdown"
-            @mouseleave="closeDropdown"
-          >
-            <button
-              class="btn dropdown-toggle p-0"
-              type="button"
-              id="accountDropdown"
-              aria-expanded="dropdownOpen"
-            >
-              <!-- Account SVG Icon -->
+          <!-- Logged In UI Elements -->
+          <div v-else class="d-flex align-items-center">
+            <!-- Wishlist Icon -->
+            <button class="btn position-relative me-3" @click="goToWishlist">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
                 fill="currentColor"
-                class="bi bi-person"
+                class="bi bi-heart"
                 viewBox="0 0 16 16"
               >
-                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
                 <path
-                  fill-rule="evenodd"
-                  d="M8 9a5 5 0 0 0-4.546 2.916.5.5 0 0 0 .832.554A4 4 0 0 1 8 10a4 4 0 0 1 3.714 2.37.5.5 0 0 0 .832-.554A5 5 0 0 0 8 9z"
+                  d="M8 2.748c-1.1-1.176-2.785-1.103-3.95.285-1.168 1.395-.593 3.247 1.12 4.722C6.2 9.8 8 11.4 8 11.4s1.8-1.6 3.78-4.095c1.714-1.475 2.288-3.327 1.12-4.722C10.785 1.645 9.1 1.572 8 2.748z"
                 />
               </svg>
+              <!-- Optional badge for wishlist count -->
+              <span
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                v-if="wishlistItemCount > 0"
+              >
+                {{ wishlistItemCount }}
+              </span>
             </button>
-            <ul
-              class="dropdown-menu"
-              :class="{ show: dropdownOpen }"
-              aria-labelledby="accountDropdown"
+
+            <!-- Shopping Cart Icon -->
+            <button class="btn position-relative me-3" @click="goToCart">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="currentColor"
+                class="bi bi-cart"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 
+                     .485.379L2.89 5H14.5a.5.5 0 0 1 
+                     .49.598l-1.5 7A.5.5 0 0 1 
+                     13 13H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM3.102 6l1.313 6h7.17l1.313-6H3.102zM5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"
+                />
+              </svg>
+              <span
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                v-if="cartItemCount > 0"
+              >
+                {{ cartItemCount }}
+              </span>
+            </button>
+
+            <!-- Account Icon with Dropdown -->
+            <div
+              class="dropdown account-dropdown me-3"
+              @mouseenter="openDropdown"
+              @mouseleave="closeDropdown"
             >
-              <li>
-                <router-link class="dropdown-item" to="/account/profile">
-                  {{ $t("profile") }}
-                </router-link>
-              </li>
-              <li>
-                <router-link class="dropdown-item" to="/account/orders">
-                  {{ $t("orders") }}
-                </router-link>
-              </li>
-              <li>
-                <router-link class="dropdown-item" to="/account/transactions">
-                  {{ $t("transactions") }}
-                </router-link>
-              </li>
-              <li>
-                <router-link
-                  class="dropdown-item"
-                  to="/account/groups-communities"
+              <button
+                class="btn dropdown-toggle p-0"
+                type="button"
+                id="accountDropdown"
+                aria-expanded="dropdownOpen"
+              >
+                <!-- Account SVG Icon -->
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="currentColor"
+                  class="bi bi-person"
+                  viewBox="0 0 16 16"
                 >
-                  {{ $t("groupsCommunities", "Groups") }}
-                </router-link>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  href="/login"
-                  @click.prevent="logout()"
-                >
-                  {{ $t("logout") }}
-                </a>
-              </li>
-            </ul>
+                  <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                  <path
+                    fill-rule="evenodd"
+                    d="M8 9a5 5 0 0 0-4.546 2.916.5.5 0 0 0 .832.554A4 4 0 0 1 8 10a4 4 0 0 1 3.714 2.37.5.5 0 0 0 .832-.554A5 5 0 0 0 8 9z"
+                  />
+                </svg>
+              </button>
+              <ul
+                class="dropdown-menu"
+                :class="{ show: dropdownOpen }"
+                aria-labelledby="accountDropdown"
+              >
+                <li>
+                  <router-link class="dropdown-item" to="/account/profile">
+                    {{ $t("profile") }}
+                  </router-link>
+                </li>
+                <li>
+                  <router-link class="dropdown-item" to="/account/orders">
+                    {{ $t("orders") }}
+                  </router-link>
+                </li>
+                <li>
+                  <router-link class="dropdown-item" to="/account/transactions">
+                    {{ $t("transactions") }}
+                  </router-link>
+                </li>
+                <li>
+                  <router-link
+                    class="dropdown-item"
+                    to="/account/groups-communities"
+                  >
+                    {{ $t("groupsCommunities", "Groups") }}
+                  </router-link>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="#"
+                    @click.prevent="handleLogout"
+                  >
+                    {{ $t("logout") }}
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </nav>
 
+  <!-- Rest of the page content remains the same -->
   <section class="container my-4">
     <div class="row">
       <!-- Large image on the left wrapped in a router-link -->
@@ -220,449 +211,450 @@
 
   <!-- Products Section with Clickable Cards -->
   <div class="products">
-    <section class="newproduct">
-      <div class="container">
-        <div class="categories-header">
-          <p class="h1">{{ $t("products") }}</p>
-          <router-link to="/allproduct" class="view-all">
-            {{ $t("viewAll") }} <span class="arrow">&rarr;</span>
-          </router-link>
-        </div>
-        <div class="container my-5">
-          <div
-            class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4"
-          >
-            <!-- Card 1 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/hybrid-coconut-seedlings' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/hybrid-coconut.jpg"
-                    class="card-img-top"
-                    :alt="$t('hybridCoconutSeedlings')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">
-                      {{ $t("hybridCoconutSeedlings") }}
-                    </h5>
-                    <p class="card-text">{{ $t("currency") }}10</p>
-                  </div>
+  <section class="newproduct">
+    <div class="container">
+      <div class="categories-header">
+        <p class="h1">{{ $t("products") }}</p>
+        <router-link to="/allproduct" class="view-all">
+          {{ $t("viewAll") }} <span class="arrow">&rarr;</span>
+        </router-link>
+      </div>
+      <div class="container my-5">
+        <div
+          class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4"
+        >
+          <!-- Card 1 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/hybrid-coconut-seedlings' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/hybrid-coconut.jpg"
+                  class="card-img-top"
+                  :alt="$t('hybridCoconutSeedlings')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">
+                    {{ $t("hybridCoconutSeedlings") }}
+                  </h5>
+                  <p class="card-text">{{ $t("currency") }}10</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
+          </div>
 
-            <!-- Card 2 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/hybrid-tenera-oil-palm-seedlings' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/hybrid_tenera_oil_palm.jpg"
-                    class="card-img-top"
-                    :alt="$t('hybridTeneraOilPalmSeedlings')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">
-                      {{ $t("hybridTeneraOilPalmSeedlings") }}
-                    </h5>
-                    <p class="card-text">{{ $t("currency") }}15</p>
-                  </div>
+          <!-- Card 2 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/hybrid-tenera-oil-palm-seedlings' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/hybrid_tenera_oil_palm.jpg"
+                  class="card-img-top"
+                  :alt="$t('hybridTeneraOilPalmSeedlings')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">
+                    {{ $t("hybridTeneraOilPalmSeedlings") }}
+                  </h5>
+                  <p class="card-text">{{ $t("currency") }}15</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
+          </div>
 
-            <!-- Card 3 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/tenera-oil-palm-sprouted-seeds' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/tenera_oil_palm_sprouted_seeds.jpg"
-                    class="card-img-top"
-                    :alt="$t('teneraOilPalmSproutedSeeds')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">
-                      {{ $t("teneraOilPalmSproutedSeeds") }}
-                    </h5>
-                    <p class="card-text">{{ $t("currency") }}20</p>
-                  </div>
+          <!-- Card 3 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/tenera-oil-palm-sprouted-seeds' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/tenera_oil_palm_sprouted_seeds.jpg"
+                  class="card-img-top"
+                  :alt="$t('teneraOilPalmSproutedSeeds')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">
+                    {{ $t("teneraOilPalmSproutedSeeds") }}
+                  </h5>
+                  <p class="card-text">{{ $t("currency") }}20</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
+          </div>
 
-            <!-- Card 4 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/black-eyed-pea-cowpea' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/cowpea.jpg"
-                    class="card-img-top"
-                    :alt="$t('blackEyedPeaCowpea')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t("blackEyedPeaCowpea") }}</h5>
-                    <p class="card-text">{{ $t("currency") }}25</p>
-                  </div>
+          <!-- Card 4 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/black-eyed-pea-cowpea' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/cowpea.jpg"
+                  class="card-img-top"
+                  :alt="$t('blackEyedPeaCowpea')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{ $t("blackEyedPeaCowpea") }}</h5>
+                  <p class="card-text">{{ $t("currency") }}25</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
+          </div>
 
-            <!-- Card 5 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/white-maize' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/white-maize.jpg"
-                    class="card-img-top"
-                    :alt="$t('whiteMaize')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t("whiteMaize") }}</h5>
-                    <p class="card-text">{{ $t("currency") }}30</p>
-                  </div>
+          <!-- Card 5 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/white-maize' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/white-maize.jpg"
+                  class="card-img-top"
+                  :alt="$t('whiteMaize')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{ $t("whiteMaize") }}</h5>
+                  <p class="card-text">{{ $t("currency") }}30</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
+          </div>
 
-            <!-- Card 6 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/white-beans' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/white-beans.jpg"
-                    class="card-img-top"
-                    :alt="$t('whiteBeans')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t("whiteBeans") }}</h5>
-                    <p class="card-text">{{ $t("currency") }}35</p>
-                  </div>
+          <!-- Card 6 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/white-beans' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/white-beans.jpg"
+                  class="card-img-top"
+                  :alt="$t('whiteBeans')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{ $t("whiteBeans") }}</h5>
+                  <p class="card-text">{{ $t("currency") }}35</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
+          </div>
 
-            <!-- Card 7 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/cassava' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/cassava.jpeg"
-                    class="card-img-top"
-                    :alt="$t('cassava')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t("cassava") }}</h5>
-                    <p class="card-text">{{ $t("currency") }}40</p>
-                  </div>
+          <!-- Card 7 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/cassava' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/cassava.jpeg"
+                  class="card-img-top"
+                  :alt="$t('cassava')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{ $t("cassava") }}</h5>
+                  <p class="card-text">{{ $t("currency") }}40</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
+          </div>
 
-            <!-- Card 8 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/mung-beans' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/mung-beans.jpg"
-                    class="card-img-top"
-                    :alt="$t('mungBeans')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t("mungBeans") }}</h5>
-                    <p class="card-text">{{ $t("currency") }}45</p>
-                  </div>
+          <!-- Card 8 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/mung-beans' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/mung-beans.jpg"
+                  class="card-img-top"
+                  :alt="$t('mungBeans')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{ $t("mungBeans") }}</h5>
+                  <p class="card-text">{{ $t("currency") }}45</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
+          </div>
 
-            <!-- Card 9 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/red-kidney-beans' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/red-kidney-beans.jpg"
-                    class="card-img-top"
-                    :alt="$t('redKidneyBeans')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t("redKidneyBeans") }}</h5>
-                    <p class="card-text">{{ $t("currency") }}50</p>
-                  </div>
+          <!-- Card 9 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/red-kidney-beans' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/red-kidney-beans.jpg"
+                  class="card-img-top"
+                  :alt="$t('redKidneyBeans')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{ $t("redKidneyBeans") }}</h5>
+                  <p class="card-text">{{ $t("currency") }}50</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
+          </div>
 
-            <!-- Card 10 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/soursop-tea' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/soursop-tea.jpg"
-                    class="card-img-top"
-                    :alt="$t('soursopTea')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t("soursopTea") }}</h5>
-                    <p class="card-text">{{ $t("currency") }}55</p>
-                  </div>
+          <!-- Card 10 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/soursop-tea' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/soursop-tea.jpg"
+                  class="card-img-top"
+                  :alt="$t('soursopTea')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{ $t("soursopTea") }}</h5>
+                  <p class="card-text">{{ $t("currency") }}55</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
           </div>
         </div>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
+</div>
 
-  <!-- New Products Section -->
-  <div class="new-products">
-    <section class="newproduct">
-      <div class="container">
-        <div class="categories-header">
-          <p class="h1">{{ $t("newProducts") }}</p>
-        </div>
-        <div class="container my-5">
-          <div
-            class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4"
-          >
-            <!-- Card 1 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/hybrid-coconut-seedlings' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/hybrid-coconut.jpg"
-                    class="card-img-top"
-                    :alt="$t('hybridCoconutSeedlings')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">
-                      {{ $t("hybridCoconutSeedlings") }}
-                    </h5>
-                    <p class="card-text">{{ $t("currency") }}10</p>
-                  </div>
+<!-- New Products Section -->
+<div class="new-products">
+  <section class="newproduct">
+    <div class="container">
+      <div class="categories-header">
+        <p class="h1">{{ $t("newProducts") }}</p>
+      </div>
+      <div class="container my-5">
+        <div
+          class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4"
+        >
+          <!-- Card 1 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/hybrid-coconut-seedlings' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/hybrid-coconut.jpg"
+                  class="card-img-top"
+                  :alt="$t('hybridCoconutSeedlings')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">
+                    {{ $t("hybridCoconutSeedlings") }}
+                  </h5>
+                  <p class="card-text">{{ $t("currency") }}10</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
+          </div>
 
-            <!-- Card 2 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/hybrid-tenera-oil-palm-seedlings' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/hybrid_tenera_oil_palm.jpg"
-                    class="card-img-top"
-                    :alt="$t('hybridTeneraOilPalmSeedlings')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">
-                      {{ $t("hybridTeneraOilPalmSeedlings") }}
-                    </h5>
-                    <p class="card-text">{{ $t("currency") }}15</p>
-                  </div>
+          <!-- Card 2 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/hybrid-tenera-oil-palm-seedlings' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/hybrid_tenera_oil_palm.jpg"
+                  class="card-img-top"
+                  :alt="$t('hybridTeneraOilPalmSeedlings')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">
+                    {{ $t("hybridTeneraOilPalmSeedlings") }}
+                  </h5>
+                  <p class="card-text">{{ $t("currency") }}15</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
+          </div>
 
-            <!-- Card 3 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/tenera-oil-palm-sprouted-seeds' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/tenera_oil_palm_sprouted_seeds.jpg"
-                    class="card-img-top"
-                    :alt="$t('teneraOilPalmSproutedSeeds')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">
-                      {{ $t("teneraOilPalmSproutedSeeds") }}
-                    </h5>
-                    <p class="card-text">{{ $t("currency") }}20</p>
-                  </div>
+          <!-- Card 3 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/tenera-oil-palm-sprouted-seeds' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/tenera_oil_palm_sprouted_seeds.jpg"
+                  class="card-img-top"
+                  :alt="$t('teneraOilPalmSproutedSeeds')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">
+                    {{ $t("teneraOilPalmSproutedSeeds") }}
+                  </h5>
+                  <p class="card-text">{{ $t("currency") }}20</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
+          </div>
 
-            <!-- Card 4 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/black-eyed-pea-cowpea' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/cowpea.jpg"
-                    class="card-img-top"
-                    :alt="$t('blackEyedPeaCowpea')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t("blackEyedPeaCowpea") }}</h5>
-                    <p class="card-text">{{ $t("currency") }}25</p>
-                  </div>
+          <!-- Card 4 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/black-eyed-pea-cowpea' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/cowpea.jpg"
+                  class="card-img-top"
+                  :alt="$t('blackEyedPeaCowpea')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{ $t("blackEyedPeaCowpea") }}</h5>
+                  <p class="card-text">{{ $t("currency") }}25</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
+          </div>
 
-            <!-- Card 5 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/white-maize' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/white-maize.jpg"
-                    class="card-img-top"
-                    :alt="$t('whiteMaize')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t("whiteMaize") }}</h5>
-                    <p class="card-text">{{ $t("currency") }}30</p>
-                  </div>
+          <!-- Card 5 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/white-maize' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/white-maize.jpg"
+                  class="card-img-top"
+                  :alt="$t('whiteMaize')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{ $t("whiteMaize") }}</h5>
+                  <p class="card-text">{{ $t("currency") }}30</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
+          </div>
 
-            <!-- Card 6 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/white-beans' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/white-beans.jpg"
-                    class="card-img-top"
-                    :alt="$t('whiteBeans')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t("whiteBeans") }}</h5>
-                    <p class="card-text">{{ $t("currency") }}35</p>
-                  </div>
+          <!-- Card 6 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/white-beans' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/white-beans.jpg"
+                  class="card-img-top"
+                  :alt="$t('whiteBeans')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{ $t("whiteBeans") }}</h5>
+                  <p class="card-text">{{ $t("currency") }}35</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
+          </div>
 
-            <!-- Card 7 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/cassava' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/cassava.jpeg"
-                    class="card-img-top"
-                    :alt="$t('cassava')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t("cassava") }}</h5>
-                    <p class="card-text">{{ $t("currency") }}40</p>
-                  </div>
+          <!-- Card 7 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/cassava' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/cassava.jpeg"
+                  class="card-img-top"
+                  :alt="$t('cassava')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{ $t("cassava") }}</h5>
+                  <p class="card-text">{{ $t("currency") }}40</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
+          </div>
 
-            <!-- Card 8 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/mung-beans' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/mung-beans.jpg"
-                    class="card-img-top"
-                    :alt="$t('mungBeans')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t("mungBeans") }}</h5>
-                    <p class="card-text">{{ $t("currency") }}45</p>
-                  </div>
+          <!-- Card 8 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/mung-beans' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/mung-beans.jpg"
+                  class="card-img-top"
+                  :alt="$t('mungBeans')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{ $t("mungBeans") }}</h5>
+                  <p class="card-text">{{ $t("currency") }}45</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
+          </div>
 
-            <!-- Card 9 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/red-kidney-beans' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/red-kidney-beans.jpg"
-                    class="card-img-top"
-                    :alt="$t('redKidneyBeans')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t("redKidneyBeans") }}</h5>
-                    <p class="card-text">{{ $t("currency") }}50</p>
-                  </div>
+          <!-- Card 9 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/red-kidney-beans' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/red-kidney-beans.jpg"
+                  class="card-img-top"
+                  :alt="$t('redKidneyBeans')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{ $t("redKidneyBeans") }}</h5>
+                  <p class="card-text">{{ $t("currency") }}50</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
+          </div>
 
-            <!-- Card 10 -->
-            <div class="col">
-              <router-link
-                :to="{ path: '/product/soursop-tea' }"
-                class="text-decoration-none"
-              >
-                <div class="card h-100">
-                  <img
-                    src="../../assets/soursop-tea.jpg"
-                    class="card-img-top"
-                    :alt="$t('soursopTea')"
-                  />
-                  <div class="card-body text-center">
-                    <h5 class="card-title">{{ $t("soursopTea") }}</h5>
-                    <p class="card-text">{{ $t("currency") }}55</p>
-                  </div>
+          <!-- Card 10 -->
+          <div class="col">
+            <router-link
+              :to="{ path: '/product/soursop-tea' }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  src="../../assets/soursop-tea.jpg"
+                  class="card-img-top"
+                  :alt="$t('soursopTea')"
+                />
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{ $t("soursopTea") }}</h5>
+                  <p class="card-text">{{ $t("currency") }}55</p>
                 </div>
-              </router-link>
-            </div>
+              </div>
+            </router-link>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
+
   </div>
   <ChatBot />
   <Footer />
@@ -670,10 +662,13 @@
 
 <script>
 import { useI18n } from "vue-i18n";
+import { useAuthStore } from "../../stores/auth"; // Import auth store
 import Footer from "../../components/MarketFooter.vue";
 import Categories from "../../components/Categories.vue";
 import LanguageDropdown from "../../components/LanguageDropdown.vue";
 import ChatBot from "../../components/ChatBot.vue";
+import { computed, ref, onMounted } from "vue";
+import SearchBar from "../../components/SearchBar.vue";
 
 export default {
   name: "HomePage",
@@ -682,67 +677,93 @@ export default {
     Categories,
     LanguageDropdown,
     ChatBot,
+    SearchBar,
   },
   setup() {
     const { t } = useI18n();
-    return { t };
-  },
-  data() {
-    return {
-      // Account dropdown properties
-      dropdownOpen: false,
-      dropdownTimeout: null,
-
-      // Search properties
-      searchQuery: "",
-
-      // Cart and wishlist properties
-      cartItemCount: 0,
-      wishlistItemCount: 0,
-      cartItems: [],
+    const authStore = useAuthStore();
+    
+    // Auth state
+    const isLoggedIn = computed(() => !!authStore.token);
+    
+    // Dropdown state
+    const dropdownOpen = ref(false);
+    let dropdownTimeout = null;
+    
+    // Search, cart and wishlist state
+    const cartItems = ref([]);
+    const wishlistItemCount = ref(0);
+    
+    // Methods
+    const openDropdown = () => {
+      if (dropdownTimeout) {
+        clearTimeout(dropdownTimeout);
+        dropdownTimeout = null;
+      }
+      dropdownOpen.value = true;
     };
-  },
-  methods: {
-    // Account dropdown methods
-    openDropdown() {
-      if (this.dropdownTimeout) {
-        clearTimeout(this.dropdownTimeout);
-        this.dropdownTimeout = null;
-      }
-      this.dropdownOpen = true;
-    },
-    closeDropdown() {
-      this.dropdownTimeout = setTimeout(() => {
-        this.dropdownOpen = false;
+    
+    const closeDropdown = () => {
+      dropdownTimeout = setTimeout(() => {
+        dropdownOpen.value = false;
       }, 300);
-    },
-
-    // Navigation methods
-    logout() {
-      console.log("Logging out...");
-      this.$router.push("/login");
-    },
-    handleSearch() {
-      const query = this.searchQuery.trim();
-      if (query) {
-        this.$router.push({
-          name: "SearchResults",
-          query: { q: query },
-        });
+    };
+    
+    const handleLogout = () => {
+      authStore.logout();
+      // Optionally add a success message or redirect
+      location.reload(); // Refresh the page to reflect logged out state
+    };
+    
+    
+    const goToCart = () => {
+      // Check if user is logged in before navigating
+      if (isLoggedIn.value) {
+        window.location.href = "/cart";
+      } else {
+        window.location.href = "/login";
       }
-    },
-    goToCart() {
-      this.$router.push("/cart");
-    },
-    goToWishlist() {
-      this.$router.push("/wishlist");
-    },
-  },
-  computed: {
-    cartItemCount() {
-      return this.cartItems.reduce((total, item) => total + item.quantity, 0);
-    },
-  },
+    };
+    
+    const goToWishlist = () => {
+      // Check if user is logged in before navigating
+      if (isLoggedIn.value) {
+        window.location.href = "/wishlist";
+      } else {
+        window.location.href = "/login";
+      }
+    };
+    
+    // Computed properties
+    const cartItemCount = computed(() => {
+      return cartItems.value.reduce((total, item) => total + item.quantity, 0);
+    });
+    
+    // Check authentication on component mount
+    onMounted(() => {
+      // Check if token exists in localStorage
+      const token = localStorage.getItem("authToken");
+      if (token && !authStore.token) {
+        // Set the auth state if token exists but not set in store
+        authStore.token = token;
+        // Optionally fetch user data
+      }
+    });
+    
+    return {
+      t,
+      isLoggedIn,
+      dropdownOpen,
+      cartItems,
+      wishlistItemCount,
+      openDropdown,
+      closeDropdown,
+      handleLogout,
+      goToCart,
+      goToWishlist,
+      cartItemCount
+    };
+  }
 };
 </script>
 
@@ -832,7 +853,7 @@ body {
 }
 .btn:hover {
   /* background-color: #fff; */
-  color: #198754;
+  color: #f0f1f1;
 }
 .categories-header {
   display: flex;

@@ -18,9 +18,9 @@ export const useProductStore = defineStore("product", {
   },
 
   actions: {
-    // Get auth token from localStorage
+    // Get auth token from localStorage - FIXED to match auth.js store
     getAuthHeaders() {
-      const token = localStorage.getItem("auth_token");
+      const token = localStorage.getItem("authToken");
       return {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -28,7 +28,7 @@ export const useProductStore = defineStore("product", {
     },
 
     getFormDataHeaders() {
-      const token = localStorage.getItem("auth_token");
+      const token = localStorage.getItem("authToken");
       return {
         Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
@@ -41,8 +41,10 @@ export const useProductStore = defineStore("product", {
       this.error = null;
 
       try {
+        // FIXED: URL construction - removed concatenation with apiBaseUrl
         const response = await axios.get(
-          `${this.apiBaseUrl}https://agroconnect.shop/api/delete-product`
+          "https://agroconnect.shop/api/products",
+          { headers: this.getAuthHeaders() }  // Added headers for authorization
         );
 
         // Transform API data to match our product structure
@@ -56,7 +58,7 @@ export const useProductStore = defineStore("product", {
           unit: product.product_unit,
           inStock: parseInt(product.product_qty) || 0,
           image: product.product_img
-            ? `${this.apiBaseUrl}/${product.product_img}`
+            ? `https://agroconnect.shop/${product.product_img}` // Fixed URL path
             : "../src/assets/placeholder.png",
           apiProduct: true, // Flag to identify API products
           originalData: product, // Keep original data for updates
@@ -167,9 +169,9 @@ export const useProductStore = defineStore("product", {
           formData.append("product_img", productData.imageFile);
         }
 
-        // Send to API
+        // FIXED: URL and headers
         const response = await axios.post(
-          `${this.apiBaseUrl}https://agroconnect.shop/api/create-product`,
+          "https://agroconnect.shop/api/create-product",
           formData,
           { headers: this.getFormDataHeaders() }
         );
@@ -186,7 +188,7 @@ export const useProductStore = defineStore("product", {
           unit: apiProduct.product_unit || productData.unit,
           inStock: parseInt(apiProduct.product_qty) || productData.inStock,
           image: apiProduct.product_img
-            ? `${this.apiBaseUrl}/${apiProduct.product_img}`
+            ? `https://agroconnect.shop/${apiProduct.product_img}`
             : productData.image,
           apiProduct: true,
           originalData: apiProduct,
@@ -247,9 +249,9 @@ export const useProductStore = defineStore("product", {
             formData.append("product_img", productData.imageFile);
           }
 
-          // Send to API
+          // FIXED: URL and headers
           const response = await axios.post(
-            `${this.apiBaseUrl}https://agroconnect.shop/api/update-product`,
+            "https://agroconnect.shop/api/update-product",
             formData,
             { headers: this.getFormDataHeaders() }
           );
@@ -271,7 +273,7 @@ export const useProductStore = defineStore("product", {
             inStock:
               parseInt(updatedApiProduct.product_qty) || productData.inStock,
             image: updatedApiProduct.product_img
-              ? `${this.apiBaseUrl}/${updatedApiProduct.product_img}`
+              ? `https://agroconnect.shop/${updatedApiProduct.product_img}`
               : productData.image,
             apiProduct: true,
             originalData: updatedApiProduct,
@@ -322,9 +324,9 @@ export const useProductStore = defineStore("product", {
 
         // If it's an API product, make the API call
         if (product.apiProduct) {
-          // Your API might require a specific endpoint for deletion
+          // FIXED: URL and headers
           await axios.delete(
-            `${this.apiBaseUrl}https://agroconnect.shop/api/delete-product/${productId}`,
+            `https://agroconnect.shop/api/delete-product/${productId}`,
             { headers: this.getAuthHeaders() }
           );
         }
