@@ -2,12 +2,13 @@
 import { defineStore } from "pinia";
 import axios from "axios";
 
+// Make sure the export is properly defined
 export const useProductStore = defineStore("product", {
   state: () => ({
     products: [],
     loading: false,
     error: null,
-    apiBaseUrl: import.meta.env.VITE_API_BASE_URL || "",
+    apiBaseUrl: "https://agroconnect.shop/api", // Fixed API base URL
   }),
 
   getters: {
@@ -20,7 +21,7 @@ export const useProductStore = defineStore("product", {
   actions: {
     // Get auth token from localStorage
     getAuthHeaders() {
-      const token = localStorage.getItem("auth_token");
+      const token = localStorage.getItem("authToken");
       return {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
@@ -28,7 +29,7 @@ export const useProductStore = defineStore("product", {
     },
 
     getFormDataHeaders() {
-      const token = localStorage.getItem("auth_token");
+      const token = localStorage.getItem("authToken");
       return {
         Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
@@ -41,26 +42,82 @@ export const useProductStore = defineStore("product", {
       this.error = null;
 
       try {
-        const response = await axios.get(
-          `${this.apiBaseUrl}https://agroconnect.shop/api/delete-product`
-        );
+        // Try to get the user ID from localStorage
+        let userId = null;
 
-        // Transform API data to match our product structure
-        const apiProducts = response.data.map((product) => ({
-          id: product.id || `#API${Math.floor(Math.random() * 900) + 100}`,
-          name: product.product_name,
-          category: product.product_category,
-          unitPrice: product.product_unit_price?.startsWith("Rs")
-            ? product.product_unit_price
-            : `Rs ${product.product_unit_price}`,
-          unit: product.product_unit,
-          inStock: parseInt(product.product_qty) || 0,
-          image: product.product_img
-            ? `${this.apiBaseUrl}/${product.product_img}`
-            : "../src/assets/placeholder.png",
-          apiProduct: true, // Flag to identify API products
-          originalData: product, // Keep original data for updates
-        }));
+        // Check if user data is stored in localStorage
+        try {
+          const userData = localStorage.getItem("user");
+          if (userData) {
+            const user = JSON.parse(userData);
+            userId = user.id;
+          } else {
+            // If user object isn't available, try to get it from auth token
+            const token = localStorage.getItem("authToken");
+            if (token) {
+              // Optionally fetch user profile if needed
+              // This would require a separate API call to get user details
+            }
+          }
+        } catch (e) {
+          console.error("Error getting user data:", e);
+        }
+
+        // Add user_id as query parameter if available
+        const url = userId
+          ? `${this.apiBaseUrl}/products?user_id=${userId}`
+          : `${this.apiBaseUrl}/products`;
+
+        console.log("Fetching products with URL:", url);
+
+        // Fixed URL to fetch products endpoint with auth headers
+        const response = await axios.get(url, {
+          headers: this.getAuthHeaders(),
+        });
+
+        // Check the structure of response.data
+        console.log("API Response data:", response.data);
+
+        // Handle different response structures
+        let apiProducts = [];
+        if (Array.isArray(response.data)) {
+          // If response.data is already an array of products
+          apiProducts = response.data.map((product) => ({
+            id: product.id || `#API${Math.floor(Math.random() * 900) + 100}`,
+            name: product.product_name,
+            category: product.product_category,
+            unitPrice: product.product_unit_price?.toString().startsWith("Rs")
+              ? product.product_unit_price
+              : `Rs ${product.product_unit_price}`,
+            unit: product.product_unit,
+            inStock: parseInt(product.product_qty) || 0,
+            image: product.product_img
+              ? `https://agroconnect.shop/storage/${product.product_img}`
+              : "../src/assets/placeholder.png",
+            apiProduct: true, // Flag to identify API products
+            originalData: product, // Keep original data for updates
+          }));
+        } else if (response.data.data && Array.isArray(response.data.data)) {
+          // If response.data has a nested data array (common API structure)
+          apiProducts = response.data.data.map((product) => ({
+            id: product.id || `#API${Math.floor(Math.random() * 900) + 100}`,
+            name: product.product_name,
+            category: product.product_category,
+            unitPrice: product.product_unit_price?.toString().startsWith("Rs")
+              ? product.product_unit_price
+              : `Rs ${product.product_unit_price}`,
+            unit: product.product_unit,
+            inStock: parseInt(product.product_qty) || 0,
+            image: product.product_img
+              ? `https://agroconnect.shop/storage/${product.product_img}`
+              : "../src/assets/placeholder.png",
+            apiProduct: true, // Flag to identify API products
+            originalData: product, // Keep original data for updates
+          }));
+        } else {
+          // If it's not in an expected format, log it and use an empty array
+          console.log("Unexpected API response format:", response.data);
+        }
 
         // Add dummy products for development/testing
         const dummyProducts = [
@@ -150,26 +207,35 @@ export const useProductStore = defineStore("product", {
       try {
         // Create form data for the API
         const formData = new FormData();
+
+        // Log what we're sending to help debug
+        console.log("Adding product with data:", productData);
+
+        // Required fields
         formData.append("product_name", productData.name);
         formData.append("product_category", productData.category);
-        formData.append(
-          "product_unit_price",
-          productData.unitPrice.replace("Rs ", "")
-        );
-        formData.append(
-          "product_price",
-          productData.unitPrice.replace("Rs ", "")
-        );
+
+        // Handle price formatting - remove currency symbol if present
+        const unitPrice = productData.unitPrice.replace("Rs ", "").trim();
+        formData.append("product_unit_price", unitPrice);
+        formData.append("product_price", unitPrice);
+
         formData.append("product_unit", productData.unit);
         formData.append("product_qty", productData.inStock.toString());
 
+        // Add image if available - this should be a file, not a string
         if (productData.imageFile) {
           formData.append("product_img", productData.imageFile);
         }
 
-        // Send to API
+        // For debugging - log FormData contents
+        for (let pair of formData.entries()) {
+          console.log(pair[0] + ": " + pair[1]);
+        }
+
+        // Fixed URL for creating product
         const response = await axios.post(
-          `${this.apiBaseUrl}https://agroconnect.shop/api/create-product`,
+          `${this.apiBaseUrl}/create-product`,
           formData,
           { headers: this.getFormDataHeaders() }
         );
@@ -180,13 +246,13 @@ export const useProductStore = defineStore("product", {
           id: apiProduct.id || `#API${Math.floor(Math.random() * 900) + 100}`,
           name: apiProduct.product_name || productData.name,
           category: apiProduct.product_category || productData.category,
-          unitPrice: apiProduct.product_unit_price?.startsWith("Rs")
+          unitPrice: apiProduct.product_unit_price?.toString().startsWith("Rs")
             ? apiProduct.product_unit_price
             : `Rs ${apiProduct.product_unit_price || productData.unitPrice}`,
           unit: apiProduct.product_unit || productData.unit,
           inStock: parseInt(apiProduct.product_qty) || productData.inStock,
           image: apiProduct.product_img
-            ? `${this.apiBaseUrl}/${apiProduct.product_img}`
+            ? `https://agroconnect.shop/storage/${apiProduct.product_img}`
             : productData.image,
           apiProduct: true,
           originalData: apiProduct,
@@ -196,6 +262,10 @@ export const useProductStore = defineStore("product", {
         return { success: true, product: newProduct };
       } catch (error) {
         console.error("Error adding product:", error);
+        // Log detailed validation errors if available
+        if (error.response && error.response.data) {
+          console.log("Validation errors:", error.response.data);
+        }
         this.error = "Failed to add product to the API.";
 
         // Fallback: Add as dummy product if API fails
@@ -247,9 +317,9 @@ export const useProductStore = defineStore("product", {
             formData.append("product_img", productData.imageFile);
           }
 
-          // Send to API
-          const response = await axios.post(
-            `${this.apiBaseUrl}https://agroconnect.shop/api/update-product`,
+          // Fixed URL for updating product
+          const response = await axios.put(
+            `${this.apiBaseUrl}/update-product/${productData.id}`,
             formData,
             { headers: this.getFormDataHeaders() }
           );
@@ -261,7 +331,9 @@ export const useProductStore = defineStore("product", {
             name: updatedApiProduct.product_name || productData.name,
             category:
               updatedApiProduct.product_category || productData.category,
-            unitPrice: updatedApiProduct.product_unit_price?.startsWith("Rs")
+            unitPrice: updatedApiProduct.product_unit_price
+              ?.toString()
+              .startsWith("Rs")
               ? updatedApiProduct.product_unit_price
               : `Rs ${
                   updatedApiProduct.product_unit_price ||
@@ -271,7 +343,7 @@ export const useProductStore = defineStore("product", {
             inStock:
               parseInt(updatedApiProduct.product_qty) || productData.inStock,
             image: updatedApiProduct.product_img
-              ? `${this.apiBaseUrl}/${updatedApiProduct.product_img}`
+              ? `https://agroconnect.shop/storage/${updatedApiProduct.product_img}`
               : productData.image,
             apiProduct: true,
             originalData: updatedApiProduct,
@@ -322,11 +394,10 @@ export const useProductStore = defineStore("product", {
 
         // If it's an API product, make the API call
         if (product.apiProduct) {
-          // Your API might require a specific endpoint for deletion
-          await axios.delete(
-            `${this.apiBaseUrl}https://agroconnect.shop/api/delete-product/${productId}`,
-            { headers: this.getAuthHeaders() }
-          );
+          // Fixed URL for deleting product
+          await axios.delete(`${this.apiBaseUrl}/delete-product/${productId}`, {
+            headers: this.getAuthHeaders(),
+          });
         }
 
         // Remove the product from local array

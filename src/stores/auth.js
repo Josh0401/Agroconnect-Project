@@ -252,6 +252,11 @@ export const useAuthStore = defineStore("auth", {
         this.account_type = user?.account_type || "";
         console.log("[Auth Store] Account type set to:", this.account_type);
 
+        if (user) {
+          // Save user object to localStorage for later use
+          localStorage.setItem("user", JSON.stringify(user));
+        }
+
         if (token) {
           localStorage.setItem("authToken", token);
           localStorage.setItem("account_type", this.account_type);
