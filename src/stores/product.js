@@ -92,7 +92,7 @@ export const useProductStore = defineStore("product", {
             unit: product.product_unit,
             inStock: parseInt(product.product_qty) || 0,
             image: product.product_img
-              ? `https://agroconnect.shop/storage/${product.product_img}`
+              ? `https://agroconnect.shop/public/storage/${product.product_img}`
               : "../src/assets/placeholder.png",
             apiProduct: true, // Flag to identify API products
             originalData: product, // Keep original data for updates
@@ -109,7 +109,7 @@ export const useProductStore = defineStore("product", {
             unit: product.product_unit,
             inStock: parseInt(product.product_qty) || 0,
             image: product.product_img
-              ? `https://agroconnect.shop/storage/${product.product_img}`
+              ? `https://agroconnect.shop/public/storage/${product.product_img}`
               : "../src/assets/placeholder.png",
             apiProduct: true, // Flag to identify API products
             originalData: product, // Keep original data for updates
@@ -240,8 +240,33 @@ export const useProductStore = defineStore("product", {
           { headers: this.getFormDataHeaders() }
         );
 
+        // Debug the API response
+        console.log("Add product API response:", response.data);
+        console.log("Image path from API:", response.data.product_img);
+
         // Add the new product to the local array
         const apiProduct = response.data;
+
+        // Try different approaches to get the correct image URL
+        let imageUrl;
+
+        // Check if the API response includes a complete URL
+        if (
+          apiProduct.product_img &&
+          apiProduct.product_img.startsWith("http")
+        ) {
+          // If it's already a full URL, use it directly
+          imageUrl = apiProduct.product_img;
+        } else if (apiProduct.product_img) {
+          // If it's a path, try different combinations
+          // Option 1: Standard pattern
+          imageUrl = `https://agroconnect.shop/public/storage/${apiProduct.product_img}`;
+          console.log("Constructed image URL:", imageUrl);
+        } else {
+          // Fallback to the image in the form
+          imageUrl = productData.image;
+        }
+
         const newProduct = {
           id: apiProduct.id || `#API${Math.floor(Math.random() * 900) + 100}`,
           name: apiProduct.product_name || productData.name,
@@ -251,9 +276,7 @@ export const useProductStore = defineStore("product", {
             : `Rs ${apiProduct.product_unit_price || productData.unitPrice}`,
           unit: apiProduct.product_unit || productData.unit,
           inStock: parseInt(apiProduct.product_qty) || productData.inStock,
-          image: apiProduct.product_img
-            ? `https://agroconnect.shop/storage/${apiProduct.product_img}`
-            : productData.image,
+          image: imageUrl,
           apiProduct: true,
           originalData: apiProduct,
         };
@@ -324,8 +347,35 @@ export const useProductStore = defineStore("product", {
             { headers: this.getFormDataHeaders() }
           );
 
+          // Debug the API response
+          console.log("Update product API response:", response.data);
+          console.log(
+            "Updated image path from API:",
+            response.data.product_img
+          );
+
           // Create updated product object
           const updatedApiProduct = response.data;
+
+          // Try different approaches to get the correct image URL
+          let imageUrl;
+
+          // Check if the API response includes a complete URL
+          if (
+            updatedApiProduct.product_img &&
+            updatedApiProduct.product_img.startsWith("http")
+          ) {
+            // If it's already a full URL, use it directly
+            imageUrl = updatedApiProduct.product_img;
+          } else if (updatedApiProduct.product_img) {
+            // If it's a path, try the standard pattern
+            imageUrl = `https://agroconnect.shop/public/storage/${updatedApiProduct.product_img}`;
+            console.log("Constructed updated image URL:", imageUrl);
+          } else {
+            // Fallback to the existing image
+            imageUrl = productData.image;
+          }
+
           const updatedProduct = {
             id: updatedApiProduct.id || productData.id,
             name: updatedApiProduct.product_name || productData.name,
@@ -342,9 +392,7 @@ export const useProductStore = defineStore("product", {
             unit: updatedApiProduct.product_unit || productData.unit,
             inStock:
               parseInt(updatedApiProduct.product_qty) || productData.inStock,
-            image: updatedApiProduct.product_img
-              ? `https://agroconnect.shop/storage/${updatedApiProduct.product_img}`
-              : productData.image,
+            image: imageUrl,
             apiProduct: true,
             originalData: updatedApiProduct,
           };
