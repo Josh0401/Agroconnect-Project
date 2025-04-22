@@ -211,106 +211,6 @@
                 </div>
               </router-link>
             </div>
-
-            <!-- Card 11: Proteins -->
-            <div class="col">
-              <router-link
-                :to="{
-                  name: 'FilteredCategoriesPage',
-                  query: { category: 'Proteins' },
-                }"
-                class="card h-100"
-              >
-                <img
-                  src="../assets/protein.png"
-                  class="card-img-top"
-                  alt="Proteins"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t('proteins') }}</h5>
-                </div>
-              </router-link>
-            </div>
-
-            <!-- Card 12: Baking Ingredients -->
-            <div class="col">
-              <router-link
-                :to="{
-                  name: 'FilteredCategoriesPage',
-                  query: { category: 'Baking Ingredients' },
-                }"
-                class="card h-100"
-              >
-                <img
-                  src="../assets/baking.png"
-                  class="card-img-top"
-                  alt="Baking Ingredients"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t('bakingIngredients') }}</h5>
-                </div>
-              </router-link>
-            </div>
-
-            <!-- Card 13: Snacks and Pastries -->
-            <div class="col">
-              <router-link
-                :to="{
-                  name: 'FilteredCategoriesPage',
-                  query: { category: 'Snacks and Pastries' },
-                }"
-                class="card h-100"
-              >
-                <img
-                  src="../assets/snack.png"
-                  class="card-img-top"
-                  alt="Snacks and Pastries"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t('snacksAndPastries') }}</h5>
-                </div>
-              </router-link>
-            </div>
-
-            <!-- Card 14: Cereals and Beverages -->
-            <div class="col">
-              <router-link
-                :to="{
-                  name: 'FilteredCategoriesPage',
-                  query: { category: 'Cereals and Beverages' },
-                }"
-                class="card h-100"
-              >
-                <img
-                  src="../assets/cereal.png"
-                  class="card-img-top"
-                  alt="Cereals"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t('cerealsAndBeverages') }}</h5>
-                </div>
-              </router-link>
-            </div>
-
-            <!-- Card 15: Fresh Vegetables -->
-            <div class="col">
-              <router-link
-                :to="{
-                  name: 'FilteredCategoriesPage',
-                  query: { category: 'Fresh Vegetables' },
-                }"
-                class="card h-100"
-              >
-                <img
-                  src="../assets/fresh-veg.png"
-                  class="card-img-top"
-                  alt="Fresh Vegetables"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t('freshVegetables') }}</h5>
-                </div>
-              </router-link>
-            </div>
           </div>
         </div>
       </div>
@@ -329,6 +229,7 @@ export default {
   },
   data() {
     return {
+      // Just keeping the first 10 categories
       categories: [
         "Herbs and Spices",
         "Fresh Fruits",
@@ -339,12 +240,7 @@ export default {
         "Dairy Products",
         "Processed Foods",
         "Agro Chemicals",
-        "Diabetics",
-        "Proteins",
-        "Baking Ingredients",
-        "Snacks and Pastries",
-        "Cereals and Beverages",
-        "Fresh Vegetables",
+        "Diabetics"
       ],
     };
   },
@@ -352,7 +248,7 @@ export default {
 </script>
 
 <style>
-/* (Your existing styles remain unchanged) */
+/* Styles remain unchanged */
 .nav-item.dropdown:hover .dropdown-menu {
   display: block;
   margin-top: 0;
@@ -437,7 +333,7 @@ a {
 }
 .btn:hover {
   /* background-color: #fff; */
-  color: #198754;
+  color: #f2f4f3;
 }
 .categories-header {
   display: flex;

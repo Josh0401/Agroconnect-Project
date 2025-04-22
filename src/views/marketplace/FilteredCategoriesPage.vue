@@ -61,126 +61,144 @@
             @language-changed="handleLanguageChange"
           />
 
-          <!-- Wishlist Icon -->
-          <button class="btn position-relative me-3" @click="goToWishlist">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              fill="currentColor"
-              class="bi bi-heart"
-              viewBox="0 0 16 16"
-            >
-              <path
-                d="M8 2.748c-1.1-1.176-2.785-1.103-3.95.285-1.168 1.395-.593 3.247 1.12 4.722C6.2 9.8 8 11.4 8 11.4s1.8-1.6 3.78-4.095c1.714-1.475 2.288-3.327 1.12-4.722C10.785 1.645 9.1 1.572 8 2.748z"
-              />
-            </svg>
-            <!-- Optional badge for wishlist count -->
-            <span
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-              v-if="wishlistItemCount > 0"
-            >
-              {{ wishlistItemCount }}
-            </span>
-          </button>
+          <!-- Logged out state -->
+          <div v-if="!isLoggedIn" class="d-flex align-items-center">
+            <router-link to="/login" class="btn btn-outline-success me-2">
+              {{ t.login || "Login" }}
+            </router-link>
+            <router-link to="/register" class="btn btn-success">
+              {{ t.register || "Register" }}
+            </router-link>
+          </div>
 
-          <!-- Shopping Cart Icon -->
-          <button class="btn position-relative me-3" @click="goToCart">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              fill="currentColor"
-              class="bi bi-cart"
-              viewBox="0 0 16 16"
-            >
-              <path
-                d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 
-                   .485.379L2.89 5H14.5a.5.5 0 0 1 
-                   .49.598l-1.5 7A.5.5 0 0 1 
-                   13 13H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM3.102 6l1.313 6h7.17l1.313-6H3.102zM5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"
-              />
-            </svg>
-            <span
-              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-              v-if="cartItemCount > 0"
-            >
-              {{ cartItemCount }}
-            </span>
-          </button>
-
-          <!-- Account Icon with Dropdown -->
-          <div
-            class="dropdown account-dropdown me-3"
-            @mouseenter="openDropdown"
-            @mouseleave="closeDropdown"
-          >
-            <button
-              class="btn dropdown-toggle p-0"
-              type="button"
-              id="accountDropdown"
-              aria-expanded="dropdownOpen"
-            >
-              <!-- Account SVG Icon -->
+          <!-- Logged in state -->
+          <div v-else class="d-flex align-items-center">
+            <!-- Wishlist Icon -->
+            <button class="btn position-relative me-3" @click="goToWishlist">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
                 fill="currentColor"
-                class="bi bi-person"
+                class="bi bi-heart"
                 viewBox="0 0 16 16"
               >
-                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
                 <path
-                  fill-rule="evenodd"
-                  d="M8 9a5 5 0 0 0-4.546 2.916.5.5 0 0 0 .832.554A4 4 0 0 1 8 10a4 4 0 0 1 3.714 2.37.5.5 0 0 0 .832-.554A5 5 0 0 0 8 9z"
+                  d="M8 2.748c-1.1-1.176-2.785-1.103-3.95.285-1.168 1.395-.593 3.247 1.12 4.722C6.2 9.8 8 11.4 8 11.4s1.8-1.6 3.78-4.095c1.714-1.475 2.288-3.327 1.12-4.722C10.785 1.645 9.1 1.572 8 2.748z"
                 />
               </svg>
+              <!-- Optional badge for wishlist count -->
+              <span
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                v-if="wishlistItemCount > 0"
+              >
+                {{ wishlistItemCount }}
+              </span>
             </button>
-            <ul
-              class="dropdown-menu"
-              :class="{ show: dropdownOpen }"
-              aria-labelledby="accountDropdown"
+
+            <!-- Shopping Cart Icon -->
+            <button class="btn position-relative me-3" @click="goToCart">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="currentColor"
+                class="bi bi-cart"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 
+                   .485.379L2.89 5H14.5a.5.5 0 0 1 
+                   .49.598l-1.5 7A.5.5 0 0 1 
+                   13 13H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM3.102 6l1.313 6h7.17l1.313-6H3.102zM5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"
+                />
+              </svg>
+              <span
+                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                v-if="cartItemCount > 0"
+              >
+                {{ cartItemCount }}
+              </span>
+            </button>
+
+            <!-- Account Icon with Dropdown -->
+            <div
+              class="dropdown account-dropdown me-3"
+              @mouseenter="openDropdown"
+              @mouseleave="closeDropdown"
             >
-              <li>
-                <router-link class="dropdown-item" to="/account/profile">
-                  {{ t.profile || "Profile" }}
-                </router-link>
-              </li>
-              <li>
-                <router-link class="dropdown-item" to="/account/orders">
-                  {{ t.orders || "Orders" }}
-                </router-link>
-              </li>
-              <li>
-                <router-link class="dropdown-item" to="/account/transactions">
-                  {{ t.transactions || "Transactions" }}
-                </router-link>
-              </li>
-              <li>
-                <router-link
-                  class="dropdown-item"
-                  to="/account/groups-communities"
+              <button
+                class="btn dropdown-toggle p-0"
+                type="button"
+                id="accountDropdown"
+                aria-expanded="dropdownOpen"
+              >
+                <!-- Account SVG Icon -->
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="currentColor"
+                  class="bi bi-person"
+                  viewBox="0 0 16 16"
                 >
-                  {{ t.groupsCommunities || "Groups" }}
-                </router-link>
-              </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  href="/login"
-                  @click.prevent="logout()"
-                >
-                  {{ t.logout || "Logout" }}
-                </a>
-              </li>
-            </ul>
+                  <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                  <path
+                    fill-rule="evenodd"
+                    d="M8 9a5 5 0 0 0-4.546 2.916.5.5 0 0 0 .832.554A4 4 0 0 1 8 10a4 4 0 0 1 3.714 2.37.5.5 0 0 0 .832-.554A5 5 0 0 0 8 9z"
+                  />
+                </svg>
+              </button>
+              <ul
+                class="dropdown-menu"
+                :class="{ show: dropdownOpen }"
+                aria-labelledby="accountDropdown"
+              >
+                <li>
+                  <router-link class="dropdown-item" to="/account/profile">
+                    {{ t.profile || "Profile" }}
+                  </router-link>
+                </li>
+                <li>
+                  <router-link class="dropdown-item" to="/account/orders">
+                    {{ t.orders || "Orders" }}
+                  </router-link>
+                </li>
+                <li>
+                  <router-link class="dropdown-item" to="/account/transactions">
+                    {{ t.transactions || "Transactions" }}
+                  </router-link>
+                </li>
+                <li>
+                  <router-link
+                    class="dropdown-item"
+                    to="/account/groups-communities"
+                  >
+                    {{ t.groupsCommunities || "Groups" }}
+                  </router-link>
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    href="/login"
+                    @click.prevent="logout()"
+                  >
+                    {{ t.logout || "Logout" }}
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </nav>
   <div class="container py-4">
+    <div class="container mt-3">
+    <router-link to="/market" class="back-to-market">
+      <span class="arrow-left">&#8592;</span> Back to Marketplace
+    </router-link>
+  </div>
     <div class="row">
       <!-- Sidebar: Categories -->
       <aside class="col-md-3 mb-4">
@@ -252,6 +270,8 @@ export default {
 
   data() {
     return {
+      // Authentication state
+      isLoggedIn: false,
       // Language properties
       currentLanguage: "en",
       t: translations.en, // Default to English
@@ -339,9 +359,26 @@ export default {
       route.query.category && this.categories.includes(route.query.category)
         ? route.query.category
         : this.categories[0];
+        
+    // Check if user is logged in
+    this.checkLoginStatus();
   },
 
   methods: {
+    // Check login status
+    checkLoginStatus() {
+      // In a real application, you would check with your authentication service
+      // For now, we'll use localStorage as a simple example
+      const token = localStorage.getItem('authToken');
+      this.isLoggedIn = !!token;
+    },
+    
+    // Login method (for development purposes)
+    login() {
+      localStorage.setItem('authToken', 'sample-token');
+      this.isLoggedIn = true;
+    },
+    
     selectCategory(category) {
       this.selectedCategory = category;
       // Optionally, you could update the URL query parameter here as well.
@@ -362,6 +399,9 @@ export default {
 
     logout() {
       console.log("Logging out...");
+      // Remove auth token
+      localStorage.removeItem('authToken');
+      this.isLoggedIn = false;
       this.$router.push("/login");
     },
     handleSearch() {
@@ -384,10 +424,26 @@ export default {
     },
 
     goToCart() {
-      this.$router.push("/cart");
+      if (this.isLoggedIn) {
+        this.$router.push("/cart");
+      } else {
+        // Redirect to login with return URL
+        this.$router.push({
+          path: "/login",
+          query: { redirect: "/cart" }
+        });
+      }
     },
     goToWishlist() {
-      this.$router.push("/wishlist");
+      if (this.isLoggedIn) {
+        this.$router.push("/wishlist");
+      } else {
+        // Redirect to login with return URL
+        this.$router.push({
+          path: "/login",
+          query: { redirect: "/wishlist" }
+        });
+      }
     },
   },
   mounted() {
@@ -493,7 +549,7 @@ body {
 }
 .btn:hover {
   /* background-color: #fff; */
-  color: #198754;
+  color: #e5ece9;
 }
 .categories-header {
   display: flex;

@@ -38,6 +38,7 @@ import LoginSeller from "../views/auth/LoginSeller.vue";
 import TransactionsPage from "../views/account/TransactionsPage.vue";
 import FilteredCategoriesPage from "../views/marketplace/FilteredCategoriesPage.vue";
 import GroupsCommunitiesPage from "../views/account/GroupsCommunitiesPage.vue";
+import SearchResults from "../views/marketplace/SearchResults.vue"; // Import the new SearchResults component
 //import Categories from "../components/Categories.vue";
 //import MarketPlaceHome from "../views/MarketPlaceHome.vue";
 // import About from "@/views/About.vue";
@@ -230,7 +231,7 @@ const routes = [
   {
     path: "/filtered-categories",
     name: "FilteredCategoriesPage",
-    component: () => import("../views/marketplace/FilteredCategoriesPage.vue"),
+    component: FilteredCategoriesPage,
     meta: { hideHeader: true, hideFooter: true },
   },
   {
@@ -241,6 +242,13 @@ const routes = [
   {
     path: "/account/transactions",
     component: TransactionsPage,
+    meta: { hideHeader: true, hideFooter: true },
+  },
+  // Add the new route for search results
+  {
+    path: "/search",
+    name: "SearchResults",
+    component: SearchResults, 
     meta: { hideHeader: true, hideFooter: true },
   },
 ];

@@ -19,8 +19,9 @@ export const useProductStore = defineStore("product", {
   },
 
   actions: {
-    // Get auth token from localStorage
+    // Get auth token from localStorage - FIXED to match auth.js store
     getAuthHeaders() {
+      const token = localStorage.getItem("authToken");
       const token = localStorage.getItem("authToken");
       return {
         Authorization: `Bearer ${token}`,
@@ -29,6 +30,7 @@ export const useProductStore = defineStore("product", {
     },
 
     getFormDataHeaders() {
+      const token = localStorage.getItem("authToken");
       const token = localStorage.getItem("authToken");
       return {
         Authorization: `Bearer ${token}`,

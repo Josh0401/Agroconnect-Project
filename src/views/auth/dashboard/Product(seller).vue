@@ -68,7 +68,7 @@
       </div>
 
       <!-- Products Table -->
-      <div v-else class="table-responsive">
+      <div v-else-if="filteredProducts.length > 0" class="table-responsive">
         <table class="table table-borderless align-middle">
           <thead>
             <tr class="text-secondary">
@@ -90,6 +90,7 @@
                   alt="Product"
                   class="rounded-circle me-2"
                   style="width: 40px; height: 40px; object-fit: cover"
+                  @error="handleImageError($event, product)"
                 />
                 {{ product.name }}
               </td>
@@ -140,6 +141,13 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      
+      <!-- No Products State -->
+      <div v-else class="text-center py-5">
+        <i class="fa-solid fa-box-open fa-3x text-muted mb-3"></i>
+        <p class="lead">No products found</p>
+        <p class="text-muted">Try changing your search or filter criteria, or add a new product.</p>
       </div>
     </div>
 
@@ -451,6 +459,9 @@ export default {
     const filteredProducts = computed(() => {
       let result = productStore.getProducts;
 
+      // Print debug info
+      console.log("Products count:", result.length);
+
       if (searchQuery.value) {
         const query = searchQuery.value.toLowerCase();
         result = result.filter(
@@ -471,12 +482,25 @@ export default {
 
     // Fetch products on component mount
     onMounted(() => {
+      console.log("Component mounted, fetching products");
       fetchProducts();
     });
 
     // Methods
     const fetchProducts = async () => {
-      await productStore.fetchProducts();
+      console.log("Fetching products...");
+      try {
+        await productStore.fetchProducts();
+        console.log("Products fetched:", productStore.getProducts.length);
+      } catch (error) {
+        console.error("Error in component while fetching products:", error);
+      }
+    };
+
+    const handleImageError = (event, product) => {
+      // Replace with a default image if the image fails to load
+      event.target.src = "../src/assets/placeholder.png";
+      console.log(`Image failed to load for product ${product.id}, using fallback`);
     };
 
     const openModal = () => {
@@ -535,8 +559,13 @@ export default {
 
     const handleAddProduct = async () => {
       if (validateForm()) {
-        await productStore.addProduct(newProduct.value);
-        closeModal();
+        try {
+          await productStore.addProduct(newProduct.value);
+          closeModal();
+        } catch (error) {
+          console.error("Error adding product:", error);
+          errors.value.general = "Failed to add product. Please try again.";
+        }
       }
     };
 
@@ -569,19 +598,30 @@ export default {
     };
 
     const handleUpdateProduct = async () => {
-      await productStore.updateProduct(editingProduct.value);
-      closeEditModal();
+      try {
+        await productStore.updateProduct(editingProduct.value);
+        closeEditModal();
+      } catch (error) {
+        console.error("Error updating product:", error);
+        alert("Failed to update product. Please try again.");
+      }
     };
 
     const deleteProduct = async (productId) => {
       if (confirm(`Are you sure you want to delete this product?`)) {
-        await productStore.deleteProduct(productId);
-        activeActionIndex.value = null;
+        try {
+          await productStore.deleteProduct(productId);
+          activeActionIndex.value = null;
+        } catch (error) {
+          console.error("Error deleting product:", error);
+          alert("Failed to delete product. Please try again.");
+        }
       }
     };
 
     const filterProducts = () => {
       // This is handled by the computed property
+      console.log("Filtering products with query:", searchQuery.value);
     };
 
     return {
@@ -609,6 +649,7 @@ export default {
       handleUpdateProduct,
       deleteProduct,
       filterProducts,
+      handleImageError
     };
   },
 };
