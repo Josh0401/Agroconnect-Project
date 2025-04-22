@@ -12,14 +12,81 @@
       </div>
       <!-- Key Metrics Cards -->
       <div class="row g-3">
-        <div
-          class="col-md-3 col-sm-6"
-          v-for="(card, index) in keyMetrics"
-          :key="index"
-        >
-          <div class="card dashboard-card p-3" :class="card.color">
-            <h6 class="text-muted">{{ card.title }}</h6>
-            <h3 class="fw-bold">{{ card.value }}</h3>
+        <!-- Total Sales Card with Graph -->
+        <div class="col-md-3 col-sm-6">
+          <div class="card dashboard-card p-3 card-total-sales">
+            <h6 class="text-muted">Total Sales</h6>
+            <h3 class="fw-bold">Rs 4,000,000</h3>
+            <div class="chart-container mt-2">
+              <!-- Simple SVG Line Chart -->
+              <svg width="100%" height="60" viewBox="0 0 100 30" preserveAspectRatio="none">
+                <polyline
+                  fill="rgba(0, 77, 64, 0.1)"
+                  stroke="#004d40"
+                  stroke-width="1"
+                  points="0,25 20,20 40,22 60,10 80,15 100,5"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total Products Card with Bar Chart -->
+        <div class="col-md-3 col-sm-6">
+          <div class="card dashboard-card p-3 card-total-products">
+            <h6 class="text-muted">Total Products</h6>
+            <h3 class="fw-bold">16</h3>
+            <div class="chart-container mt-2">
+              <!-- Simple SVG Bar Chart -->
+              <svg width="100%" height="60" viewBox="0 0 100 30" preserveAspectRatio="none">
+                <rect x="10" y="5" width="10" height="25" fill="rgba(121, 85, 155, 0.5)" />
+                <rect x="30" y="15" width="10" height="15" fill="rgba(149, 117, 178, 0.5)" />
+                <rect x="50" y="10" width="10" height="20" fill="rgba(177, 149, 201, 0.5)" />
+                <rect x="70" y="12" width="10" height="18" fill="rgba(209, 196, 233, 0.5)" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Redesigned Pending Sales Card -->
+        <div class="col-md-3 col-sm-6">
+          <div class="card dashboard-card p-3 card-pending-sales">
+            <div class="pending-sales-content">
+              <div class="pending-icon-container mb-2">
+                <i class="fas fa-hourglass-half"></i>
+              </div>
+              <h6 class="text-muted">Pending Sales</h6>
+              <h3 class="fw-bold">0</h3>
+              <div class="progress mt-2" style="height: 8px">
+                <div
+                  class="progress-bar bg-warning"
+                  role="progressbar"
+                  style="width: 0%"
+                  aria-valuenow="0"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Completed Sales Card with Graph -->
+        <div class="col-md-3 col-sm-6">
+          <div class="card dashboard-card p-3 card-completed-sales">
+            <h6 class="text-muted">Completed Sales</h6>
+            <h3 class="fw-bold">71</h3>
+            <div class="chart-container mt-2">
+              <!-- Simple SVG Line Chart -->
+              <svg width="100%" height="60" viewBox="0 0 100 30" preserveAspectRatio="none">
+                <polyline
+                  fill="rgba(2, 119, 189, 0.1)"
+                  stroke="#0277bd"
+                  stroke-width="1"
+                  points="0,20 20,15 40,10 60,18 80,8 100,12"
+                />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -27,15 +94,73 @@
       <!-- Additional Metrics -->
       <div class="row mt-4">
         <div class="col-md-6">
-          <div class="card dashboard-card p-3">
+          <div class="card dashboard-card p-3 larger-card">
             <h6>Total Orders (Last 7 days)</h6>
             <h4>{{ ordersLast7days }}</h4>
+            <div class="chart-container-large mt-3">
+              <!-- SVG Bar Chart for Orders -->
+              <svg width="100%" height="180" viewBox="0 0 100 50" preserveAspectRatio="none">
+                <g class="grid-lines">
+                  <line x1="0" y1="0" x2="100" y2="0" stroke="#e0e0e0" stroke-width="0.5" />
+                  <line x1="0" y1="12.5" x2="100" y2="12.5" stroke="#e0e0e0" stroke-width="0.5" />
+                  <line x1="0" y1="25" x2="100" y2="25" stroke="#e0e0e0" stroke-width="0.5" />
+                  <line x1="0" y1="37.5" x2="100" y2="37.5" stroke="#e0e0e0" stroke-width="0.5" />
+                  <line x1="0" y1="50" x2="100" y2="50" stroke="#e0e0e0" stroke-width="0.5" />
+                </g>
+                <rect x="2" y="30" width="8" height="20" fill="rgba(75, 192, 192, 0.5)" />
+                <rect x="16" y="20" width="8" height="30" fill="rgba(75, 192, 192, 0.5)" />
+                <rect x="30" y="35" width="8" height="15" fill="rgba(75, 192, 192, 0.5)" />
+                <rect x="44" y="15" width="8" height="35" fill="rgba(75, 192, 192, 0.5)" />
+                <rect x="58" y="25" width="8" height="25" fill="rgba(75, 192, 192, 0.5)" />
+                <rect x="72" y="30" width="8" height="20" fill="rgba(75, 192, 192, 0.5)" />
+                <rect x="86" y="27" width="8" height="23" fill="rgba(75, 192, 192, 0.5)" />
+              </svg>
+            </div>
+            <!-- Simple days row -->
+            <div class="simple-days-row">
+              <div>Mon</div>
+              <div>Tue</div>
+              <div>Wed</div>
+              <div>Thu</div>
+              <div>Fri</div>
+              <div>Sat</div>
+              <div>Sun</div>
+            </div>
           </div>
         </div>
         <div class="col-md-6">
-          <div class="card dashboard-card p-3">
+          <div class="card dashboard-card p-3 larger-card">
             <h6>Total Profit (Last 7 days)</h6>
             <h4>{{ profitLast7days }}</h4>
+            <div class="chart-container-large mt-3">
+              <!-- SVG Bar Chart for Profit -->
+              <svg width="100%" height="180" viewBox="0 0 100 50" preserveAspectRatio="none">
+                <g class="grid-lines">
+                  <line x1="0" y1="0" x2="100" y2="0" stroke="#e0e0e0" stroke-width="0.5" />
+                  <line x1="0" y1="12.5" x2="100" y2="12.5" stroke="#e0e0e0" stroke-width="0.5" />
+                  <line x1="0" y1="25" x2="100" y2="25" stroke="#e0e0e0" stroke-width="0.5" />
+                  <line x1="0" y1="37.5" x2="100" y2="37.5" stroke="#e0e0e0" stroke-width="0.5" />
+                  <line x1="0" y1="50" x2="100" y2="50" stroke="#e0e0e0" stroke-width="0.5" />
+                </g>
+                <rect x="2" y="15" width="8" height="35" fill="rgba(255, 159, 64, 0.5)" />
+                <rect x="16" y="10" width="8" height="40" fill="rgba(255, 159, 64, 0.5)" />
+                <rect x="30" y="25" width="8" height="25" fill="rgba(255, 159, 64, 0.5)" />
+                <rect x="44" y="13" width="8" height="37" fill="rgba(255, 159, 64, 0.5)" />
+                <rect x="58" y="17" width="8" height="33" fill="rgba(255, 159, 64, 0.5)" />
+                <rect x="72" y="22" width="8" height="28" fill="rgba(255, 159, 64, 0.5)" />
+                <rect x="86" y="18" width="8" height="32" fill="rgba(255, 159, 64, 0.5)" />
+              </svg>
+            </div>
+            <!-- Simple days row -->
+            <div class="simple-days-row">
+              <div>Mon</div>
+              <div>Tue</div>
+              <div>Wed</div>
+              <div>Thu</div>
+              <div>Fri</div>
+              <div>Sat</div>
+              <div>Sun</div>
+            </div>
           </div>
         </div>
       </div>
@@ -92,7 +217,9 @@ import Sidebar from "../../../components/DashboardSidebar.vue";
 
 export default {
   name: "DashboardPage",
-  components: { Sidebar },
+  components: { 
+    Sidebar
+  },
   data() {
     return {
       keyMetrics: [
@@ -134,7 +261,7 @@ export default {
         { id: "#SKU5758", name: "Maize", quantity: 11 },
         { id: "#SKU5759", name: "Rice", quantity: 4 },
         { id: "#SKU5760", name: "Beans", quantity: 9 },
-      ],
+      ]
     };
   },
 };
@@ -166,8 +293,53 @@ export default {
   border: none;
   padding: 1.5rem;
   color: #333;
-  /* default box shadow can be overridden by individual classes if needed */
   box-shadow: 5px 5px 10px #bebebe, -5px -5px 10px #ffffff;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Chart container */
+.chart-container {
+  height: 60px;
+  margin-top: 15px;
+  position: relative;
+}
+
+.chart-container-large {
+  height: 200px;
+  margin-top: 15px;
+  position: relative;
+}
+
+.chart-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: #666;
+  padding: 0 5px;
+  width: 100%;
+}
+
+.simple-days-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding: 0 5px;
+  font-size: 0.8rem;
+  color: #666;
+  text-align: center;
+}
+
+.simple-days-row div {
+  flex: 1;
+  text-align: center;
+  font-weight: 500;
+  padding: 5px 0;
+}
+
+.larger-card {
+  min-height: 300px;
 }
 
 /* Custom card colors */
@@ -189,6 +361,29 @@ export default {
     #fff8e1,
     #ffecb3
   ); /* light yellow gradient */
+  position: relative;
+}
+
+.pending-sales-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.pending-icon-container {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgba(255, 193, 7, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pending-icon-container i {
+  font-size: 24px;
+  color: #ff9800;
 }
 
 .card-completed-sales {
