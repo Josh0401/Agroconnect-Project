@@ -206,25 +206,25 @@
       </div>
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-          <li class="breadcrumb-item">
+          <li class="breadcrumb-item" id="crumb">
             <router-link to="/market" class="text-decoration-none">
               <i class="bi bi-house-door"></i>
             </router-link>
           </li>
-          <li class="breadcrumb-item">
+          <li class="breadcrumb-item" id="crumb">
             <router-link to="/allcategory" class="text-decoration-none"
               >Categories</router-link
             >
           </li>
-          <li class="breadcrumb-item">
+          <li class="breadcrumb-item" id="crumb">
             <router-link
               :to="
-                '/allcategory/' +
+                '/filtered-categories?category=' +
                 (
                   product.product_category ||
                   product.category ||
-                  'category'
-                ).toLowerCase()
+                  'Category'
+                )
               "
               class="text-decoration-none"
             >
@@ -1739,7 +1739,12 @@ export default {
 .product-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
+.breadcrumb-item a{
+  color: #198754 !important;
+}
+.breadcrumb-item.active{
+  color: #198754 !important;
+}
 .product-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
