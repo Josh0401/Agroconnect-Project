@@ -26,48 +26,27 @@
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav mx-auto">
             <!-- Search container -->
-            <div class="search-container d-flex align-items-center">
-              <!-- Search Icon (always visible) -->
-              <svg
-                class="search-icon me-2"
-                fill="currentColor"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85.708-.708-3.85-3.85zm-5.242.656
-                     a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"
-                />
-              </svg>
-              <!-- Search input & button visible only on larger screens -->
-              <input
-                id="searchInput"
-                type="text"
-                placeholder="Search"
-                @keydown.enter="handleSearch"
-                v-model="searchQuery"
-                class="d-none d-lg-block form-control me-2"
-              />
-              <button
-                type="button"
-                @click="handleSearch"
-                class="d-none d-lg-block btn btn-outline-secondary"
-              >
-                Search
-              </button>
-            </div>
+            <SearchBar
+              :current-language="$i18n.locale"
+              :custom-placeholder="$t('search')"
+              :custom-button-text="$t('search')"
+            />
           </ul>
           <div class="d-flex align-items-center py-1">
-            <!-- Logged out state -->
+            <!-- Language Selector Dropdown - Always Visible -->
+            <LanguageDropdown class="me-3" />
+
+            <!-- Logged Out UI Elements -->
             <div v-if="!isLoggedIn" class="d-flex align-items-center">
               <router-link to="/login" class="btn btn-outline-success me-2">
-                Login
+                {{ $t("login") }}
               </router-link>
-              <router-link to="/register" class="btn btn-success">
-                Register
+              <router-link to="/signup" class="btn btn-success">
+                {{ $t("signup") }}
               </router-link>
             </div>
 
-            <!-- Logged in state -->
+            <!-- Logged In UI Elements -->
             <div v-else class="d-flex align-items-center">
               <!-- Wishlist Icon -->
               <button class="btn position-relative me-3" @click="goToWishlist">
@@ -117,6 +96,31 @@
                 </span>
               </button>
 
+              <!-- Notification Bell Icon -->
+              <button
+                class="btn position-relative me-3"
+                @click="goToNotifications"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="currentColor"
+                  class="bi bi-bell"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"
+                  />
+                </svg>
+                <span
+                  class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                  v-if="notificationCount > 0"
+                >
+                  {{ notificationCount }}
+                </span>
+              </button>
+
               <!-- Account Icon with Dropdown -->
               <div
                 class="dropdown account-dropdown me-3"
@@ -151,24 +155,39 @@
                   aria-labelledby="accountDropdown"
                 >
                   <li>
-                    <router-link class="dropdown-item" to="/account/profile"
-                      >Profile</router-link
-                    >
+                    <router-link class="dropdown-item" to="/account/profile">
+                      {{ $t("profile") }}
+                    </router-link>
                   </li>
                   <li>
-                    <router-link class="dropdown-item" to="/account/orders"
-                      >Orders</router-link
-                    >
+                    <router-link class="dropdown-item" to="/account/orders">
+                      {{ $t("orders") }}
+                    </router-link>
                   </li>
                   <li>
-                    <router-link class="dropdown-item" to="/account/transactions"
-                      >Transactions</router-link
+                    <router-link
+                      class="dropdown-item"
+                      to="/account/transactions"
                     >
+                      {{ $t("transactions") }}
+                    </router-link>
                   </li>
                   <li>
-                    <a class="dropdown-item" href="#" @click.prevent="logout"
-                      >Logout</a
+                    <router-link
+                      class="dropdown-item"
+                      to="/account/groups-communities"
                     >
+                      {{ $t("groupsCommunities", "Groups") }}
+                    </router-link>
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="#"
+                      @click.prevent="handleLogout"
+                    >
+                      {{ $t("logout") }}
+                    </a>
                   </li>
                 </ul>
               </div>
@@ -181,10 +200,10 @@
     <!-- Breadcrumb -->
     <div class="container mt-3 mb-1">
       <div class="container mt-3">
-    <router-link to="/market" class="back-to-market">
-      <span class="arrow-left">&#8592;</span> Back to Marketplace
-    </router-link>
-  </div>
+        <router-link to="/market" class="back-to-market">
+          <span class="arrow-left">&#8592;</span> Back to Marketplace
+        </router-link>
+      </div>
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
           <li class="breadcrumb-item">
@@ -193,12 +212,28 @@
             </router-link>
           </li>
           <li class="breadcrumb-item">
-            <router-link to="/allcategory" class="text-decoration-none">Categories</router-link>
+            <router-link to="/allcategory" class="text-decoration-none"
+              >Categories</router-link
+            >
           </li>
           <li class="breadcrumb-item">
-            <router-link to="/allcategory/vegetables" class="text-decoration-none">Vegetables</router-link>
+            <router-link
+              :to="
+                '/allcategory/' +
+                (
+                  product.product_category ||
+                  product.category ||
+                  'category'
+                ).toLowerCase()
+              "
+              class="text-decoration-none"
+            >
+              {{ product.product_category || product.category || "Category" }}
+            </router-link>
           </li>
-          <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+          <li class="breadcrumb-item active" aria-current="page">
+            {{ product.product_name || product.name }}
+          </li>
         </ol>
       </nav>
     </div>
@@ -218,21 +253,47 @@
         <div class="col-12">
           <!-- Product name and stock status -->
           <div class="d-flex justify-content-between align-items-center">
-            <h2 class="product-title mb-0">{{ product.name }}</h2>
-            <span class="badge bg-light text-success border border-success">In Stock</span>
+            <h2 class="product-title mb-0">
+              {{ product.product_name || product.name }}
+            </h2>
+            <span
+              v-if="product.inStock > 0"
+              class="badge bg-light text-success border border-success"
+            >
+              In Stock
+            </span>
+            <span
+              v-else
+              class="badge bg-light text-danger border border-danger"
+            >
+              Out of Stock
+            </span>
           </div>
-          
+
           <!-- Ratings -->
           <div class="d-flex align-items-center mt-2">
             <div class="ratings">
-              <i class="bi bi-star-fill text-warning"></i>
-              <i class="bi bi-star-fill text-warning"></i>
-              <i class="bi bi-star-fill text-warning"></i>
-              <i class="bi bi-star-fill text-warning"></i>
-              <i class="bi bi-star-half text-warning"></i>
+              <i
+                v-for="n in 5"
+                :key="n"
+                class="bi"
+                :class="
+                  n <= avgRating
+                    ? 'bi-star-fill'
+                    : n <= avgRating + 0.5
+                    ? 'bi-star-half'
+                    : 'bi-star'
+                "
+                aria-hidden="true"
+              ></i>
             </div>
-            <span class="ms-2 text-muted small">6 Reviews</span>
-            <span class="ms-3 text-muted small">SKU: #{{ product.sku || 'SKU4321' }}</span>
+            <span class="ms-2 text-muted small"
+              >{{ productReviews.length }}
+              {{ productReviews.length === 1 ? "Review" : "Reviews" }}</span
+            >
+            <span class="ms-3 text-muted small"
+              >SKU: #{{ product.id || "SKU4321" }}</span
+            >
           </div>
         </div>
       </div>
@@ -242,32 +303,49 @@
         <div class="col-md-6 mb-4">
           <!-- Main image -->
           <div class="main-image-container mb-3">
-            <img :src="currentImage" :alt="product.name" class="img-fluid rounded main-product-image border" />
+            <img
+              :src="currentImage"
+              :alt="product.name"
+              class="img-fluid rounded main-product-image border"
+            />
           </div>
-          
+
           <!-- Thumbnail images -->
           <div class="thumbnails-container d-flex">
-            <div 
-              v-for="(image, index) in productImages" 
-              :key="index" 
+            <div
+              v-for="(image, index) in productImages"
+              :key="index"
               class="thumbnail-wrapper me-2 p-1 border rounded"
-              :class="{'border-success': currentImageIndex === index}"
-              @click="selectImage(index)">
-              <img :src="image" :alt="`${product.name} thumbnail ${index + 1}`" class="img-fluid thumbnail-image" />
+              :class="{ 'border-success': currentImageIndex === index }"
+              @click="selectImage(index)"
+            >
+              <img
+                :src="image"
+                :alt="`${product.name} thumbnail ${index + 1}`"
+                class="img-fluid thumbnail-image"
+              />
             </div>
           </div>
         </div>
-        
+
         <!-- Product Information -->
         <div class="col-md-6">
           <div class="product-details">
             <!-- Price -->
             <div class="d-flex align-items-center mb-3">
-              <h4 class="text-decoration-line-through text-muted me-2 mb-0">Rs {{ formatPrice(product.originalPrice || product.price * 1.6) }}</h4>
-              <h3 class="text-success fw-bold mb-0">Rs {{ formatPrice(product.price) }}</h3>
-              <span class="ms-2 badge bg-danger">64% Off</span>
+              <h3 class="text-success fw-bold mb-0">
+                Rs
+                {{
+                  formatPrice(
+                    product.product_price ||
+                      product.product_unit_price ||
+                      product.unitPrice?.replace("Rs ", "") ||
+                      0
+                  )
+                }}
+              </h3>
             </div>
-            
+
             <!-- Seller -->
             <div class="seller-info d-flex align-items-center mb-3">
               <p class="mb-0 me-2">Seller</p>
@@ -275,59 +353,106 @@
                 <span class="bg-success text-white rounded-circle p-1 me-1">
                   <i class="bi bi-shop"></i>
                 </span>
-                <span class="text-muted">FarmEasy</span>
+                <span class="text-muted">{{ sellerName }}</span>
               </div>
-              
+
               <!-- Share options -->
               <div class="share-options ms-auto">
                 <span class="me-2">Share item:</span>
-                <button class="btn btn-sm btn-outline-primary rounded-circle me-1"><i class="bi bi-facebook"></i></button>
-                <button class="btn btn-sm btn-outline-info rounded-circle me-1"><i class="bi bi-twitter"></i></button>
-                <button class="btn btn-sm btn-outline-danger rounded-circle me-1"><i class="bi bi-pinterest"></i></button>
-                <button class="btn btn-sm btn-outline-dark rounded-circle"><i class="bi bi-instagram"></i></button>
+                <button
+                  class="btn btn-sm btn-outline-primary rounded-circle me-1"
+                >
+                  <i class="bi bi-facebook"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-info rounded-circle me-1">
+                  <i class="bi bi-twitter"></i>
+                </button>
+                <button
+                  class="btn btn-sm btn-outline-danger rounded-circle me-1"
+                >
+                  <i class="bi bi-pinterest"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-dark rounded-circle">
+                  <i class="bi bi-instagram"></i>
+                </button>
               </div>
             </div>
-            
+
             <!-- Product description -->
-            <p class="product-description mb-4">{{ product.description }}</p>
-            
-            <!-- Quantity selector and Add to Cart - IMPROVED VERSION -->
+            <p class="product-description mb-4">{{ productDescription }}</p>
+
+            <!-- Quantity selector and Add to Cart -->
             <div class="d-flex align-items-center my-4">
-              <div class="quantity-selector d-flex align-items-center border rounded me-3">
-                <button class="quantity-btn" @click="decreaseQuantity">
+              <div
+                class="quantity-selector d-flex align-items-center border rounded me-3"
+              >
+                <button
+                  class="quantity-btn"
+                  @click="decreaseQuantity"
+                  :disabled="product.inStock <= 0"
+                >
                   <i class="bi bi-dash"></i>
                 </button>
-                <input 
-                  type="number" 
-                  class="form-control border-0 text-center quantity-input" 
-                  v-model="quantity" 
-                  min="1" 
+                <input
+                  type="number"
+                  class="form-control border-0 text-center quantity-input"
+                  v-model="quantity"
+                  min="1"
+                  :max="product.inStock"
+                  :disabled="product.inStock <= 0"
                   @input="validateQuantity"
                 />
-                <button class="quantity-btn" @click="increaseQuantity">
+                <button
+                  class="quantity-btn"
+                  @click="increaseQuantity"
+                  :disabled="
+                    product.inStock <= 0 || quantity >= product.inStock
+                  "
+                >
                   <i class="bi bi-plus"></i>
                 </button>
               </div>
-              
-              <button class="btn btn-success d-flex align-items-center px-4" @click="addToCart">
+
+              <button
+                class="btn btn-success d-flex align-items-center px-4"
+                @click="addToCart"
+                :disabled="product.inStock <= 0"
+              >
                 <i class="bi bi-cart-plus me-2"></i>
                 Add to Cart
               </button>
-              <button class="btn btn-outline-secondary ms-2 rounded-circle" @click="toggleWishlist">
-                <i class="bi bi-heart"></i>
+              <button
+                class="btn btn-outline-secondary ms-2 rounded-circle"
+                @click="toggleWishlist"
+              >
+                <i
+                  class="bi"
+                  :class="
+                    isInWishlist ? 'bi-heart-fill text-danger' : 'bi-heart'
+                  "
+                ></i>
               </button>
             </div>
-            
+
             <!-- Product categories and tags -->
             <div class="product-meta">
               <div class="mb-2">
-                <strong>Category:</strong> <span class="text-muted">{{ product.category }}</span>
+                <strong>Category:</strong>
+                <span class="text-muted">{{ product.category }}</span>
               </div>
-              <div>
+              <div v-if="product.unit">
+                <strong>Unit:</strong>
+                <span class="text-muted">{{ product.unit }}</span>
+              </div>
+              <div v-if="productTags.length > 0" class="mt-2">
                 <strong>Tags:</strong>
                 <span class="text-muted">
-                  <span v-for="(tag, index) in productTags" :key="index" class="me-2">
-                    {{ tag }} {{ index < productTags.length - 1 ? '•' : '' }}
+                  <span
+                    v-for="(tag, index) in productTags"
+                    :key="index"
+                    class="me-2"
+                  >
+                    {{ tag }} {{ index < productTags.length - 1 ? "•" : "" }}
                   </span>
                 </span>
               </div>
@@ -335,147 +460,234 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Product tabs: Description, Information, Feedback -->
       <div class="row mt-5">
         <div class="col-12">
           <ul class="nav nav-tabs" id="productTabs" role="tablist">
             <li class="nav-item" role="presentation">
-              <button class="nav-link active" id="description-tab" data-bs-toggle="tab" data-bs-target="#description" type="button" role="tab" aria-controls="description" aria-selected="true">Descriptions</button>
+              <button
+                class="nav-link active"
+                id="description-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#description"
+                type="button"
+                role="tab"
+                aria-controls="description"
+                aria-selected="true"
+              >
+                Descriptions
+              </button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link" id="information-tab" data-bs-toggle="tab" data-bs-target="#information" type="button" role="tab" aria-controls="information" aria-selected="false">Additional Information</button>
+              <button
+                class="nav-link"
+                id="information-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#information"
+                type="button"
+                role="tab"
+                aria-controls="information"
+                aria-selected="false"
+              >
+                Additional Information
+              </button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link" id="feedback-tab" data-bs-toggle="tab" data-bs-target="#feedback" type="button" role="tab" aria-controls="feedback" aria-selected="false">Customer Feedback</button>
+              <button
+                class="nav-link"
+                id="feedback-tab"
+                data-bs-toggle="tab"
+                data-bs-target="#feedback"
+                type="button"
+                role="tab"
+                aria-controls="feedback"
+                aria-selected="false"
+              >
+                Customer Feedback
+              </button>
             </li>
           </ul>
-          <div class="tab-content p-4 border border-top-0 rounded-bottom" id="productTabsContent">
+          <div
+            class="tab-content p-4 border border-top-0 rounded-bottom"
+            id="productTabsContent"
+          >
             <!-- Description tab -->
-            <div class="tab-pane fade show active" id="description" role="tabpanel" aria-labelledby="description-tab">
+            <div
+              class="tab-pane fade show active"
+              id="description"
+              role="tabpanel"
+              aria-labelledby="description-tab"
+            >
               <div class="row">
                 <div class="col-md-8">
-                  <p class="mb-4">{{ product.longDescription || 'Sed commodo aliquam dictum porta. Fusce ipsum felis, imperdiet at posuere ac, viverra at mauris. Maecenas tincidunt ligula a sem vestibulum pharetra. Praesent auctor tortor lacus, nec laoreet nisi porttitor vel. Etiam finibus eros vel dui interdum sollicitudin. Mauris sem orci, vestibulum nec dui vitae dignissim mollis lacus.' }}</p>
-                  
+                  <p class="mb-4">{{ productLongDescription }}</p>
+
                   <ul class="list-unstyled">
-                    <li class="mb-2">
+                    <li
+                      v-for="(benefit, index) in productBenefits"
+                      :key="index"
+                      class="mb-2"
+                    >
                       <i class="bi bi-check-circle-fill text-success me-2"></i>
-                      100 g of fresh leaves provides:
-                    </li>
-                    <li class="mb-2">
-                      <i class="bi bi-check-circle-fill text-success me-2"></i>
-                      Aliquam ac elit at dapibus volutpat elementum.
-                    </li>
-                    <li class="mb-2">
-                      <i class="bi bi-check-circle-fill text-success me-2"></i>
-                      Quisque nec enim eget sapien molestie.
-                    </li>
-                    <li class="mb-2">
-                      <i class="bi bi-check-circle-fill text-success me-2"></i>
-                      Proin convallis odio volutpat finibus posuere.
+                      {{ benefit }}
                     </li>
                   </ul>
                 </div>
-                
               </div>
-              
+
               <!-- Benefits -->
               <div class="row mt-4">
                 <div class="col-md-6">
-                  <div class="benefit-card d-flex align-items-center p-3 border rounded mb-3">
+                  <div
+                    class="benefit-card d-flex align-items-center p-3 border rounded mb-3"
+                  >
                     <div class="benefit-icon me-3">
-                      <i class="bi bi-percent text-success fs-3"></i>
+                      <i class="bi bi-truck text-success fs-3"></i>
                     </div>
                     <div>
-                      <h5 class="mb-1">64% Discount</h5>
-                      <p class="mb-0 text-muted">Save your 64% money with us</p>
+                      <h5 class="mb-1">Fast Delivery</h5>
+                      <p class="mb-0 text-muted">
+                        Free delivery for orders over Rs 5,000
+                      </p>
                     </div>
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <div class="benefit-card d-flex align-items-center p-3 border rounded mb-3">
+                  <div
+                    class="benefit-card d-flex align-items-center p-3 border rounded mb-3"
+                  >
                     <div class="benefit-icon me-3">
                       <i class="bi bi-shield-check text-success fs-3"></i>
                     </div>
                     <div>
                       <h5 class="mb-1">100% Organic</h5>
-                      <p class="mb-0 text-muted">100% Organic Vegetables</p>
+                      <p class="mb-0 text-muted">
+                        100% Organic {{ product.category || "Products" }}
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <!-- Additional Information tab -->
-            <div class="tab-pane fade" id="information" role="tabpanel" aria-labelledby="information-tab">
+            <div
+              class="tab-pane fade"
+              id="information"
+              role="tabpanel"
+              aria-labelledby="information-tab"
+            >
               <h5 class="mb-3">Product Specifications</h5>
               <table class="table table-bordered">
                 <tbody>
                   <tr>
-                    <th scope="row" class="bg-light" style="width: 30%;">Variety</th>
-                    <td>{{ product.variety || 'Chinese Cabbage' }}</td>
+                    <th scope="row" class="bg-light" style="width: 30%">
+                      Product ID
+                    </th>
+                    <td>{{ product.id }}</td>
+                  </tr>
+                  <tr v-if="product.variety">
+                    <th scope="row" class="bg-light">Variety</th>
+                    <td>{{ product.variety || "Standard" }}</td>
                   </tr>
                   <tr>
-                    <th scope="row" class="bg-light">Cultivation</th>
-                    <td>Organic, pesticide-free</td>
+                    <th scope="row" class="bg-light">Category</th>
+                    <td>{{ product.category }}</td>
+                  </tr>
+                  <tr v-if="product.unit">
+                    <th scope="row" class="bg-light">Unit</th>
+                    <td>{{ product.unit }}</td>
                   </tr>
                   <tr>
-                    <th scope="row" class="bg-light">Nutritional Value</th>
-                    <td>Rich in vitamins A, C, K and fiber</td>
+                    <th scope="row" class="bg-light">In Stock</th>
+                    <td>{{ product.inStock }} {{ product.unit || "units" }}</td>
                   </tr>
                   <tr>
                     <th scope="row" class="bg-light">Storage</th>
-                    <td>Refrigerate in a perforated bag up to 1 week</td>
+                    <td>{{ getStorageInfo() }}</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-            
-            <!-- Customer Feedback tab - UPDATED WITH REVIEW BUTTON -->
-            <div class="tab-pane fade" id="feedback" role="tabpanel" aria-labelledby="feedback-tab">
+
+            <!-- Customer Feedback tab -->
+            <div
+              class="tab-pane fade"
+              id="feedback"
+              role="tabpanel"
+              aria-labelledby="feedback-tab"
+            >
               <div class="row">
                 <div class="col-md-4">
                   <div class="overall-rating text-center p-3">
-                    <h2 class="display-4 mb-0">4.5</h2>
+                    <h2 class="display-4 mb-0">{{ avgRating.toFixed(1) }}</h2>
                     <div class="ratings mb-2">
-                      <i class="bi bi-star-fill text-warning"></i>
-                      <i class="bi bi-star-fill text-warning"></i>
-                      <i class="bi bi-star-fill text-warning"></i>
-                      <i class="bi bi-star-fill text-warning"></i>
-                      <i class="bi bi-star-half text-warning"></i>
+                      <i
+                        v-for="n in 5"
+                        :key="n"
+                        class="bi"
+                        :class="
+                          n <= avgRating
+                            ? 'bi-star-fill'
+                            : n <= avgRating + 0.5
+                            ? 'bi-star-half'
+                            : 'bi-star'
+                        "
+                        aria-hidden="true"
+                      >
+                      </i>
                     </div>
-                    <p class="text-muted mb-3">Based on 6 reviews</p>
-                    <button class="btn btn-outline-primary" @click="showReviewModal = true">Write a Review</button>
+                    <p class="text-muted mb-3">
+                      Based on {{ productReviews.length }}
+                      {{ productReviews.length === 1 ? "review" : "reviews" }}
+                    </p>
+                    <button
+                      class="btn btn-outline-primary"
+                      @click="showReviewModal = true"
+                    >
+                      Write a Review
+                    </button>
                   </div>
                 </div>
                 <div class="col-md-8">
-                  <div class="review-item mb-3 pb-3 border-bottom">
-                    <div class="d-flex justify-content-between">
-                      <h5>Fresh and crispy!</h5>
-                      <div class="ratings">
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                      </div>
-                    </div>
-                    <p class="text-muted small">by John D. - March 15, 2023</p>
-                    <p>The cabbage was delivered fresh and lasted over a week in my refrigerator. Great quality!</p>
+                  <div
+                    v-if="productReviews.length === 0"
+                    class="text-center p-4"
+                  >
+                    <p class="text-muted">
+                      No reviews yet. Be the first to review this product!
+                    </p>
                   </div>
-                  <div class="review-item">
-                    <div class="d-flex justify-content-between">
-                      <h5>Good value for money</h5>
-                      <div class="ratings">
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star text-warning"></i>
+                  <div v-else>
+                    <div
+                      v-for="(review, index) in productReviews"
+                      :key="index"
+                      class="review-item mb-3 pb-3"
+                      :class="{
+                        'border-bottom': index < productReviews.length - 1,
+                      }"
+                    >
+                      <div class="d-flex justify-content-between">
+                        <h5>{{ review.title }}</h5>
+                        <div class="ratings">
+                          <i
+                            v-for="n in 5"
+                            :key="n"
+                            class="bi"
+                            :class="
+                              n <= review.rating ? 'bi-star-fill' : 'bi-star'
+                            "
+                            aria-hidden="true"
+                          >
+                          </i>
+                        </div>
                       </div>
+                      <p class="text-muted small">
+                        by {{ review.name }} - {{ review.date }}
+                      </p>
+                      <p>{{ review.text }}</p>
                     </div>
-                    <p class="text-muted small">by Sarah M. - February 28, 2023</p>
-                    <p>Great quality vegetables at a reasonable price. Will order again.</p>
                   </div>
                 </div>
               </div>
@@ -483,25 +695,50 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Related Products -->
       <div class="related-products mt-5">
         <h3 class="mb-4">Related Products</h3>
         <div class="row">
-          <div class="col-md-3 col-6 mb-4" v-for="(product, index) in relatedProducts" :key="index">
+          <div v-if="loading" class="col-12 text-center">
+            <div class="spinner-border text-success" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+          <div v-else-if="relatedProducts.length === 0" class="col-12">
+            <p class="text-muted">No related products found.</p>
+          </div>
+          <div
+            v-else
+            class="col-md-3 col-6 mb-4"
+            v-for="(relProduct, index) in relatedProducts"
+            :key="index"
+          >
             <div class="card product-card h-100 position-relative">
               <!-- Sale tag for first product -->
-              <div class="position-absolute top-0 start-0 bg-danger text-white px-2 py-1 m-2 small rounded" v-if="index === 0">
+              <div
+                class="position-absolute top-0 start-0 bg-danger text-white px-2 py-1 m-2 small rounded"
+                v-if="index === 0"
+              >
                 Stock Sale
               </div>
-              <router-link :to="'/product/' + product.id">
-                <img :src="product.image" class="card-img-top product-thumbnail" :alt="product.name">
+              <router-link :to="'/product/' + relProduct.id">
+                <img
+                  :src="relProduct.image"
+                  class="card-img-top product-thumbnail"
+                  :alt="relProduct.name"
+                />
               </router-link>
               <div class="card-body d-flex flex-column">
-                <router-link :to="'/product/' + product.id" class="text-decoration-none">
-                  <h5 class="card-title text-dark">{{ product.name }}</h5>
+                <router-link
+                  :to="'/product/' + relProduct.id"
+                  class="text-decoration-none"
+                >
+                  <h5 class="card-title text-dark">{{ relProduct.name }}</h5>
                 </router-link>
-                <p class="card-text text-success fw-bold mb-2">Rs {{ formatPrice(product.price) }}</p>
+                <p class="card-text text-success fw-bold mb-2">
+                  {{ relProduct.unitPrice }}
+                </p>
                 <div class="ratings mb-2">
                   <i class="bi bi-star-fill text-warning"></i>
                   <i class="bi bi-star-fill text-warning"></i>
@@ -510,11 +747,25 @@
                   <i class="bi bi-star text-warning"></i>
                 </div>
                 <div class="mt-auto d-flex">
-                  <button class="btn btn-sm btn-outline-secondary flex-grow-1 me-2" @click="addRelatedToCart(product, $event)">
+                  <button
+                    class="btn btn-sm btn-outline-secondary flex-grow-1 me-2"
+                    @click.prevent="addRelatedToCart(relProduct, $event)"
+                    :disabled="relProduct.inStock <= 0"
+                  >
                     <i class="bi bi-cart-plus"></i>
                   </button>
-                  <button class="btn btn-sm btn-outline-secondary" @click="toggleRelatedWishlist(product, $event)">
-                    <i class="bi bi-heart"></i>
+                  <button
+                    class="btn btn-sm btn-outline-secondary"
+                    @click.prevent="toggleRelatedWishlist(relProduct, $event)"
+                  >
+                    <i
+                      class="bi"
+                      :class="
+                        isProductInWishlist(relProduct.id)
+                          ? 'bi-heart-fill text-danger'
+                          : 'bi-heart'
+                      "
+                    ></i>
                   </button>
                 </div>
               </div>
@@ -524,56 +775,112 @@
       </div>
     </div>
 
-   <!-- NEW REVIEW MODAL with UPDATED STAR RATING -->
-   <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" 
-         aria-hidden="true" v-if="showReviewModal" :class="{ 'show': showReviewModal }" 
-         style="display: block;" @click.self="showReviewModal = false">
+    <!-- NEW REVIEW MODAL with UPDATED STAR RATING -->
+    <div
+      class="modal fade"
+      id="reviewModal"
+      tabindex="-1"
+      aria-labelledby="reviewModalLabel"
+      aria-hidden="true"
+      v-if="showReviewModal"
+      :class="{ show: showReviewModal }"
+      style="display: block"
+      @click.self="showReviewModal = false"
+    >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="reviewModalLabel">Write a Review</h5>
-            <button type="button" class="btn-close" aria-label="Close" @click="showReviewModal = false"></button>
+            <button
+              type="button"
+              class="btn-close"
+              aria-label="Close"
+              @click="showReviewModal = false"
+            ></button>
           </div>
           <div class="modal-body">
             <form @submit.prevent="submitReview">
               <div class="mb-3">
                 <label for="reviewerName" class="form-label">Name</label>
-                <input type="text" class="form-control" id="reviewerName" v-model="reviewForm.name" 
-                       placeholder="Enter Your Name" required>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="reviewerName"
+                  v-model="reviewForm.name"
+                  placeholder="Enter Your Name"
+                  required
+                />
               </div>
-              
+
               <!-- UPDATED STAR RATING SECTION -->
               <div class="mb-3 text-center">
-                <label class="form-label d-block">Tap the Stars to rate this product</label>
+                <label class="form-label d-block"
+                  >Tap the Stars to rate this product</label
+                >
                 <div class="star-rating d-flex justify-content-center">
-                  <span v-for="n in 5" :key="n" 
-                        @click="setRating(n)" 
-                        @mouseover="hoverRating = n" 
-                        @mouseleave="hoverRating = 0"
-                        class="star-container mx-1">
-                    <i class="bi" 
-                       :class="(hoverRating >= n || reviewForm.rating >= n) ? 'bi-star-fill' : 'bi-star'" 
-                       style="font-size: 1.5rem; color: #FFA500; cursor: pointer;"></i>
+                  <span
+                    v-for="n in 5"
+                    :key="n"
+                    @click="setRating(n)"
+                    @mouseover="hoverRating = n"
+                    @mouseleave="hoverRating = 0"
+                    class="star-container mx-1"
+                  >
+                    <i
+                      class="bi"
+                      :class="
+                        hoverRating >= n || reviewForm.rating >= n
+                          ? 'bi-star-fill'
+                          : 'bi-star'
+                      "
+                      style="font-size: 1.5rem; color: #ffa500; cursor: pointer"
+                    ></i>
                   </span>
                 </div>
-                <small class="text-muted mt-1 d-block" v-if="reviewForm.rating === 0">No rating selected</small>
-                <small class="text-muted mt-1 d-block" v-else>You selected {{ reviewForm.rating }} {{ reviewForm.rating === 1 ? 'star' : 'stars' }}</small>
+                <small
+                  class="text-muted mt-1 d-block"
+                  v-if="reviewForm.rating === 0"
+                  >No rating selected</small
+                >
+                <small class="text-muted mt-1 d-block" v-else
+                  >You selected {{ reviewForm.rating }}
+                  {{ reviewForm.rating === 1 ? "star" : "stars" }}</small
+                >
               </div>
-              
+
               <div class="mb-3">
-                <label for="reviewTitle" class="form-label">What did you like about this product</label>
-                <input type="text" class="form-control" id="reviewTitle" v-model="reviewForm.title" required>
+                <label for="reviewTitle" class="form-label"
+                  >What did you like about this product</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="reviewTitle"
+                  v-model="reviewForm.title"
+                  required
+                />
               </div>
-              
+
               <div class="mb-3">
                 <label for="reviewText" class="form-label">Review</label>
-                <textarea class="form-control" id="reviewText" rows="4" 
-                          v-model="reviewForm.text" placeholder="Enter Message" required></textarea>
+                <textarea
+                  class="form-control"
+                  id="reviewText"
+                  rows="4"
+                  v-model="reviewForm.text"
+                  placeholder="Enter Message"
+                  required
+                ></textarea>
               </div>
-              
+
               <div class="d-grid">
-                <button type="submit" class="btn btn-primary py-2" 
-                        style="background-color: #20B2AA; border-color: #20B2AA;">Submit Review</button>
+                <button
+                  type="submit"
+                  class="btn btn-primary py-2"
+                  style="background-color: #20b2aa; border-color: #20b2aa"
+                >
+                  Submit Review
+                </button>
               </div>
             </form>
           </div>
@@ -584,20 +891,40 @@
     <div class="modal-backdrop fade show" v-if="showReviewModal"></div>
 
     <!-- Login Required Modal -->
-    <div class="modal fade" id="loginRequiredModal" tabindex="-1" aria-labelledby="loginRequiredModalLabel" 
-         aria-hidden="true" v-if="showLoginRequiredModal" :class="{ 'show': showLoginRequiredModal }" 
-         style="display: block;">
+    <div
+      class="modal fade"
+      id="loginRequiredModal"
+      tabindex="-1"
+      aria-labelledby="loginRequiredModalLabel"
+      aria-hidden="true"
+      v-if="showLoginRequiredModal"
+      :class="{ show: showLoginRequiredModal }"
+      style="display: block"
+    >
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="loginRequiredModalLabel">Login Required</h5>
-            <button type="button" class="btn-close" aria-label="Close" @click="showLoginRequiredModal = false"></button>
+            <h5 class="modal-title" id="loginRequiredModalLabel">
+              Login Required
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              aria-label="Close"
+              @click="showLoginRequiredModal = false"
+            ></button>
           </div>
           <div class="modal-body">
             <p>Please login to continue with this action.</p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="showLoginRequiredModal = false">Cancel</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              @click="showLoginRequiredModal = false"
+            >
+              Cancel
+            </button>
             <router-link to="/login" class="btn btn-success">Login</router-link>
           </div>
         </div>
@@ -606,12 +933,39 @@
     <!-- Modal backdrop for login required -->
     <div class="modal-backdrop fade show" v-if="showLoginRequiredModal"></div>
 
+    <!-- Success notification toast -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+      <div
+        :class="['toast', 'align-items-center', { show: showToast }]"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <div class="d-flex">
+          <div class="toast-body">
+            <i class="bi bi-check-circle-fill text-success me-2"></i>
+            {{ toastMessage }}
+          </div>
+          <button
+            type="button"
+            class="btn-close me-2 m-auto"
+            @click="showToast = false"
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
+    </div>
+
     <!-- Footer component -->
     <Footer />
   </div>
 </template>
 
 <script>
+import { ref, computed, watch, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useProductStore } from "../../stores/product";
+import { useAuthStore } from "../../stores/auth";
 import Footer from "../../components/MarketFooter.vue";
 
 export default {
@@ -619,388 +973,653 @@ export default {
   components: {
     Footer,
   },
-  data() {
-    return {
-      // Authentication state
-      isLoggedIn: false,
-      showLoginRequiredModal: false,
-      
-      loading: true,
-      quantity: 1,
-      productId: '',
-      currentImageIndex: 0,
-      product: {
-        name: "",
-        price: 0,
-        originalPrice: 0,
-        sku: "",
-        description: "",
-        longDescription: "",
-        category: "",
-        benefits: [],
-        variety: ""
+  setup() {
+    // Stores and router setup
+    const productStore = useProductStore();
+    const authStore = useAuthStore();
+    const route = useRoute();
+    const router = useRouter();
+
+    // State
+    const loading = ref(true);
+    const quantity = ref(1);
+    const productId = ref("");
+    const currentImageIndex = ref(0);
+    const product = ref({
+      name: "",
+      product_price: "",
+      product_unit_price: "",
+      unitPrice: "",
+      category: "",
+      product_category: "",
+      inStock: 0,
+      image: "",
+      id: "",
+    });
+
+    // UI state
+    const isLoggedIn = computed(() => !!authStore.token);
+    const searchQuery = ref("");
+    const dropdownOpen = ref(false);
+    let dropdownTimeout = null;
+    const wishlistItems = ref([]);
+    const cartItems = ref([]);
+    const notificationCount = ref(0);
+    const showReviewModal = ref(false);
+    const showLoginRequiredModal = ref(false);
+    const hoverRating = ref(0);
+    const isInWishlist = ref(false);
+    const showToast = ref(false);
+    const toastMessage = ref("");
+
+    // Review form data
+    const reviewForm = ref({
+      name: "",
+      rating: 0,
+      title: "",
+      text: "",
+    });
+
+    // Mock product reviews
+    const productReviews = ref([
+      {
+        name: "John D.",
+        rating: 5,
+        title: "Fresh and crispy!",
+        text: "The product was delivered fresh and lasted over a week in my refrigerator. Great quality!",
+        date: "March 15, 2023",
       },
-      relatedProducts: [
-        {
-          id: "green-apple",
-          name: "Green Apple",
-          price: 3000,
-          image: "../../assets/green-apple.jpg"
-        },
-        {
-          id: "cauliflower",
-          name: "Cauliflower",
-          price: 3000,
-          image: "../../assets/cauliflower.jpg"
-        },
-        {
-          id: "green-capsicum",
-          name: "Green Capsicum",
-          price: 3000,
-          image: "../../assets/green-capsicum.jpg"
-        },
-        {
-          id: "ladies-finger",
-          name: "Ladies Finger",
-          price: 3000,
-          image: "../../assets/ladies-finger.jpg"
-        }
-      ],
-      // Added from Market.vue navbar
-      searchQuery: "",
-      dropdownOpen: false,
-      dropdownTimeout: null,
-      wishlistItemCount: 0,
-      cartItems: [],
-      // Updated review modal data
-      showReviewModal: false,
-      hoverRating: 0,
-      reviewForm: {
-        name: "",
-        rating: 0, // Start with 0 rating (no stars selected)
-        title: "",
-        text: ""
-      }
-    };
-  },
-  computed: {
-    productImages() {
-      // Get the main product image and generate additional views
-      const mainImage = this.getProductImage();
+      {
+        name: "Sarah M.",
+        rating: 4,
+        title: "Good value for money",
+        text: "Great quality product at a reasonable price. Will order again.",
+        date: "February 28, 2023",
+      },
+    ]);
+
+    // Computed properties
+    const wishlistItemCount = computed(() => wishlistItems.value.length);
+
+    const cartItemCount = computed(() =>
+      cartItems.value.reduce((total, item) => total + item.quantity, 0)
+    );
+
+    const productImages = computed(() => {
       // For a real application, you would have multiple actual images
       // Here we're simulating additional views with the same main image
+      const mainImage =
+        product.value.image ||
+        (product.value.product_img
+          ? `https://agroconnect.shop/public/storage/${product.value.product_img}`
+          : "../../assets/Agroconnect.png");
+      return [mainImage, mainImage, mainImage, mainImage];
+    });
+
+    const currentImage = computed(
+      () => productImages.value[currentImageIndex.value] || ""
+    );
+
+    const productTags = computed(() => {
+      if (!product.value.category) return [];
+      // Generate tags based on product category and other attributes
+      const tags = [product.value.category];
+      if (product.value.category === "Vegetables") {
+        tags.push("Healthy", "Fresh", "Organic");
+      } else if (product.value.category === "Fruits") {
+        tags.push("Fresh", "Seasonal", "Organic");
+      } else if (
+        product.value.category === "Seeds" ||
+        product.value.category === "Seedlings"
+      ) {
+        tags.push("Planting", "Farming", "Organic");
+      }
+      return tags;
+    });
+
+    const avgRating = computed(() => {
+      if (productReviews.value.length === 0) return 0;
+      const sum = productReviews.value.reduce(
+        (total, review) => total + review.rating,
+        0
+      );
+      return sum / productReviews.value.length;
+    });
+
+    const sellerName = computed(() => {
+      return product.value.seller || "FarmEasy";
+    });
+
+    const productDescription = computed(() => {
+      if (product.value.description) return product.value.description;
+
+      // Default descriptions based on category
+      if (product.value.category === "Vegetables") {
+        return `Fresh ${product.value.name} sourced directly from local farms. Our vegetables are pesticide-free and harvested at peak ripeness to ensure the best flavor and nutritional value.`;
+      } else if (product.value.category === "Fruits") {
+        return `Premium quality ${product.value.name} sourced from certified organic farms. Our fruits are naturally ripened and hand-picked to ensure the best taste and freshness.`;
+      } else if (
+        product.value.category === "Seeds" ||
+        product.value.category === "Seedlings"
+      ) {
+        return `High-quality ${product.value.name} with excellent germination rates. Perfect for both small gardens and large-scale farming operations.`;
+      }
+
+      return `Quality ${product.value.name} sourced directly from trusted farmers. We ensure all our products meet the highest standards for freshness and quality.`;
+    });
+
+    const productLongDescription = computed(() => {
+      if (product.value.longDescription) return product.value.longDescription;
+
+      // Generate a longer description based on product category
+      return `${productDescription.value} We work directly with farmers to ensure fair prices and sustainable farming practices. All products are carefully inspected and packaged to maintain freshness during delivery. When you purchase from AgroEase, you're supporting local agriculture and helping to build a more sustainable food system.`;
+    });
+
+    const productBenefits = computed(() => {
+      // Generate benefits based on product category
+      if (product.value.category === "Vegetables") {
+        return [
+          `${product.value.name} is rich in essential vitamins and minerals`,
+          "Low in calories and high in fiber",
+          "Grown using sustainable farming practices",
+          "Harvested at peak ripeness for maximum flavor and nutrition",
+        ];
+      } else if (product.value.category === "Fruits") {
+        return [
+          `${product.value.name} is packed with natural antioxidants`,
+          "Source of essential vitamins and minerals",
+          "Naturally sweet and delicious",
+          "Carefully selected for optimal ripeness",
+        ];
+      } else if (
+        product.value.category === "Seeds" ||
+        product.value.category === "Seedlings"
+      ) {
+        return [
+          "High germination rate guaranteed",
+          "Disease-resistant varieties",
+          "Suitable for various growing conditions",
+          "Produces high-yielding plants",
+        ];
+      }
+
       return [
-        mainImage,
-        mainImage,
-        mainImage,
-        mainImage
+        "100% authentic and quality assured",
+        "Sourced directly from certified farmers",
+        "Fully traceable from farm to table",
+        "Supports sustainable agricultural practices",
       ];
-    },
-    currentImage() {
-      return this.productImages[this.currentImageIndex];
-    },
-    productTags() {
-      return ["Vegetables", "Healthy", "Chinese", "Cabbage", "Green Cabbage"];
-    },
-    // Added from Market.vue navbar
-    cartItemCount() {
-      return this.cartItems.reduce((total, item) => total + item.quantity, 0);
-    }
-  },
-  mounted() {
-    this.loadProduct();
-    this.checkLoginStatus();
-    
-    // Add Bootstrap icons CSS
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css';
-    document.head.appendChild(link);
-  },
-  methods: {
-    // Check login status
-    checkLoginStatus() {
-      // In a real application, you would check with your authentication service
-      // For now, we'll use localStorage as a simple example
-      const token = localStorage.getItem('authToken');
-      this.isLoggedIn = !!token;
-    },
-    
-    // Login method (for development purposes)
-    login() {
-      localStorage.setItem('authToken', 'sample-token');
-      this.isLoggedIn = true;
-    },
-    
-    loadProduct() {
-      // Get the product ID from the route
-      this.productId = this.$route.params.id;
-      console.log("Loading product with ID:", this.productId);
-      
-      // Simple product mapping for testing
-      const products = {
-        'chinese-cabbage': {
-          name: 'Chinese Cabbage',
-          price: 10000,
-          originalPrice: 18000,
-          sku: 'SKU4321',
-          description: 'Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla nibh diam, blandit vel consequat nec, aliquam et ipsum. Nulla varius magna a consequat pulvinar.',
-          longDescription: 'Sed commodo aliquam dictum porta. Fusce ipsum felis, imperdiet at posuere ac, viverra at mauris. Maecenas tincidunt ligula a sem vestibulum pharetra. Praesent auctor tortor lacus, nec laoreet nisi porttitor vel. Etiam finibus eros vel dui interdum sollicitudin. Mauris sem orci, vestibulum nec dui vitae dignissim mollis lacus.',
-          category: 'Vegetables',
-          benefits: [
-            'Rich in vitamins and minerals',
-            'Low in calories',
-            'High in fiber'
-          ],
-          variety: 'Chinese'
-        },
-        'hybrid-coconut-seedlings': {
-          name: 'Hybrid Coconut Seedlings',
-          price: 10000,
-          originalPrice: 18000,
-          description: 'High-yielding hybrid coconut seedlings that are disease-resistant and perfect for plantation.',
-          longDescription: 'Our hybrid coconut seedlings are known for their excellent growth rate and high yield potential. They are carefully cultivated to ensure maximum viability and productivity.',
-          category: 'Seedlings',
-          benefits: [
-            'Early fruiting within 3-4 years',
-            'High yield potential',
-            'Disease and pest resistant'
-          ],
-          variety: 'Hybrid'
-        },
-        'hybrid-tenera-oil-palm-seedlings': {
-          name: 'Hybrid Tenera Oil Palm Seedlings',
-          price: 15000,
-          originalPrice: 22000,
-          description: 'Premium quality Tenera oil palm seedlings with high oil content and excellent yield potential.',
-          category: 'Seedlings',
-          benefits: [
-            'High oil content',
-            'Early fruiting',
-            'Disease resistant'
-          ],
-          variety: 'Tenera'
-        },
-      };
-  
-      // Simulate API call
-      setTimeout(() => {
-        if (products[this.productId]) {
-          this.product = products[this.productId];
+    });
+
+    // Get related products from the same category
+    const relatedProducts = computed(() => {
+      if (!product.value.category && !product.value.product_category) return [];
+
+      const category = product.value.product_category || product.value.category;
+
+      return productStore.getProducts
+        .filter(
+          (p) =>
+            (p.category === category || p.product_category === category) &&
+            p.id !== product.value.id &&
+            p.id.toString() !== product.value.id.toString()
+        )
+        .slice(0, 4);
+    });
+
+    // Methods
+    const loadProduct = async () => {
+      loading.value = true;
+      productId.value = route.params.id;
+
+      // Make sure products are loaded
+      if (productStore.getProducts.length === 0) {
+        await productStore.fetchProducts();
+      }
+
+      // Find the product in the store
+      const foundProduct = productStore.getProducts.find(
+        (p) => p.id === productId.value || p.id.toString() === productId.value
+      );
+
+      if (foundProduct) {
+        // Handle API product data structure
+        if (foundProduct.product_name) {
+          product.value = {
+            ...foundProduct,
+            name: foundProduct.product_name,
+            inStock: parseInt(foundProduct.product_qty) || 0,
+            image:
+              foundProduct.image ||
+              (foundProduct.product_img
+                ? `https://agroconnect.shop/public/storage/${foundProduct.product_img}`
+                : "../../assets/Agroconnect.png"),
+          };
         } else {
-          // If product not found, create a default product based on ID
-          // or use the Chinese Cabbage as default
-          this.product = products['chinese-cabbage'];
-          this.product.name = this.productId.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+          product.value = foundProduct;
         }
-        
-        // Set loading to false
-        this.loading = false;
+
+        // Ensure we have proper inStock value from API
+        if (foundProduct.product_qty) {
+          product.value.inStock = parseInt(foundProduct.product_qty);
+        } else if (foundProduct.inStock !== undefined) {
+          product.value.inStock = foundProduct.inStock;
+        } else {
+          product.value.inStock = 0;
+        }
+
+        console.log("Found product:", product.value);
+      } else {
+        console.error("Product not found:", productId.value);
+        product.value = {
+          name: productId.value
+            .split("-")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" "),
+          product_price: "0",
+          product_unit_price: "0",
+          category: "Unknown",
+          inStock: 0,
+          image: "../../assets/Agroconnect.png",
+          id: productId.value,
+        };
+      }
+
+      // Check if product is in wishlist
+      checkWishlistStatus();
+
+      // Simulate checking user notifications
+      notificationCount.value = Math.floor(Math.random() * 5);
+
+      setTimeout(() => {
+        loading.value = false;
       }, 500);
-    },
-    
-    increaseQuantity() {
-      this.quantity++;
-    },
-    
-    decreaseQuantity() {
-      if (this.quantity > 1) {
-        this.quantity--;
+    };
+
+    const checkWishlistStatus = () => {
+      // Check if product is already in wishlist
+      isInWishlist.value = wishlistItems.value.some(
+        (item) => item.id === product.value.id
+      );
+    };
+
+    // Get product price with proper fallbacks
+    const getProductPrice = (prod) => {
+      return (
+        prod.product_price ||
+        prod.product_unit_price ||
+        (prod.unitPrice ? prod.unitPrice.replace("Rs ", "") : 0)
+      );
+    };
+
+    const getStorageInfo = () => {
+      // Return storage information based on category
+      if (product.value.category === "Vegetables") {
+        return "Refrigerate in a perforated bag up to 1 week";
+      } else if (product.value.category === "Fruits") {
+        return "Store at room temperature until ripe, then refrigerate";
+      } else if (product.value.category === "Seeds") {
+        return "Store in a cool, dry place away from direct sunlight";
+      } else if (product.value.category === "Seedlings") {
+        return "Plant in well-draining soil with adequate sunlight";
       }
-    },
-    
-    validateQuantity() {
-      if (this.quantity < 1) {
-        this.quantity = 1;
+
+      return "Store appropriately based on product type";
+    };
+
+    const increaseQuantity = () => {
+      if (quantity.value < product.value.inStock) {
+        quantity.value++;
       }
-    },
-    
-    addToCart() {
-      if (this.isLoggedIn) {
+    };
+
+    const decreaseQuantity = () => {
+      if (quantity.value > 1) {
+        quantity.value--;
+      }
+    };
+
+    const validateQuantity = () => {
+      let qty = parseInt(quantity.value);
+      if (isNaN(qty) || qty < 1) {
+        quantity.value = 1;
+      } else if (qty > product.value.inStock) {
+        quantity.value = product.value.inStock;
+      }
+    };
+
+    const showToastNotification = (message) => {
+      toastMessage.value = message;
+      showToast.value = true;
+
+      // Hide toast after 3 seconds
+      setTimeout(() => {
+        showToast.value = false;
+      }, 3000);
+    };
+
+    const addToCart = () => {
+      if (isLoggedIn.value) {
+        // Check if product is in stock
+        if (product.value.inStock <= 0) {
+          showToastNotification("Sorry, this product is out of stock");
+          return;
+        }
+
         // Add to cart logic
-        alert(`Added ${this.quantity} ${this.product.name} to cart!`);
-        // Add to cart items array for the badge count
-        this.cartItems.push({
-          id: this.productId,
-          quantity: this.quantity,
-          name: this.product.name,
-          price: this.product.price
-        });
-      } else {
-        // Show login required modal
-        this.showLoginRequiredModal = true;
-      }
-    },
-    
-    toggleWishlist() {
-      if (this.isLoggedIn) {
-        // Toggle wishlist logic
-        this.wishlistItemCount = this.wishlistItemCount > 0 ? 0 : 1;
-        alert(this.wishlistItemCount > 0 ? 'Added to wishlist!' : 'Removed from wishlist!');
-      } else {
-        // Show login required modal
-        this.showLoginRequiredModal = true;
-      }
-    },
-    
-    addRelatedToCart(product, event) {
-      event.preventDefault();
-      if (this.isLoggedIn) {
-        // Add related product to cart
-        alert(`Added ${product.name} to cart!`);
-        this.cartItems.push({
-          id: product.id,
-          quantity: 1,
-          name: product.name,
-          price: product.price
-        });
-      } else {
-        // Show login required modal
-        this.showLoginRequiredModal = true;
-      }
-    },
-    
-    toggleRelatedWishlist(product, event) {
-      event.preventDefault();
-      if (this.isLoggedIn) {
-        // Toggle wishlist for related product
-        this.wishlistItemCount = this.wishlistItemCount > 0 ? 0 : 1;
-        alert(this.wishlistItemCount > 0 ? 
-          `Added ${product.name} to wishlist!` : 
-          `Removed ${product.name} from wishlist!`
+        const existingItem = cartItems.value.find(
+          (item) => item.id === product.value.id
+        );
+
+        if (existingItem) {
+          existingItem.quantity += quantity.value;
+        } else {
+          cartItems.value.push({
+            id: product.value.id,
+            name: product.value.name,
+            price: product.value.unitPrice,
+            image: product.value.image,
+            quantity: quantity.value,
+          });
+        }
+
+        showToastNotification(
+          `Added ${quantity.value} ${product.value.name} to cart!`
         );
       } else {
         // Show login required modal
-        this.showLoginRequiredModal = true;
+        showLoginRequiredModal.value = true;
       }
-    },
-    
-    selectImage(index) {
-      this.currentImageIndex = index;
-    },
-    
-    formatPrice(price) {
-      return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    },
-    
-    getProductImage() {
-      if (this.productId === 'hybrid-coconut-seedlings') {
-        return '../../assets/hybrid-coconut.jpg';
-      } else if (this.productId === 'hybrid-tenera-oil-palm-seedlings') {
-        return '../../assets/hybrid_tenera_oil_palm.jpg';
-      } else if (this.productId === 'tenera-oil-palm-sprouted-seeds') {
-        return '../../assets/tenera_oil_palm_sprouted_seeds.jpg';
-      } else if (this.productId === 'black-eyed-pea-cowpea') {
-        return '../../assets/cowpea.jpg';
-      } else if (this.productId === 'white-maize') {
-        return '../../assets/white-maize.jpg';
-      } else if (this.productId === 'white-beans') {
-        return '../../assets/white-beans.jpg';
-      } else if (this.productId === 'cassava') {
-        return '../../assets/cassava.jpeg';
-      } else if (this.productId === 'mung-beans') {
-        return '../../assets/mung-beans.jpg';
-      } else if (this.productId === 'red-kidney-beans') {
-        return '../../assets/red-kidney-beans.jpg';
-      } else if (this.productId === 'soursop-tea') {
-        return '../../assets/soursop-tea.jpg';
-      } else if (this.productId === 'chinese-cabbage') {
-        return '../../assets/chinese-cabbage.jpg';
-      } else {
-        return '../../assets/Agroconnect.png';
-      }
-    },
+    };
 
-    // UPDATED Review modal methods
-    setRating(rating) {
-      if (this.isLoggedIn) {
-        this.reviewForm.rating = rating;
+    const toggleWishlist = () => {
+      if (isLoggedIn.value) {
+        if (isInWishlist.value) {
+          // Remove from wishlist
+          wishlistItems.value = wishlistItems.value.filter(
+            (item) => item.id !== product.value.id
+          );
+          isInWishlist.value = false;
+          showToastNotification(`Removed ${product.value.name} from wishlist`);
+        } else {
+          // Add to wishlist
+          wishlistItems.value.push({
+            id: product.value.id,
+            name: product.value.name,
+            price: product.value.unitPrice,
+            image: product.value.image,
+          });
+          isInWishlist.value = true;
+          showToastNotification(`Added ${product.value.name} to wishlist`);
+        }
       } else {
-        this.showReviewModal = false;
-        this.showLoginRequiredModal = true;
+        // Show login required modal
+        showLoginRequiredModal.value = true;
       }
-    },
-    
-    submitReview() {
-      if (!this.isLoggedIn) {
-        this.showReviewModal = false;
-        this.showLoginRequiredModal = true;
+    };
+
+    const isProductInWishlist = (prodId) => {
+      return wishlistItems.value.some((item) => item.id === prodId);
+    };
+
+    const addRelatedToCart = (relatedProduct, event) => {
+      event.preventDefault();
+      if (isLoggedIn.value) {
+        // Check if product is in stock
+        if (relatedProduct.inStock <= 0) {
+          showToastNotification("Sorry, this product is out of stock");
+          return;
+        }
+
+        // Add related product to cart
+        const existingItem = cartItems.value.find(
+          (item) => item.id === relatedProduct.id
+        );
+
+        if (existingItem) {
+          existingItem.quantity += 1;
+        } else {
+          cartItems.value.push({
+            id: relatedProduct.id,
+            name: relatedProduct.name,
+            price: relatedProduct.unitPrice,
+            image: relatedProduct.image,
+            quantity: 1,
+          });
+        }
+
+        showToastNotification(`Added ${relatedProduct.name} to cart!`);
+      } else {
+        // Show login required modal
+        showLoginRequiredModal.value = true;
+      }
+    };
+
+    const toggleRelatedWishlist = (relatedProduct, event) => {
+      event.preventDefault();
+      if (isLoggedIn.value) {
+        const isInList = isProductInWishlist(relatedProduct.id);
+
+        if (isInList) {
+          // Remove from wishlist
+          wishlistItems.value = wishlistItems.value.filter(
+            (item) => item.id !== relatedProduct.id
+          );
+          showToastNotification(`Removed ${relatedProduct.name} from wishlist`);
+        } else {
+          // Add to wishlist
+          wishlistItems.value.push({
+            id: relatedProduct.id,
+            name: relatedProduct.name,
+            price: relatedProduct.unitPrice,
+            image: relatedProduct.image,
+          });
+          showToastNotification(`Added ${relatedProduct.name} to wishlist`);
+        }
+      } else {
+        // Show login required modal
+        showLoginRequiredModal.value = true;
+      }
+    };
+
+    const selectImage = (index) => {
+      currentImageIndex.value = index;
+    };
+
+    const formatPrice = (price) => {
+      return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    };
+
+    const setRating = (rating) => {
+      if (isLoggedIn.value) {
+        reviewForm.value.rating = rating;
+      } else {
+        showReviewModal.value = false;
+        showLoginRequiredModal.value = true;
+      }
+    };
+
+    const submitReview = () => {
+      if (!isLoggedIn.value) {
+        showReviewModal.value = false;
+        showLoginRequiredModal.value = true;
         return;
       }
-      
+
       // Validate rating is set
-      if (this.reviewForm.rating === 0) {
-        alert('Please select a star rating');
+      if (reviewForm.value.rating === 0) {
+        alert("Please select a star rating");
         return;
       }
-      
-      // Here you would typically submit the review to your backend
-      console.log('Submitting review:', this.reviewForm);
-      alert('Thank you for your review!');
-      
+
+      // Add review to the reviews array
+      const today = new Date();
+      const formattedDate = `${today.toLocaleString("default", {
+        month: "long",
+      })} ${today.getDate()}, ${today.getFullYear()}`;
+
+      productReviews.value.unshift({
+        name: reviewForm.value.name,
+        rating: reviewForm.value.rating,
+        title: reviewForm.value.title,
+        text: reviewForm.value.text,
+        date: formattedDate,
+      });
+
+      showToastNotification("Thank you for your review!");
+
       // Reset form and close modal
-      this.reviewForm = {
+      reviewForm.value = {
         name: "",
-        rating: 0, // Reset to 0 for next time
+        rating: 0,
         title: "",
-        text: ""
+        text: "",
       };
-      this.showReviewModal = false;
-    },
-      
-    // Added from Market.vue navbar
-    handleSearch() {
-      const query = this.searchQuery.trim();
+      showReviewModal.value = false;
+    };
+
+    const handleSearch = () => {
+      const query = searchQuery.value.trim();
       if (query) {
-        this.$router.push({
+        router.push({
           name: "SearchResults",
           query: { q: query },
         });
       }
-    },
-    
-    goToCart() {
-      if (this.isLoggedIn) {
-        this.$router.push("/cart");
+    };
+
+    const goToCart = () => {
+      if (isLoggedIn.value) {
+        router.push("/cart");
       } else {
-        // Show login required modal
-        this.showLoginRequiredModal = true;
+        showLoginRequiredModal.value = true;
       }
-    },
-    
-    goToWishlist() {
-      if (this.isLoggedIn) {
-        this.$router.push("/wishlist");
+    };
+
+    const goToWishlist = () => {
+      if (isLoggedIn.value) {
+        router.push("/wishlist");
       } else {
-        // Show login required modal
-        this.showLoginRequiredModal = true;
+        showLoginRequiredModal.value = true;
       }
-    },
-    
-    openDropdown() {
-      if (this.dropdownTimeout) {
-        clearTimeout(this.dropdownTimeout);
-        this.dropdownTimeout = null;
+    };
+
+    const goToNotifications = () => {
+      if (isLoggedIn.value) {
+        router.push("/notifications");
+      } else {
+        showLoginRequiredModal.value = true;
       }
-      this.dropdownOpen = true;
-    },
-    
-    closeDropdown() {
-      this.dropdownTimeout = setTimeout(() => {
-        this.dropdownOpen = false;
+    };
+
+    const openDropdown = () => {
+      if (dropdownTimeout) {
+        clearTimeout(dropdownTimeout);
+        dropdownTimeout = null;
+      }
+      dropdownOpen.value = true;
+    };
+
+    const closeDropdown = () => {
+      dropdownTimeout = setTimeout(() => {
+        dropdownOpen.value = false;
       }, 300);
-    },
-    
-    logout() {
-      console.log("Logging out...");
-      localStorage.removeItem('authToken');
-      this.isLoggedIn = false;
-      this.$router.push("/login");
-    }
-  }
+    };
+
+    const handleLogout = () => {
+      authStore.logout();
+      // Clear local cart and wishlist
+      cartItems.value = [];
+      wishlistItems.value = [];
+      isLoggedIn.value = false;
+      router.push("/login");
+    };
+
+    // Watch for route changes to load the new product
+    watch(
+      () => route.params.id,
+      (newId, oldId) => {
+        if (newId !== oldId) {
+          loadProduct();
+        }
+      }
+    );
+
+    // Load product on component mount
+    onMounted(() => {
+      // Add Bootstrap icons CSS
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href =
+        "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.0/font/bootstrap-icons.css";
+      document.head.appendChild(link);
+
+      loadProduct();
+    });
+
+    // Return all refs, computed properties, and methods to the template
+    return {
+      // State
+      loading,
+      quantity,
+      productId,
+      currentImageIndex,
+      product,
+      isLoggedIn,
+      searchQuery,
+      dropdownOpen,
+      wishlistItems,
+      cartItems,
+      notificationCount,
+      showReviewModal,
+      showLoginRequiredModal,
+      hoverRating,
+      reviewForm,
+      productReviews,
+      isInWishlist,
+      showToast,
+      toastMessage,
+
+      // Computed
+      wishlistItemCount,
+      cartItemCount,
+      productImages,
+      currentImage,
+      productTags,
+      avgRating,
+      sellerName,
+      productDescription,
+      productLongDescription,
+      productBenefits,
+      relatedProducts,
+
+      // Methods
+      getProductPrice,
+      getStorageInfo,
+      increaseQuantity,
+      decreaseQuantity,
+      validateQuantity,
+      addToCart,
+      toggleWishlist,
+      isProductInWishlist,
+      addRelatedToCart,
+      toggleRelatedWishlist,
+      selectImage,
+      formatPrice,
+      setRating,
+      submitReview,
+      handleSearch,
+      goToCart,
+      goToWishlist,
+      goToNotifications,
+      openDropdown,
+      closeDropdown,
+      handleLogout,
+    };
+  },
 };
 </script>
-  
+
 <style scoped>
 .main-product-image {
   max-height: 400px;
@@ -1033,6 +1652,11 @@ export default {
 .quantity-btn:hover {
   background-color: #f0f0f0;
   color: #333;
+}
+
+.quantity-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .quantity-input {
@@ -1097,19 +1721,6 @@ export default {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.play-button .btn {
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.play-button .bi-play-fill {
-  font-size: 24px;
-  margin-left: 3px;
-}
-
 /* Tab styling */
 .nav-tabs .nav-link {
   color: #495057;
@@ -1134,7 +1745,7 @@ export default {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* Added from Market.vue navbar */
+/* Navbar styles */
 .nav-item.dropdown:hover .dropdown-menu {
   display: block;
   margin-top: 0;
@@ -1201,10 +1812,48 @@ export default {
   color: #e5e9e7;
 }
 
+/* Toast styling */
+.toast {
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-left: 4px solid #198754;
+}
+
+.toast.show {
+  opacity: 1;
+}
+
+.back-to-market {
+  color: #198754;
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.back-to-market:hover {
+  text-decoration: underline;
+}
+
+.arrow-left {
+  font-size: 18px;
+}
+
 @media (max-width: 992px) {
   .search-container input,
   .search-container button {
     display: none !important;
+  }
+
+  .share-options {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .product-meta {
+    margin-top: 20px;
   }
 }
 </style>
