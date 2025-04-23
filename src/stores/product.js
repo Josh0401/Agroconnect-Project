@@ -121,36 +121,36 @@ export const useProductStore = defineStore("product", {
 
         // Add dummy products for development/testing
         const dummyProducts = [
-          {
-            id: "#SLT145",
-            name: "Mama's Choice Rice",
-            category: "Rice",
-            unitPrice: "Rs 90",
-            unit: "Bag",
-            inStock: 5,
-            image: "../src/assets/rice.png",
-            isDummy: true,
-          },
-          {
-            id: "#SLT146",
-            name: "Cap Rice",
-            category: "Rice",
-            unitPrice: "Rs 25",
-            unit: "Bag",
-            inStock: 0,
-            image: "../src/assets/rice2.png",
-            isDummy: true,
-          },
-          {
-            id: "#SLT147",
-            name: "Ugu Leaf",
-            category: "Vegetables",
-            unitPrice: "Rs 15",
-            unit: "Bundle",
-            inStock: 10,
-            image: "../src/assets/ugwu.png",
-            isDummy: true,
-          },
+          // {
+          //   id: "#SLT145",
+          //   name: "Mama's Choice Rice",
+          //   category: "Rice",
+          //   unitPrice: "Rs 90",
+          //   unit: "Bag",
+          //   inStock: 5,
+          //   image: "../src/assets/rice.png",
+          //   isDummy: true,
+          // },
+          // {
+          //   id: "#SLT146",
+          //   name: "Cap Rice",
+          //   category: "Rice",
+          //   unitPrice: "Rs 25",
+          //   unit: "Bag",
+          //   inStock: 0,
+          //   image: "../src/assets/rice2.png",
+          //   isDummy: true,
+          // },
+          // {
+          //   id: "#SLT147",
+          //   name: "Ugu Leaf",
+          //   category: "Vegetables",
+          //   unitPrice: "Rs 15",
+          //   unit: "Bundle",
+          //   inStock: 10,
+          //   image: "../src/assets/ugwu.png",
+          //   isDummy: true,
+          // },
         ];
 
         // Combine API and dummy products

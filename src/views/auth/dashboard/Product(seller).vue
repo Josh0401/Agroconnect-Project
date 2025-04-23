@@ -73,7 +73,7 @@
           <thead>
             <tr class="text-secondary">
               <th scope="col">Product ID</th>
-              <th scope="col">Product Name</th>
+              <th scope="col">Product Name jY</th>
               <th scope="col">Category</th>
               <th scope="col">Unit Price</th>
               <th scope="col">Unit</th>
@@ -83,7 +83,7 @@
           </thead>
           <tbody>
             <tr v-for="(product, index) in filteredProducts" :key="product.id">
-              <td>{{ product.id }}</td>
+              <td>#SLT14{{ product.id }}</td>
               <td class="d-flex align-items-center">
                 <img
                   :src="getProductImageUrl(product)"
