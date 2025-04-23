@@ -39,6 +39,7 @@ import TransactionsPage from "../views/account/TransactionsPage.vue";
 import FilteredCategoriesPage from "../views/marketplace/FilteredCategoriesPage.vue";
 import GroupsCommunitiesPage from "../views/account/GroupsCommunitiesPage.vue";
 import SearchResults from "../views/marketplace/SearchResults.vue"; // Import the new SearchResults component
+import NotificationsPage from "../views/account/NotificationsPage.vue";
 //import Categories from "../components/Categories.vue";
 //import MarketPlaceHome from "../views/MarketPlaceHome.vue";
 // import About from "@/views/About.vue";
@@ -237,6 +238,12 @@ const routes = [
   {
     path: "/account/groups-communities",
     component: GroupsCommunitiesPage,
+    meta: { hideHeader: true, hideFooter: true },
+  },
+  {
+    path: "/notifications",
+    name: "Notifications",
+    component: NotificationsPage,
     meta: { hideHeader: true, hideFooter: true },
   },
   {
