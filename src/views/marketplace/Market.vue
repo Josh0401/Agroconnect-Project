@@ -24,12 +24,11 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav mx-auto">
           <!-- Search container -->
-          <SearchBar 
-  :current-language="$i18n.locale"
-  :custom-placeholder="$t('search')"
-  :custom-button-text="$t('search')"
-/>
-
+          <SearchBar
+            :current-language="$i18n.locale"
+            :custom-placeholder="$t('search')"
+            :custom-button-text="$t('search')"
+          />
         </ul>
         <div class="d-flex align-items-center py-1">
           <!-- Language Selector Dropdown - Always Visible -->
@@ -96,7 +95,10 @@
             </button>
 
             <!-- Notification Bell Icon -->
-            <button class="btn position-relative me-3" @click="goToNotifications">
+            <button
+              class="btn position-relative me-3"
+              @click="goToNotifications"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -105,7 +107,9 @@
                 class="bi bi-bell"
                 viewBox="0 0 16 16"
               >
-                <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"/>
+                <path
+                  d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z"
+                />
               </svg>
               <span
                 class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
@@ -231,451 +235,140 @@
 
   <!-- Products Section with Clickable Cards -->
   <div class="products">
-  <section class="newproduct">
-    <div class="container">
-      <div class="categories-header">
-        <p class="h1">{{ $t("products") }}</p>
-        <router-link to="/allproduct" class="view-all">
-          {{ $t("viewAll") }} <span class="arrow">&rarr;</span>
-        </router-link>
-      </div>
-      <div class="container my-5">
+    <section class="newproduct">
+      <div class="container">
+        <div class="categories-header">
+          <p class="h1">{{ $t("products") }}</p>
+          <router-link to="/allproduct" class="view-all">
+            {{ $t("viewAll") }} <span class="arrow">&rarr;</span>
+          </router-link>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div v-if="productStore.isLoading" class="text-center my-5">
+          <div class="spinner-border text-success" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">{{ $t("loadingProducts") }}</p>
+        </div>
+
+        <!-- Error Message -->
         <div
-          class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4"
+          v-else-if="productStore.hasError"
+          class="alert alert-danger"
+          role="alert"
         >
-          <!-- Card 1 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/hybrid-coconut-seedlings' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/hybrid-coconut.jpg"
-                  class="card-img-top"
-                  :alt="$t('hybridCoconutSeedlings')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">
-                    {{ $t("hybridCoconutSeedlings") }}
-                  </h5>
-                  <p class="card-text">{{ $t("currency") }}10</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
+          {{ productStore.getError }}
+        </div>
 
-          <!-- Card 2 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/hybrid-tenera-oil-palm-seedlings' }"
-              class="text-decoration-none"
+        <!-- Products Grid -->
+        <div v-else class="container my-5">
+          <div
+            class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4"
+          >
+            <!-- Dynamically display first 15 products -->
+            <div
+              v-for="product in limitedProducts"
+              :key="product.id"
+              class="col"
             >
-              <div class="card h-100">
-                <img
-                  src="../../assets/hybrid_tenera_oil_palm.jpg"
-                  class="card-img-top"
-                  :alt="$t('hybridTeneraOilPalmSeedlings')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">
-                    {{ $t("hybridTeneraOilPalmSeedlings") }}
-                  </h5>
-                  <p class="card-text">{{ $t("currency") }}15</p>
+              <router-link
+                :to="{ path: `/product/${product.id}` }"
+                class="text-decoration-none"
+              >
+                <div class="card h-100">
+                  <img
+                    :src="product.image"
+                    class="card-img-top"
+                    :alt="product.name"
+                  />
+                  <div class="card-body text-center">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">{{ product.unitPrice }}</p>
+                    <p v-if="product.inStock <= 0" class="text-danger">
+                      {{ $t("outOfStock") }}
+                    </p>
+                    <p v-else class="text-success">
+                      {{ $t("inStock") }}: {{ product.inStock }}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </router-link>
-          </div>
-
-          <!-- Card 3 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/tenera-oil-palm-sprouted-seeds' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/tenera_oil_palm_sprouted_seeds.jpg"
-                  class="card-img-top"
-                  :alt="$t('teneraOilPalmSproutedSeeds')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">
-                    {{ $t("teneraOilPalmSproutedSeeds") }}
-                  </h5>
-                  <p class="card-text">{{ $t("currency") }}20</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-
-          <!-- Card 4 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/black-eyed-pea-cowpea' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/cowpea.jpg"
-                  class="card-img-top"
-                  :alt="$t('blackEyedPeaCowpea')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t("blackEyedPeaCowpea") }}</h5>
-                  <p class="card-text">{{ $t("currency") }}25</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-
-          <!-- Card 5 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/white-maize' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/white-maize.jpg"
-                  class="card-img-top"
-                  :alt="$t('whiteMaize')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t("whiteMaize") }}</h5>
-                  <p class="card-text">{{ $t("currency") }}30</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-
-          <!-- Card 6 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/white-beans' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/white-beans.jpg"
-                  class="card-img-top"
-                  :alt="$t('whiteBeans')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t("whiteBeans") }}</h5>
-                  <p class="card-text">{{ $t("currency") }}35</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-
-          <!-- Card 7 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/cassava' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/cassava.jpeg"
-                  class="card-img-top"
-                  :alt="$t('cassava')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t("cassava") }}</h5>
-                  <p class="card-text">{{ $t("currency") }}40</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-
-          <!-- Card 8 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/mung-beans' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/mung-beans.jpg"
-                  class="card-img-top"
-                  :alt="$t('mungBeans')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t("mungBeans") }}</h5>
-                  <p class="card-text">{{ $t("currency") }}45</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-
-          <!-- Card 9 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/red-kidney-beans' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/red-kidney-beans.jpg"
-                  class="card-img-top"
-                  :alt="$t('redKidneyBeans')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t("redKidneyBeans") }}</h5>
-                  <p class="card-text">{{ $t("currency") }}50</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-
-          <!-- Card 10 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/soursop-tea' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/soursop-tea.jpg"
-                  class="card-img-top"
-                  :alt="$t('soursopTea')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t("soursopTea") }}</h5>
-                  <p class="card-text">{{ $t("currency") }}55</p>
-                </div>
-              </div>
-            </router-link>
+              </router-link>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
-</div>
-
-<!-- New Products Section -->
-<div class="new-products">
-  <section class="newproduct">
-    <div class="container">
-      <div class="categories-header">
-        <p class="h1">{{ $t("newProducts") }}</p>
-      </div>
-      <div class="container my-5">
-        <div
-          class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4"
-        >
-          <!-- Card 1 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/hybrid-coconut-seedlings' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/hybrid-coconut.jpg"
-                  class="card-img-top"
-                  :alt="$t('hybridCoconutSeedlings')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">
-                    {{ $t("hybridCoconutSeedlings") }}
-                  </h5>
-                  <p class="card-text">{{ $t("currency") }}10</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-
-          <!-- Card 2 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/hybrid-tenera-oil-palm-seedlings' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/hybrid_tenera_oil_palm.jpg"
-                  class="card-img-top"
-                  :alt="$t('hybridTeneraOilPalmSeedlings')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">
-                    {{ $t("hybridTeneraOilPalmSeedlings") }}
-                  </h5>
-                  <p class="card-text">{{ $t("currency") }}15</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-
-          <!-- Card 3 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/tenera-oil-palm-sprouted-seeds' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/tenera_oil_palm_sprouted_seeds.jpg"
-                  class="card-img-top"
-                  :alt="$t('teneraOilPalmSproutedSeeds')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">
-                    {{ $t("teneraOilPalmSproutedSeeds") }}
-                  </h5>
-                  <p class="card-text">{{ $t("currency") }}20</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-
-          <!-- Card 4 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/black-eyed-pea-cowpea' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/cowpea.jpg"
-                  class="card-img-top"
-                  :alt="$t('blackEyedPeaCowpea')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t("blackEyedPeaCowpea") }}</h5>
-                  <p class="card-text">{{ $t("currency") }}25</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-
-          <!-- Card 5 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/white-maize' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/white-maize.jpg"
-                  class="card-img-top"
-                  :alt="$t('whiteMaize')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t("whiteMaize") }}</h5>
-                  <p class="card-text">{{ $t("currency") }}30</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-
-          <!-- Card 6 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/white-beans' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/white-beans.jpg"
-                  class="card-img-top"
-                  :alt="$t('whiteBeans')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t("whiteBeans") }}</h5>
-                  <p class="card-text">{{ $t("currency") }}35</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-
-          <!-- Card 7 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/cassava' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/cassava.jpeg"
-                  class="card-img-top"
-                  :alt="$t('cassava')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t("cassava") }}</h5>
-                  <p class="card-text">{{ $t("currency") }}40</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-
-          <!-- Card 8 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/mung-beans' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/mung-beans.jpg"
-                  class="card-img-top"
-                  :alt="$t('mungBeans')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t("mungBeans") }}</h5>
-                  <p class="card-text">{{ $t("currency") }}45</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-
-          <!-- Card 9 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/red-kidney-beans' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/red-kidney-beans.jpg"
-                  class="card-img-top"
-                  :alt="$t('redKidneyBeans')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t("redKidneyBeans") }}</h5>
-                  <p class="card-text">{{ $t("currency") }}50</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-
-          <!-- Card 10 -->
-          <div class="col">
-            <router-link
-              :to="{ path: '/product/soursop-tea' }"
-              class="text-decoration-none"
-            >
-              <div class="card h-100">
-                <img
-                  src="../../assets/soursop-tea.jpg"
-                  class="card-img-top"
-                  :alt="$t('soursopTea')"
-                />
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t("soursopTea") }}</h5>
-                  <p class="card-text">{{ $t("currency") }}55</p>
-                </div>
-              </div>
-            </router-link>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
+    </section>
   </div>
+
+  <!-- New Products Section -->
+  <div class="new-products">
+    <section class="newproduct">
+      <div class="container">
+        <div class="categories-header">
+          <p class="h1">{{ $t("newProducts") }}</p>
+          <router-link to="/allproduct" class="view-all">
+            {{ $t("viewAll") }} <span class="arrow">&rarr;</span>
+          </router-link>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div v-if="productStore.isLoading" class="text-center my-5">
+          <div class="spinner-border text-success" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">{{ $t("loadingProducts") }}</p>
+        </div>
+
+        <!-- Error Message -->
+        <div
+          v-else-if="productStore.hasError"
+          class="alert alert-danger"
+          role="alert"
+        >
+          {{ productStore.getError }}
+        </div>
+
+        <!-- Products Grid -->
+        <div v-else class="container my-5">
+          <div
+            class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4"
+          >
+            <!-- Dynamically display newest 15 products (we'll reverse the array to show newest first) -->
+            <div
+              v-for="product in newestProducts"
+              :key="product.id"
+              class="col"
+            >
+              <router-link
+                :to="{ path: `/product/${product.id}` }"
+                class="text-decoration-none"
+              >
+                <div class="card h-100">
+                  <img
+                    :src="product.image"
+                    class="card-img-top"
+                    :alt="product.name"
+                  />
+                  <div class="card-body text-center">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">{{ product.unitPrice }}</p>
+                    <p v-if="product.inStock <= 0" class="text-danger">
+                      {{ $t("outOfStock") }}
+                    </p>
+                    <p v-else class="text-success">
+                      {{ $t("inStock") }}: {{ product.inStock }}
+                    </p>
+                  </div>
+                </div>
+              </router-link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <ChatBot />
   <Footer />
 </template>
@@ -683,6 +376,7 @@
 <script>
 import { useI18n } from "vue-i18n";
 import { useAuthStore } from "../../stores/auth"; // Import auth store
+import { useProductStore } from "../../stores/product"; // Import product store
 import { useRouter } from "vue-router"; // Add router import
 import Footer from "../../components/MarketFooter.vue";
 import Categories from "../../components/Categories.vue";
@@ -703,20 +397,33 @@ export default {
   setup() {
     const { t } = useI18n();
     const authStore = useAuthStore();
+    const productStore = useProductStore();
     const router = useRouter();
-    
+
     // Auth state
     const isLoggedIn = computed(() => !!authStore.token);
-    
+
     // Dropdown state
     const dropdownOpen = ref(false);
     let dropdownTimeout = null;
-    
+
     // Search, cart, wishlist and notification state
     const cartItems = ref([]);
     const wishlistItemCount = ref(0);
     const notificationCount = ref(3); // Example count, in reality would be fetched from an API
-    
+
+    // Computed properties for limited products
+    const limitedProducts = computed(() => {
+      return productStore.getProducts.slice(0, 15);
+    });
+
+    // For the "New Products" section, we'll show the latest 15 products (in reverse order)
+    const newestProducts = computed(() => {
+      // Create a copy of the array to avoid mutating the original
+      const reversedProducts = [...productStore.getProducts];
+      return reversedProducts.reverse().slice(0, 15);
+    });
+
     // Methods
     const openDropdown = () => {
       if (dropdownTimeout) {
@@ -725,19 +432,19 @@ export default {
       }
       dropdownOpen.value = true;
     };
-    
+
     const closeDropdown = () => {
       dropdownTimeout = setTimeout(() => {
         dropdownOpen.value = false;
       }, 300);
     };
-    
+
     const handleLogout = () => {
       authStore.logout();
       // Optionally add a success message or redirect
       location.reload(); // Refresh the page to reflect logged out state
     };
-    
+
     const goToCart = () => {
       // Check if user is logged in before navigating
       if (isLoggedIn.value) {
@@ -746,7 +453,7 @@ export default {
         router.push("/login");
       }
     };
-    
+
     const goToWishlist = () => {
       // Check if user is logged in before navigating
       if (isLoggedIn.value) {
@@ -764,14 +471,14 @@ export default {
         router.push("/login");
       }
     };
-    
+
     // Computed properties
     const cartItemCount = computed(() => {
       return cartItems.value.reduce((total, item) => total + item.quantity, 0);
     });
-    
-    // Check authentication on component mount
-    onMounted(() => {
+
+    // Check authentication and fetch products on component mount
+    onMounted(async () => {
       // Check if token exists in localStorage
       const token = localStorage.getItem("authToken");
       if (token && !authStore.token) {
@@ -780,18 +487,26 @@ export default {
         // Optionally fetch user data and notifications
         fetchNotifications();
       }
+
+      // Fetch products if they haven't been loaded yet
+      if (productStore.getProducts.length === 0) {
+        await productStore.fetchProducts();
+      }
     });
-    
+
     // Mock function to fetch notifications
     const fetchNotifications = () => {
       // In a real application, this would be an API call
       // For demo purposes, we're just setting a static value
       notificationCount.value = 3;
     };
-    
+
     return {
       t,
       isLoggedIn,
+      productStore,
+      limitedProducts,
+      newestProducts,
       dropdownOpen,
       cartItems,
       wishlistItemCount,
@@ -802,9 +517,9 @@ export default {
       goToCart,
       goToWishlist,
       goToNotifications,
-      cartItemCount
+      cartItemCount,
     };
-  }
+  },
 };
 </script>
 

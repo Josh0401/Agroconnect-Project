@@ -164,12 +164,17 @@
                   >
                 </li>
                 <li>
-                  <router-link class="dropdown-item" to="/account/groups-communities"
+                  <router-link
+                    class="dropdown-item"
+                    to="/account/groups-communities"
                     >Groups</router-link
                   >
                 </li>
                 <li>
-                  <a class="dropdown-item" href="#" @click.prevent="handleLogout"
+                  <a
+                    class="dropdown-item"
+                    href="#"
+                    @click.prevent="handleLogout"
                     >Logout</a
                   >
                 </li>
@@ -182,8 +187,7 @@
   </nav>
 
   <!-- Back to Marketplace Button -->
-  
-  
+
   <div class="w-100 mt-3">
     <img
       src="../../assets/hero-img-market.png"
@@ -195,18 +199,73 @@
   <div class="products py-5">
     <section class="newproduct">
       <div class="container mt-3">
-    <router-link to="/market" class="back-to-market">
-      <span class="arrow-left">&#8592;</span> Back to Marketplace
-    </router-link>
-  </div>
+        <router-link to="/market" class="back-to-market">
+          <span class="arrow-left">&#8592;</span> Back to Marketplace
+        </router-link>
+      </div>
       <div class="container">
         <div class="categories-header">
           <p class="h1">Products</p>
         </div>
-        <div class="container my-5">
+        <!-- Loading Indicator -->
+        <div v-if="productStore.isLoading" class="text-center my-5">
+          <div class="spinner-border text-success" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Loading products...</p>
+        </div>
+        <!-- Error Message -->
+        <div
+          v-else-if="productStore.hasError"
+          class="alert alert-danger"
+          role="alert"
+        >
+          {{ productStore.getError }}
+        </div>
+        <!-- Products Grid -->
+        <div v-else class="container my-5">
+          <!-- Section Title for Dynamic Products -->
+          <h4 class="mb-4">Products from Store</h4>
+          <div
+            class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4 mb-5"
+          >
+            <!-- Dynamic Product Cards -->
+            <div
+              v-for="product in productStore.getProducts"
+              :key="product.id"
+              class="col"
+            >
+              <router-link
+                :to="{ path: `/product/${product.id}` }"
+                class="text-decoration-none"
+              >
+                <div class="card h-100">
+                  <img
+                    :src="product.image"
+                    class="card-img-top"
+                    :alt="product.name"
+                  />
+                  <div class="card-body text-center">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">{{ product.unitPrice }}</p>
+                    <p v-if="product.inStock <= 0" class="text-danger">
+                      Out of Stock
+                    </p>
+                    <p v-else class="text-success">
+                      In Stock: {{ product.inStock }}
+                    </p>
+                  </div>
+                </div>
+              </router-link>
+            </div>
+          </div>
+
+          <!-- Section Title for Hardcoded Products -->
+          <h4 class="mb-4">Featured Products</h4>
           <div
             class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-4"
           >
+            <!-- Hardcoded Product Cards -->
             <!-- Card 1 -->
             <div class="col">
               <div class="card h-100">
@@ -282,8 +341,8 @@
               </div>
             </div>
 
-           <!-- Card 7 -->
-           <div class="col">
+            <!-- Card 7 -->
+            <div class="col">
               <div class="card h-100">
                 <img
                   src="../../assets/cassava.jpeg"
@@ -352,8 +411,10 @@
 
 <script>
 import { useAuthStore } from "../../stores/auth"; // Import auth store
+import { useProductStore } from "../../stores/product"; // Import product store
 import Footer from "../../components/MarketFooter.vue";
 import { computed, ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 
 export default {
   name: "AllProducts",
@@ -362,17 +423,19 @@ export default {
   },
   setup() {
     const authStore = useAuthStore();
-    
+    const productStore = useProductStore();
+    const router = useRouter();
+
     // Auth state
     const isLoggedIn = computed(() => !!authStore.token);
-    
+
     // UI state
     const dropdownOpen = ref(false);
     let dropdownTimeout = null;
     const searchQuery = ref("");
     const cartItems = ref([]);
     const wishlistItemCount = ref(0);
-    
+
     // Methods
     const openDropdown = () => {
       if (dropdownTimeout) {
@@ -381,62 +444,69 @@ export default {
       }
       dropdownOpen.value = true;
     };
-    
+
     const closeDropdown = () => {
       dropdownTimeout = setTimeout(() => {
         dropdownOpen.value = false;
       }, 300);
     };
-    
+
     const handleLogout = () => {
       authStore.logout();
       // Optionally add a success message or redirect
       location.reload(); // Refresh the page to reflect logged out state
     };
-    
+
     const handleSearch = () => {
       const query = searchQuery.value.trim();
       if (query) {
-        // Implement search navigation
+        // Implement search navigation or filtering
+        // For now, we'll just log to console
+        console.log("Searching for:", query);
       }
     };
-    
+
     const goToCart = () => {
       // Check if user is logged in before navigating
       if (isLoggedIn.value) {
-        window.location.href = "/cart";
+        router.push("/cart");
       } else {
-        window.location.href = "/login";
+        router.push("/login");
       }
     };
-    
+
     const goToWishlist = () => {
       // Check if user is logged in before navigating
       if (isLoggedIn.value) {
-        window.location.href = "/wishlist";
+        router.push("/wishlist");
       } else {
-        window.location.href = "/login";
+        router.push("/login");
       }
     };
-    
+
     // Computed properties
     const cartItemCount = computed(() => {
       return cartItems.value.reduce((total, item) => total + item.quantity, 0);
     });
-    
-    // Check authentication on component mount
-    onMounted(() => {
+
+    // Fetch products when component mounts
+    onMounted(async () => {
       // Check if token exists in localStorage
       const token = localStorage.getItem("authToken");
       if (token && !authStore.token) {
         // Set the auth state if token exists but not set in store
         authStore.token = token;
-        // Optionally fetch user data
+      }
+
+      // Fetch products if they haven't been loaded yet
+      if (productStore.getProducts.length === 0) {
+        await productStore.fetchProducts();
       }
     });
-    
+
     return {
       isLoggedIn,
+      productStore,
       dropdownOpen,
       searchQuery,
       cartItems,
@@ -447,9 +517,9 @@ export default {
       handleSearch,
       goToCart,
       goToWishlist,
-      cartItemCount
+      cartItemCount,
     };
-  }
+  },
 };
 </script>
 
