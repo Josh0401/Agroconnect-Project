@@ -86,25 +86,31 @@
               <td>{{ product.id }}</td>
               <td class="d-flex align-items-center">
                 <img
-                  :src="product.image"
+                  :src="getProductImageUrl(product)"
                   alt="Product"
                   class="rounded-circle me-2"
                   style="width: 40px; height: 40px; object-fit: cover"
                   @error="handleImageError($event, product)"
                 />
-                {{ product.name }}
+                {{ product.name || product.product_name }}
               </td>
-              <td>{{ product.category }}</td>
-              <td>{{ product.unitPrice }}</td>
-              <td>{{ product.unit }}</td>
+              <td>{{ product.category || product.product_category }}</td>
+              <td>{{ product.unitPrice || product.product_unit_price }}</td>
+              <td>{{ product.unit || product.product_unit }}</td>
               <td>
                 <span
                   :class="[
                     'badge',
-                    product.inStock > 0 ? 'bg-success' : 'bg-danger',
+                    product.inStock > 0 || product.product_qty > 0
+                      ? 'bg-success'
+                      : 'bg-danger',
                   ]"
                 >
-                  {{ product.inStock > 0 ? product.inStock : "Out of Stock" }}
+                  {{
+                    product.inStock > 0 || product.product_qty > 0
+                      ? product.inStock || product.product_qty
+                      : "Out of Stock"
+                  }}
                 </span>
               </td>
               <!-- Actions Column -->
@@ -456,8 +462,7 @@ export default {
 
     // Categories list
     const categories = ref([
-      // "Rice",
-      // "Vegetables",
+      "Vegetables", // Added Vegetables since it's missing
       "Fruits",
       "Others",
       "Fresh Fruits",
@@ -476,6 +481,36 @@ export default {
       "Processed Foods",
     ]);
 
+    // Method to get product image URL with multiple fallbacks
+    const getProductImageUrl = (product) => {
+      // First check for already constructed image URL
+      if (
+        product.image &&
+        (product.image.startsWith("http") || product.image.startsWith("../"))
+      ) {
+        return product.image;
+      }
+
+      // Check for product_img field
+      if (product.product_img) {
+        // Different format options
+        if (product.product_img.startsWith("http")) {
+          return product.product_img;
+        } else {
+          // If product_img already contains "products/" prefix
+          if (product.product_img.startsWith("products/")) {
+            return `https://agroconnect.shop/public/storage/${product.product_img}`;
+          } else {
+            // Otherwise, add it
+            return `https://agroconnect.shop/public/storage/products/${product.product_img}`;
+          }
+        }
+      }
+
+      // Ultimate fallback
+      return "../src/assets/placeholder.png";
+    };
+
     // Computed property for filtered products
     const filteredProducts = computed(() => {
       let result = productStore.getProducts;
@@ -487,15 +522,19 @@ export default {
         const query = searchQuery.value.toLowerCase();
         result = result.filter(
           (p) =>
-            p.name.toLowerCase().includes(query) ||
-            p.id.toLowerCase().includes(query)
+            (p.name || p.product_name || "").toLowerCase().includes(query) ||
+            (p.id || "").toString().toLowerCase().includes(query)
         );
       }
 
       if (selectedFilter.value === "inStock") {
-        result = result.filter((p) => p.inStock > 0);
+        result = result.filter((p) => p.inStock > 0 || p.product_qty > 0);
       } else if (selectedFilter.value === "outOfStock") {
-        result = result.filter((p) => p.inStock === 0);
+        result = result.filter(
+          (p) =>
+            (p.inStock === 0 || p.inStock === null) &&
+            (p.product_qty === 0 || p.product_qty === null)
+        );
       }
 
       return result;
@@ -504,7 +543,27 @@ export default {
     // Fetch products on component mount
     onMounted(() => {
       console.log("Component mounted, fetching products");
-      fetchProducts();
+      fetchProducts().then(() => {
+        console.log("All products loaded, examining image paths:");
+        productStore.getProducts.forEach((product) => {
+          console.log(
+            `Product ${product.id} - ${product.name || product.product_name}:`
+          );
+
+          if (product.image) {
+            console.log(`  image: ${product.image}`);
+          }
+
+          if (product.product_img) {
+            console.log(`  product_img: ${product.product_img}`);
+            console.log(`  constructed URL: ${getProductImageUrl(product)}`);
+          }
+
+          if (!product.image && !product.product_img) {
+            console.log("  No image path found!");
+          }
+        });
+      });
     });
 
     // Methods
@@ -521,8 +580,17 @@ export default {
     const handleImageError = (event, product) => {
       // Replace with a default image if the image fails to load
       event.target.src = "../src/assets/placeholder.png";
+
       console.log(
-        `Image failed to load for product ${product.id}, using fallback`
+        `Image failed to load for product ${
+          product.id
+        }, path was: ${event.target.getAttribute("src")}, using fallback`
+      );
+
+      // For debugging, print the complete product object for failed images
+      console.log(
+        "Complete product data for failed image:",
+        JSON.stringify(product)
       );
     };
 
@@ -583,7 +651,29 @@ export default {
     const handleAddProduct = async () => {
       if (validateForm()) {
         try {
-          await productStore.addProduct(newProduct.value);
+          // Create a properly formatted product object for the API
+          const productToAdd = {
+            ...newProduct.value,
+            product_name: newProduct.value.name,
+            product_category: newProduct.value.category,
+            product_unit_price: newProduct.value.unitPrice,
+            product_price: newProduct.value.unitPrice,
+            product_unit: newProduct.value.unit,
+            product_qty: newProduct.value.inStock,
+          };
+
+          console.log("Adding product:", productToAdd);
+
+          // If we have an image file, log info about it for debugging
+          if (productToAdd.imageFile) {
+            console.log("Image file details:", {
+              name: productToAdd.imageFile.name,
+              type: productToAdd.imageFile.type,
+              size: productToAdd.imageFile.size,
+            });
+          }
+
+          await productStore.addProduct(productToAdd);
           closeModal();
         } catch (error) {
           console.error("Error adding product:", error);
@@ -598,7 +688,15 @@ export default {
     };
 
     const openEditProduct = (product) => {
-      editingProduct.value = { ...product };
+      // Make sure we have proper field mappings
+      editingProduct.value = {
+        ...product,
+        name: product.name || product.product_name,
+        category: product.category || product.product_category,
+        unitPrice: product.unitPrice || product.product_unit_price,
+        unit: product.unit || product.product_unit,
+        inStock: product.inStock || product.product_qty,
+      };
       showEditProductModal.value = true;
       activeActionIndex.value = null;
     };
@@ -622,7 +720,19 @@ export default {
 
     const handleUpdateProduct = async () => {
       try {
-        await productStore.updateProduct(editingProduct.value);
+        // Create a properly formatted product object for the API
+        const productToUpdate = {
+          ...editingProduct.value,
+          product_name: editingProduct.value.name,
+          product_category: editingProduct.value.category,
+          product_unit_price: editingProduct.value.unitPrice,
+          product_price: editingProduct.value.unitPrice,
+          product_unit: editingProduct.value.unit,
+          product_qty: editingProduct.value.inStock,
+        };
+
+        console.log("Updating product:", productToUpdate);
+        await productStore.updateProduct(productToUpdate);
         closeEditModal();
       } catch (error) {
         console.error("Error updating product:", error);
@@ -673,6 +783,7 @@ export default {
       deleteProduct,
       filterProducts,
       handleImageError,
+      getProductImageUrl,
     };
   },
 };
