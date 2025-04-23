@@ -195,10 +195,10 @@
   </nav>
   <div class="container py-4">
     <div class="container mt-3">
-    <router-link to="/market" class="back-to-market">
-      <span class="arrow-left">&#8592;</span> Back to Marketplace
-    </router-link>
-  </div>
+      <router-link to="/market" class="back-to-market">
+        <span class="arrow-left">&#8592;</span> Back to Marketplace
+      </router-link>
+    </div>
     <div class="row">
       <!-- Sidebar: Categories -->
       <aside class="col-md-3 mb-4">
@@ -206,7 +206,16 @@
           <div class="card-header">
             <h5 class="mb-0">Categories</h5>
           </div>
+          <!-- Add "All Products" option at the top -->
           <ul class="list-group list-group-flush">
+            <li
+              class="list-group-item list-group-item-action"
+              :class="{ active: selectedCategory === 'All' }"
+              @click="selectCategory('All')"
+              style="cursor: pointer"
+            >
+              All Products
+            </li>
             <li
               v-for="category in categories"
               :key="category"
@@ -224,29 +233,56 @@
       <!-- Products Section -->
       <section class="col-md-9">
         <div class="mb-3">
-          <h4>{{ selectedCategory }}</h4>
+          <h4>
+            {{ selectedCategory === "All" ? "All Products" : selectedCategory }}
+          </h4>
           <small class="text-muted"
             >{{ filteredProducts.length }} Results Found</small
           >
         </div>
-        <div class="row">
+
+        <!-- Loading indicator -->
+        <div v-if="loading" class="text-center py-5">
+          <div class="spinner-border text-success" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Loading products...</p>
+        </div>
+
+        <!-- No results message -->
+        <div v-else-if="filteredProducts.length === 0" class="text-center py-5">
+          <p>No products found in this category.</p>
+        </div>
+
+        <!-- Products grid -->
+        <div v-else class="row">
           <div
             class="col-sm-6 col-lg-4 mb-4"
             v-for="product in filteredProducts"
             :key="product.id"
           >
-            <div class="card h-100">
-              <img
-                v-if="product.imageUrl"
-                :src="product.imageUrl"
-                :alt="product.title"
-                class="card-img-top"
-              />
-              <div class="card-body">
-                <h5 class="card-title">{{ product.title }}</h5>
-                <p class="card-text text-success">\${{ product.price }}</p>
+            <router-link
+              :to="{ path: `/product/${product.id}` }"
+              class="text-decoration-none"
+            >
+              <div class="card h-100">
+                <img
+                  :src="product.image"
+                  :alt="product.name"
+                  class="card-img-top"
+                />
+                <div class="card-body">
+                  <h5 class="card-title">{{ product.name }}</h5>
+                  <p class="card-text text-success">{{ product.unitPrice }}</p>
+                  <p v-if="product.inStock <= 0" class="text-danger">
+                    Out of Stock
+                  </p>
+                  <p v-else class="text-success">
+                    In Stock: {{ product.inStock }}
+                  </p>
+                </div>
               </div>
-            </div>
+            </router-link>
           </div>
         </div>
       </section>
@@ -256,8 +292,9 @@
 </template>
 
 <script>
-import { useRoute } from "vue-router";
-import img from "../../assets/cowpea.jpg"; // Example image
+import { useRoute, useRouter } from "vue-router";
+import { useProductStore } from "../../stores/product"; // Import product store
+import { ref, computed, onMounted, watch } from "vue";
 import Footer from "../../components/MarketFooter.vue";
 import LanguageDropdown from "../../components/LanguageDropdown.vue";
 import { translations } from "../../translations";
@@ -268,191 +305,213 @@ export default {
     LanguageDropdown,
   },
 
-  data() {
-    return {
-      // Authentication state
-      isLoggedIn: false,
-      // Language properties
-      currentLanguage: "en",
-      t: translations.en, // Default to English
-      // Sample list of categories
-      categories: [
-        "Herbs and Spices",
-        "Fresh Fruits",
-        "Grains",
-        "Roots and Tubers",
-        "Nuts and Seeds",
-        "Cooking",
-        "Dairy Products",
-        "Processed Foods",
-        "Agro Chemicals",
-        "Diabetics",
-        "Proteins",
-        "Baking Ingredients",
-        "Snacks and Pastries",
-        "Cereals and Beverages",
-        "Fresh Vegetables",
-      ],
+  setup() {
+    const route = useRoute();
+    const router = useRouter();
+    const productStore = useProductStore();
 
-      // Sample products data
-      products: [
-        {
-          id: 1,
-          category: "Herbs and Spices",
-          title: "Capsicum",
-          price: 2.9,
-          imageUrl: img,
-        },
-        {
-          id: 2,
-          category: "Herbs and Spices",
-          title: "Soursop Tea with Ginger",
-          price: 11.99,
-          imageUrl: img,
-        },
-        {
-          id: 3,
-          category: "Fresh Fruits",
-          title: "Apples",
-          price: 0.99,
-          imageUrl: img,
-        },
-        // ... more products
-      ],
+    // State
+    const isLoggedIn = ref(false);
+    const currentLanguage = ref("en");
+    const t = ref(translations.en);
+    const loading = ref(true);
+    const selectedCategory = ref("All");
+    const searchQuery = ref("");
+    const dropdownOpen = ref(false);
+    const wishlistItemCount = ref(0);
+    const cartItems = ref([]);
+    let dropdownTimeout = null;
 
-      selectedCategory: null,
-      searchQuery: "",
-      dropdownOpen: false,
-      wishlistItemCount: 0,
-      cartItemCount: 0,
-      cartItems: [],
+    // Category list - includes all possible product categories
+    const categories = [
+      "Herbs and Spices",
+      "Fresh Fruits",
+      "Grains",
+      "Roots and Tubers",
+      "Nuts and Seeds",
+      "Cooking",
+      "Dairy Products",
+      "Processed Foods",
+      "Agro Chemicals",
+      "Diabetics",
+      "Proteins",
+      "Baking Ingredients",
+      "Snacks and Pastries",
+      "Cereals and Beverages",
+      "Fresh Vegetables",
+    ];
+
+    // Category mapping for API standardization
+    const categoryMapping = {
+      "herbs and spices": "Herbs and Spices",
+      "fresh fruits": "Fresh Fruits",
+      grains: "Grains",
+      "roots and tubers": "Roots and Tubers",
+      "nuts and seeds": "Nuts and Seeds",
+      cooking: "Cooking",
+      "dairy products": "Dairy Products",
+      "processed foods": "Processed Foods",
+      "agro chemicals": "Agro Chemicals",
+      diabetics: "Diabetics",
     };
-  },
 
-  computed: {
-    filteredProducts() {
-      return this.products.filter(
-        (product) => product.category === this.selectedCategory
-      );
-    },
-    cartItemCount() {
-      return this.cartItems.reduce((total, item) => total + item.quantity, 0);
-    },
-  },
+    // Get category from product using mapping
+    const getProductCategory = (product) => {
+      const productCategory = product.category.toLowerCase();
+      return categoryMapping[productCategory] || product.category;
+    };
 
-  watch: {
-    "$route.query.category": {
-      handler(newCategory) {
-        if (newCategory && this.categories.includes(newCategory)) {
-          this.selectedCategory = newCategory;
+    // Computed: Filtered products based on selected category
+    const filteredProducts = computed(() => {
+      if (selectedCategory.value === "All") {
+        return productStore.getProducts;
+      }
+
+      return productStore.getProducts.filter((product) => {
+        const productCategory = getProductCategory(product);
+        return productCategory === selectedCategory.value;
+      });
+    });
+
+    // Computed: Cart item count
+    const cartItemCount = computed(() => {
+      return cartItems.value.reduce((total, item) => total + item.quantity, 0);
+    });
+
+    // Watch for route changes to update category
+    watch(
+      () => route.query.category,
+      (newCategory) => {
+        if (newCategory) {
+          selectedCategory.value = newCategory;
+        } else {
+          selectedCategory.value = "All";
         }
       },
-      immediate: true,
-    },
-  },
+      { immediate: true }
+    );
 
-  created() {
-    const route = useRoute();
-    // Set the default selected category from the URL query if valid,
-    // otherwise default to the first category in the list.
-    this.selectedCategory =
-      route.query.category && this.categories.includes(route.query.category)
-        ? route.query.category
-        : this.categories[0];
-        
-    // Check if user is logged in
-    this.checkLoginStatus();
-  },
+    // Methods
+    const selectCategory = (category) => {
+      selectedCategory.value = category;
+      // Update URL query parameter
+      router.push({
+        query: { category: category === "All" ? undefined : category },
+      });
+    };
 
-  methods: {
-    // Check login status
-    checkLoginStatus() {
-      // In a real application, you would check with your authentication service
-      // For now, we'll use localStorage as a simple example
-      const token = localStorage.getItem('authToken');
-      this.isLoggedIn = !!token;
-    },
-    
-    // Login method (for development purposes)
-    login() {
-      localStorage.setItem('authToken', 'sample-token');
-      this.isLoggedIn = true;
-    },
-    
-    selectCategory(category) {
-      this.selectedCategory = category;
-      // Optionally, you could update the URL query parameter here as well.
-    },
+    const checkLoginStatus = () => {
+      const token = localStorage.getItem("authToken");
+      isLoggedIn.value = !!token;
+    };
 
-    openDropdown() {
-      if (this.dropdownTimeout) {
-        clearTimeout(this.dropdownTimeout);
-        this.dropdownTimeout = null;
+    const openDropdown = () => {
+      if (dropdownTimeout) {
+        clearTimeout(dropdownTimeout);
+        dropdownTimeout = null;
       }
-      this.dropdownOpen = true;
-    },
-    closeDropdown() {
-      this.dropdownTimeout = setTimeout(() => {
-        this.dropdownOpen = false;
-      }, 300);
-    },
+      dropdownOpen.value = true;
+    };
 
-    logout() {
-      console.log("Logging out...");
-      // Remove auth token
-      localStorage.removeItem('authToken');
-      this.isLoggedIn = false;
-      this.$router.push("/login");
-    },
-    handleSearch() {
-      const query = this.searchQuery.trim();
+    const closeDropdown = () => {
+      dropdownTimeout = setTimeout(() => {
+        dropdownOpen.value = false;
+      }, 300);
+    };
+
+    const logout = () => {
+      localStorage.removeItem("authToken");
+      isLoggedIn.value = false;
+      router.push("/login");
+    };
+
+    const handleSearch = () => {
+      const query = searchQuery.value.trim();
       if (query) {
-        this.$router.push({
+        router.push({
           name: "SearchResults",
           query: { q: query },
         });
       }
-    },
+    };
 
-    handleLanguageChange(langCode) {
+    const handleLanguageChange = (langCode) => {
       if (translations[langCode]) {
-        this.currentLanguage = langCode;
-        this.t = translations[langCode];
-        // Save to localStorage for persistence
+        currentLanguage.value = langCode;
+        t.value = translations[langCode];
         localStorage.setItem("preferredLanguage", langCode);
       }
-    },
+    };
 
-    goToCart() {
-      if (this.isLoggedIn) {
-        this.$router.push("/cart");
+    const goToCart = () => {
+      if (isLoggedIn.value) {
+        router.push("/cart");
       } else {
-        // Redirect to login with return URL
-        this.$router.push({
+        router.push({
           path: "/login",
-          query: { redirect: "/cart" }
+          query: { redirect: "/cart" },
         });
       }
-    },
-    goToWishlist() {
-      if (this.isLoggedIn) {
-        this.$router.push("/wishlist");
+    };
+
+    const goToWishlist = () => {
+      if (isLoggedIn.value) {
+        router.push("/wishlist");
       } else {
-        // Redirect to login with return URL
-        this.$router.push({
+        router.push({
           path: "/login",
-          query: { redirect: "/wishlist" }
+          query: { redirect: "/wishlist" },
         });
       }
-    },
-  },
-  mounted() {
-    // Load saved language preference if available
-    const savedLang = localStorage.getItem("preferredLanguage");
-    if (savedLang && translations[savedLang]) {
-      this.currentLanguage = savedLang;
-      this.t = translations[savedLang];
-    }
+    };
+
+    // Lifecycle hooks
+    onMounted(async () => {
+      // Check login status
+      checkLoginStatus();
+
+      // Load saved language preference
+      const savedLang = localStorage.getItem("preferredLanguage");
+      if (savedLang && translations[savedLang]) {
+        currentLanguage.value = savedLang;
+        t.value = translations[savedLang];
+      }
+
+      // Set category from URL query parameter
+      if (route.query.category) {
+        selectedCategory.value = route.query.category;
+      }
+
+      // Fetch products if not already loaded
+      loading.value = true;
+      if (productStore.getProducts.length === 0) {
+        await productStore.fetchProducts();
+      }
+      loading.value = false;
+    });
+
+    return {
+      isLoggedIn,
+      currentLanguage,
+      t,
+      loading,
+      categories,
+      selectedCategory,
+      searchQuery,
+      dropdownOpen,
+      wishlistItemCount,
+      cartItems,
+      filteredProducts,
+      cartItemCount,
+      selectCategory,
+      openDropdown,
+      closeDropdown,
+      logout,
+      handleSearch,
+      handleLanguageChange,
+      goToCart,
+      goToWishlist,
+    };
   },
 };
 </script>
@@ -489,9 +548,6 @@ export default {
 }
 a {
   text-decoration: none;
-}
-body {
-  width: 200% !important;
 }
 .green {
   background-color: rgb(25, 135, 84);
@@ -597,6 +653,27 @@ body {
 .card:hover {
   cursor: pointer;
 }
+
+/* Back to marketplace link styling */
+.back-to-market {
+  display: inline-flex;
+  align-items: center;
+  color: #198754;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  margin-bottom: 20px;
+}
+
+.back-to-market:hover {
+  color: #0f5132;
+}
+
+.arrow-left {
+  margin-right: 8px;
+  font-size: 1.1em;
+}
+
 @media (max-width: 992px) {
   .search-container input,
   .search-container button {

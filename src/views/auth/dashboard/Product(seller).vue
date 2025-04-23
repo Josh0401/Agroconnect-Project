@@ -142,12 +142,14 @@
           </tbody>
         </table>
       </div>
-      
+
       <!-- No Products State -->
       <div v-else class="text-center py-5">
         <i class="fa-solid fa-box-open fa-3x text-muted mb-3"></i>
         <p class="lead">No products found</p>
-        <p class="text-muted">Try changing your search or filter criteria, or add a new product.</p>
+        <p class="text-muted">
+          Try changing your search or filter criteria, or add a new product.
+        </p>
       </div>
     </div>
 
@@ -453,7 +455,26 @@ export default {
     const errors = ref({});
 
     // Categories list
-    const categories = ref(["Rice", "Vegetables", "Fruits", "Others"]);
+    const categories = ref([
+      // "Rice",
+      // "Vegetables",
+      "Fruits",
+      "Others",
+      "Fresh Fruits",
+      "Grains",
+      "Roots and Tubers",
+      "Fresh Vegetables",
+      "Nuts and Seeds",
+      "Cooking",
+      "Dairy Products",
+      "Agro Chemicals",
+      "Diabetics",
+      "Proteins",
+      "Cereals and Beverages",
+      "Snacks and Pastries",
+      "Baking Ingredients",
+      "Processed Foods",
+    ]);
 
     // Computed property for filtered products
     const filteredProducts = computed(() => {
@@ -500,7 +521,9 @@ export default {
     const handleImageError = (event, product) => {
       // Replace with a default image if the image fails to load
       event.target.src = "../src/assets/placeholder.png";
-      console.log(`Image failed to load for product ${product.id}, using fallback`);
+      console.log(
+        `Image failed to load for product ${product.id}, using fallback`
+      );
     };
 
     const openModal = () => {
@@ -649,7 +672,7 @@ export default {
       handleUpdateProduct,
       deleteProduct,
       filterProducts,
-      handleImageError
+      handleImageError,
     };
   },
 };

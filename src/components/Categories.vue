@@ -3,9 +3,9 @@
     <section class="newproduct">
       <div class="container">
         <div class="categories-header">
-          <p class="h1">{{ $t('categories') }}</p>
-          <router-link to="/allcategory" class="view-all">
-            {{ $t('viewAll') }} <span class="arrow">&rarr;</span>
+          <p class="h1">{{ $t("categories") }}</p>
+          <router-link to="/filtered-categories" class="view-all">
+            {{ $t("viewAll") }} <span class="arrow">&rarr;</span>
           </router-link>
         </div>
         <div class="container my-5">
@@ -27,7 +27,7 @@
                   alt="Herbs and Spices"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t('herbsAndSpices') }}</h5>
+                  <h5 class="card-title">{{ $t("herbsAndSpices") }}</h5>
                 </div>
               </router-link>
             </div>
@@ -47,7 +47,7 @@
                   alt="Fresh Fruits"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t('freshFruits') }}</h5>
+                  <h5 class="card-title">{{ $t("freshFruits") }}</h5>
                 </div>
               </router-link>
             </div>
@@ -67,7 +67,7 @@
                   alt="Grains"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t('grains') }}</h5>
+                  <h5 class="card-title">{{ $t("grains") }}</h5>
                 </div>
               </router-link>
             </div>
@@ -87,7 +87,7 @@
                   alt="Roots and Tubers"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t('rootsAndTubers') }}</h5>
+                  <h5 class="card-title">{{ $t("rootsAndTubers") }}</h5>
                 </div>
               </router-link>
             </div>
@@ -107,7 +107,7 @@
                   alt="Nuts and Seeds"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t('nutsAndSeeds') }}</h5>
+                  <h5 class="card-title">{{ $t("nutsAndSeeds") }}</h5>
                 </div>
               </router-link>
             </div>
@@ -127,7 +127,7 @@
                   alt="Cooking"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t('cooking') }}</h5>
+                  <h5 class="card-title">{{ $t("cooking") }}</h5>
                 </div>
               </router-link>
             </div>
@@ -147,7 +147,7 @@
                   alt="Dairy Products"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t('dairyProducts') }}</h5>
+                  <h5 class="card-title">{{ $t("dairyProducts") }}</h5>
                 </div>
               </router-link>
             </div>
@@ -167,7 +167,7 @@
                   alt="Processed Foods"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t('processedFoods') }}</h5>
+                  <h5 class="card-title">{{ $t("processedFoods") }}</h5>
                 </div>
               </router-link>
             </div>
@@ -187,7 +187,7 @@
                   alt="Agro Chemicals"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t('agroChemicals') }}</h5>
+                  <h5 class="card-title">{{ $t("agroChemicals") }}</h5>
                 </div>
               </router-link>
             </div>
@@ -207,10 +207,12 @@
                   alt="Diabetics"
                 />
                 <div class="card-body text-center">
-                  <h5 class="card-title">{{ $t('diabetics') }}</h5>
+                  <h5 class="card-title">{{ $t("diabetics") }}</h5>
                 </div>
               </router-link>
             </div>
+
+            <!-- Add two more category cards for Rice and Vegetables to match the products -->
           </div>
         </div>
       </div>
@@ -219,7 +221,7 @@
 </template>
 
 <script>
-import { useI18n } from 'vue-i18n';
+import { useI18n } from "vue-i18n";
 
 export default {
   name: "Categories",
@@ -229,7 +231,7 @@ export default {
   },
   data() {
     return {
-      // Just keeping the first 10 categories
+      // Extended category list to match what's in the FilteredCategoriesPage
       categories: [
         "Herbs and Spices",
         "Fresh Fruits",
@@ -240,7 +242,9 @@ export default {
         "Dairy Products",
         "Processed Foods",
         "Agro Chemicals",
-        "Diabetics"
+        "Diabetics",
+        "Rice",
+        "Vegetables",
       ],
     };
   },
