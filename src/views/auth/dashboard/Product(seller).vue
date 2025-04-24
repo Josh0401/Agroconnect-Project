@@ -73,7 +73,7 @@
           <thead>
             <tr class="text-secondary">
               <th scope="col">Product ID</th>
-              <th scope="col">Product Name jY</th>
+              <th scope="col">Product Name</th>
               <th scope="col">Category</th>
               <th scope="col">Unit Price</th>
               <th scope="col">Unit</th>
