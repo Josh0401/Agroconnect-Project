@@ -32,7 +32,7 @@
               viewBox="0 0 16 16"
             >
               <path
-                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85.708-.708-3.85-3.85zm-5.242.656
+                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85-.708-.708-3.85-3.85zm-5.242.656
                          a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"
               />
             </svg>
@@ -97,9 +97,9 @@
             </svg>
             <span
               class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-              v-if="cartItemCount > 0"
+              v-if="cartStore.getTotalItems > 0"
             >
-              {{ cartItemCount }}
+              {{ cartStore.getTotalItems }}
             </span>
           </button>
 
@@ -151,10 +151,12 @@
                 >
               </li>
               <li>
-                  <router-link class="dropdown-item" to="/account/groups-communities"
-                    >Groups</router-link
-                  >
-                </li>
+                <router-link
+                  class="dropdown-item"
+                  to="/account/groups-communities"
+                  >Groups</router-link
+                >
+              </li>
               <li>
                 <a class="dropdown-item" href="#" @click.prevent="logout"
                   >Logout</a
@@ -179,7 +181,43 @@
   </div>
 
   <div class="container my-5">
-    <div class="row">
+    <!-- Loading indicator -->
+    <div v-if="loading" class="text-center py-5">
+      <div class="spinner-border text-success" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-3">Processing your order...</p>
+    </div>
+
+    <!-- Order placed success -->
+    <div v-else-if="orderPlaced" class="text-center py-5">
+      <div class="mb-4">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="64"
+          height="64"
+          fill="currentColor"
+          class="bi bi-check-circle-fill text-success"
+          viewBox="0 0 16 16"
+        >
+          <path
+            d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"
+          />
+        </svg>
+      </div>
+      <h3>Order Placed Successfully!</h3>
+      <p class="text-muted mb-4">
+        Thank you for your order. You will be redirected to your orders page.
+      </p>
+    </div>
+
+    <!-- Error message -->
+    <div v-else-if="error" class="alert alert-danger" role="alert">
+      {{ error }}
+    </div>
+
+    <!-- Checkout form -->
+    <div v-else class="row">
       <!-- Shipping Information Section -->
       <div class="col-12 col-md-7 mb-5 mb-md-0">
         <h4 class="mb-4">Shipping Information</h4>
@@ -300,16 +338,24 @@
           <div class="card-body">
             <h5 class="card-title mb-3">Order Summary</h5>
 
-            <!-- Example of items in the summary -->
+            <!-- No items message -->
             <div
-              v-for="(item, index) in orderItems"
-              :key="index"
+              v-if="cartStore.getCartItems.length === 0"
+              class="text-center py-3"
+            >
+              <p class="text-muted">Your cart is empty.</p>
+            </div>
+
+            <!-- Items in the summary -->
+            <div
+              v-for="item in cartStore.getCartItems"
+              :key="item.id"
               class="d-flex justify-content-between align-items-center mb-2"
             >
               <div>
                 <img
                   :src="item.image"
-                  alt="Product Image"
+                  :alt="item.name"
                   class="rounded"
                   style="
                     width: 50px;
@@ -320,7 +366,7 @@
                 />
                 <span class="ms-2">{{ item.name }} x {{ item.quantity }}</span>
               </div>
-              <div>${{ formatPrice(item.price * item.quantity) }}</div>
+              <div>Rs {{ formatPrice(item.price * item.quantity) }}</div>
             </div>
 
             <hr />
@@ -328,12 +374,14 @@
             <!-- Subtotal & Shipping -->
             <div class="d-flex justify-content-between mb-2">
               <span>Subtotal:</span>
-              <strong>${{ formatPrice(subtotal) }}</strong>
+              <strong>Rs {{ formatPrice(subtotal) }}</strong>
             </div>
             <div class="d-flex justify-content-between mb-2">
               <span>Shipping:</span>
               <strong
-                >${{ formatPrice(shippingCost) }} ({{ shippingMethod }})</strong
+                >Rs {{ formatPrice(shippingCost) }} ({{
+                  shippingMethod
+                }})</strong
               >
             </div>
 
@@ -342,7 +390,7 @@
             <!-- Total -->
             <div class="d-flex justify-content-between mb-3">
               <span>Total:</span>
-              <strong>${{ formatPrice(totalCost) }}</strong>
+              <strong>Rs {{ formatPrice(totalCost) }}</strong>
             </div>
           </div>
         </div>
@@ -383,12 +431,37 @@
 
         <!-- Place Order Button -->
         <button
-          class="btn btn-primary w-100"
-          :disabled="!paymentMethod"
+          class="btn btn-success w-100"
+          :disabled="
+            !paymentMethod || cartStore.getCartItems.length === 0 || loading
+          "
           @click="placeOrder"
         >
           Place Order
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div
+      :class="['toast', 'align-items-center', { show: showToast }]"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <div class="d-flex">
+        <div class="toast-body">
+          <i :class="toastIcon"></i>
+          {{ toastMessage }}
+        </div>
+        <button
+          type="button"
+          class="btn-close me-2 m-auto"
+          @click="showToast = false"
+          aria-label="Close"
+        ></button>
       </div>
     </div>
   </div>
@@ -398,176 +471,306 @@
 
 <script>
 import Footer from "../../components/MarketFooter.vue";
+import { useAuthStore } from "../../stores/auth";
+import { useCartStore } from "../../stores/cart";
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
 
 export default {
   name: "Checkout",
   components: {
     Footer,
   },
-  data() {
-    return {
-      searchQuery: "",
-      wishlistItems: [
-        {
-          name: "Velles alipo Bread",
-          price: 2000,
-          stockStatus: "In Stock",
-          // image: "path-to-bread-image", // if you have images
-        },
-        {
-          name: "ORON Crayfish",
-          price: 3000,
-          stockStatus: "In Stock",
-        },
-        {
-          name: "1 Litre SUPER GRO",
-          price: 1600,
-          stockStatus: "In Stock",
-        },
-        {
-          name: "Rice",
-          price: 700,
-          stockStatus: "Out of Stock",
-        },
-        {
-          name: "GOLDEN PENNY FLOUR",
-          price: 200,
-          stockStatus: "In Stock",
-        },
-      ],
-      cartItems: [
-        {
-          name: "GOLDEN PENNY FLOUR",
-          price: 62000,
-          quantity: 7,
-          image: "https://via.placeholder.com/60x60.png?text=Flour",
-        },
-        {
-          name: "Green Apple",
-          price: 500,
-          quantity: 1,
-          image: "https://via.placeholder.com/60x60.png?text=Apple",
-        },
-        {
-          name: "Fresh Orange",
-          price: 300,
-          quantity: 2,
-          image: "https://via.placeholder.com/60x60.png?text=Orange",
-        },
-        {
-          name: "Fresh Banana",
-          price: 200,
-          quantity: 3,
-          image: "https://via.placeholder.com/60x60.png?text=Banana",
-        },
-      ],
-      wishlistItemCount: 0,
-      cartItemCount: 0,
-      dropdownOpen: false,
-      firstName: "",
-      lastName: "",
-      shippingAddress: "",
-      state: "",
-      city: "",
-      email: "",
-      phone: "",
-      orderNotes: "",
+  setup() {
+    const authStore = useAuthStore();
+    const cartStore = useCartStore();
+    const router = useRouter();
 
-      orderItems: [
-        {
-          name: "Green Apple",
-          price: 300,
-          quantity: 1,
-          image: "https://via.placeholder.com/50x50.png?text=Apple",
-        },
-      ],
+    // Form fields
+    const firstName = ref("");
+    const lastName = ref("");
+    const shippingAddress = ref("");
+    const state = ref("");
+    const city = ref("");
+    const email = ref("");
+    const phone = ref("");
+    const orderNotes = ref("");
+    const paymentMethod = ref(null);
 
-      shippingMethod: "DHL Express Worldwide",
-      shippingCost: 10,
-      paymentMethod: null,
-    };
-  },
-  methods: {
-    handleSearch() {
-      if (this.searchQuery) {
-        this.$router.push({ path: "/search", query: { q: this.searchQuery } });
-      }
-    },
-    goToWishlist() {
-      this.$router.push("/wishlist");
-    },
-    goToCart() {
-      this.$router.push("/cart");
-    },
-    incrementQty(index) {
-      this.cartItems[index].quantity++;
-    },
-    decrementQty(index) {
-      if (this.cartItems[index].quantity > 1) {
-        this.cartItems[index].quantity--;
-      }
-    },
-    removeItem(index) {
-      this.cartItems.splice(index, 1);
-    },
-    openDropdown() {
-      if (this.dropdownTimeout) {
-        clearTimeout(this.dropdownTimeout);
-        this.dropdownTimeout = null;
-      }
-      this.dropdownOpen = true;
-    },
-    closeDropdown() {
-      // Delay closing the dropdown to allow the user to move the mouse to the menu
-      this.dropdownTimeout = setTimeout(() => {
-        this.dropdownOpen = false;
-      }, 300); // Adjust delay (in ms) as needed
-    },
-    logout() {
-      this.$router.push("/login");
-    },
-    formatPrice(value) {
+    // UI state
+    const searchQuery = ref("");
+    const dropdownOpen = ref(false);
+    let dropdownTimeout = null;
+    const loading = ref(false);
+    const error = ref(null);
+    const orderPlaced = ref(false);
+
+    // Toast notification state
+    const showToast = ref(false);
+    const toastMessage = ref("");
+    const toastIcon = ref("bi bi-check-circle-fill text-success me-2");
+
+    // Shipping details
+    const shippingMethod = ref("Standard Shipping");
+    const shippingCost = ref(10);
+
+    // Computed properties
+    const subtotal = computed(() => {
+      return cartStore.getTotalPrice;
+    });
+
+    const totalCost = computed(() => {
+      return subtotal.value + shippingCost.value;
+    });
+
+    // Format price with comma separator
+    const formatPrice = (value) => {
       return value.toLocaleString();
-    },
-    placeOrder() {
-      // Logic to handle order placement
-      const orderDetails = {
-        firstName: this.firstName,
-        lastName: this.lastName,
-        shippingAddress: this.shippingAddress,
-        state: this.state,
-        city: this.city,
-        email: this.email,
-        phone: this.phone,
-        orderNotes: this.orderNotes,
-        orderItems: this.orderItems,
-        paymentMethod: this.paymentMethod,
-      };
-      console.log("Order placed:", orderDetails);
-      // Redirect or show success message
-    },
-    // Function to handle logout
-  },
+    };
 
-  computed: {
-    // Calculate subtotal from order items
-    subtotal() {
-      return this.orderItems.reduce((acc, item) => {
-        return acc + item.price * item.quantity;
-      }, 0);
-    },
-    // Calculate total cost
-    totalCost() {
-      return this.subtotal + this.shippingCost;
-    },
-  },
+    // Initialize form with user data
+    const initializeUserData = () => {
+      const user = authStore.user;
 
-  mounted() {
-    const storedCartItems = JSON.parse(localStorage.getItem("cartItems"));
-    if (storedCartItems) {
-      this.cartItems = storedCartItems;
-    }
-    this.cartItemCount = this.cartItems.length;
+      if (user) {
+        firstName.value = user.first_name || "";
+        lastName.value = user.last_name || "";
+        email.value = user.email || "";
+        phone.value = user.phone_no || "";
+
+        // Address might be in different formats depending on your API
+        if (user.address) {
+          shippingAddress.value = user.address;
+        }
+
+        if (user.city) {
+          city.value = user.city;
+        }
+
+        if (user.country) {
+          state.value = user.country;
+        }
+      }
+    };
+
+    // Handle search
+    const handleSearch = () => {
+      if (searchQuery.value) {
+        router.push({ path: "/search", query: { q: searchQuery.value } });
+      }
+    };
+
+    // Navigation methods
+    const goToWishlist = () => {
+      router.push("/wishlist");
+    };
+
+    const goToCart = () => {
+      router.push("/cart");
+    };
+
+    // Dropdown methods
+    const openDropdown = () => {
+      if (dropdownTimeout) {
+        clearTimeout(dropdownTimeout);
+        dropdownTimeout = null;
+      }
+      dropdownOpen.value = true;
+    };
+
+    const closeDropdown = () => {
+      dropdownTimeout = setTimeout(() => {
+        dropdownOpen.value = false;
+      }, 300);
+    };
+
+    const logout = () => {
+      authStore.logout();
+      router.push("/login");
+    };
+
+    const showToastNotification = (message, type = "success") => {
+      toastMessage.value = message;
+      toastIcon.value =
+        type === "success"
+          ? "bi bi-check-circle-fill text-success me-2"
+          : "bi bi-exclamation-circle-fill text-danger me-2";
+      showToast.value = true;
+
+      // Auto-hide toast after 3 seconds
+      setTimeout(() => {
+        showToast.value = false;
+      }, 3000);
+    };
+
+    // Format items for order submission
+    const formatOrderItems = () => {
+      return cartStore.getCartItems.map((item) => ({
+        product_id: item.product_id,
+        quantity: item.quantity,
+      }));
+    };
+
+    // Place order
+    // This is the updated placeOrder function for your checkout component
+    // Replace your existing placeOrder function with this one
+
+    const placeOrder = async () => {
+      if (!paymentMethod.value) {
+        showToastNotification("Please select a payment method", "error");
+        return;
+      }
+
+      loading.value = true;
+      error.value = null;
+
+      try {
+        // Get user ID from auth store
+        const userId = authStore.user?.id;
+
+        if (!userId) {
+          throw new Error("User ID not found. Please log in again.");
+        }
+
+        // Format the order payload according to backend requirements
+        const orderPayload = {
+          user_id: userId,
+          shipping_address: shippingAddress.value,
+          payment_method: paymentMethod.value,
+          payment_status: "pending", // Assuming initial status is pending
+          items: formatOrderItems(),
+        };
+
+        console.log("Placing order with payload:", orderPayload);
+
+        // Get auth token
+        const token = localStorage.getItem("authToken");
+
+        // Make API request to place order
+        const response = await axios.post(
+          "https://agroconnect.shop/api/place-order",
+          orderPayload,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        console.log("Order placed successfully:", response.data);
+
+        // Show success message
+        showToastNotification("Order placed successfully!");
+        orderPlaced.value = true;
+
+        // Store order information to pass to success page
+        const orderInfo = {
+          orderNumber:
+            response.data.order_id || response.data.id || `ORD-${Date.now()}`,
+          orderDate: new Date().toISOString(),
+          orderTotal: totalCost.value,
+          paymentMethod: paymentMethod.value,
+        };
+
+        // Clear cart
+        cartStore.clearCart();
+
+        // Redirect to success page with order information
+        router.push({
+          path: "/order-success",
+          query: orderInfo,
+        });
+      } catch (err) {
+        console.error("Error placing order:", err);
+
+        if (err.response?.data?.message) {
+          error.value = err.response.data.message;
+        } else {
+          error.value =
+            err.message || "Failed to place order. Please try again.";
+        }
+
+        showToastNotification(error.value, "error");
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    onMounted(async () => {
+      // Check if user is logged in
+      const token = authStore.token || localStorage.getItem("authToken");
+
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      // Fetch cart items if not already loaded
+      if (cartStore.getCartItems.length === 0) {
+        await cartStore.fetchCartItems();
+      }
+
+      // If cart is empty after fetching, redirect to cart page
+      if (cartStore.getCartItems.length === 0) {
+        showToastNotification(
+          "Your cart is empty. Please add items before checkout.",
+          "error"
+        );
+        setTimeout(() => {
+          router.push("/cart");
+        }, 2000);
+        return;
+      }
+
+      // Initialize form with user data
+      initializeUserData();
+    });
+
+    return {
+      // Form fields
+      firstName,
+      lastName,
+      shippingAddress,
+      state,
+      city,
+      email,
+      phone,
+      orderNotes,
+      paymentMethod,
+
+      // Computed properties
+      subtotal,
+      totalCost,
+
+      // Methods
+      formatPrice,
+      placeOrder,
+      handleSearch,
+      goToWishlist,
+      goToCart,
+      openDropdown,
+      closeDropdown,
+      logout,
+
+      // UI state
+      searchQuery,
+      dropdownOpen,
+      loading,
+      error,
+      showToast,
+      toastMessage,
+      toastIcon,
+
+      // Cart and shipping
+      shippingMethod,
+      shippingCost,
+      cartStore,
+
+      // Auth store for user info
+      authStore,
+    };
   },
 };
 </script>
@@ -612,6 +815,18 @@ a {
 
 .green {
   background-color: rgb(25, 135, 84);
+}
+
+/* Toast styling */
+.toast {
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-left: 4px solid #198754;
+}
+
+.toast.show {
+  opacity: 1;
 }
 
 /* CSS */
