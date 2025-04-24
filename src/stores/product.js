@@ -42,35 +42,13 @@ export const useProductStore = defineStore("product", {
       this.error = null;
 
       try {
-        // Try to get the user ID from localStorage
-        let userId = null;
-
-        // Check if user data is stored in localStorage
-        try {
-          const userData = localStorage.getItem("user");
-          if (userData) {
-            const user = JSON.parse(userData);
-            userId = user.id;
-          } else {
-            // If user object isn't available, try to get it from auth token
-            const token = localStorage.getItem("authToken");
-            if (token) {
-              // Optionally fetch user profile if needed
-              // This would require a separate API call to get user details
-            }
-          }
-        } catch (e) {
-          console.error("Error getting user data:", e);
-        }
-
-        // Add user_id as query parameter if available
-        const url = userId
-          ? `${this.apiBaseUrl}/products?user_id=${userId}`
-          : `${this.apiBaseUrl}/products`;
+        // Use the correct API endpoint for all products
+        const url = `${this.apiBaseUrl}/all-products`;
 
         console.log("Fetching products with URL:", url);
 
-        // Fixed URL to fetch products endpoint with auth headers
+        // Make the API call - headers might still be needed for authentication
+        // even if we're not filtering by user
         const response = await axios.get(url, {
           headers: this.getAuthHeaders(),
         });
@@ -78,10 +56,9 @@ export const useProductStore = defineStore("product", {
         // Check the structure of response.data
         console.log("API Response data:", response.data);
 
-        // Handle different response structures
+        // Process products
         let apiProducts = [];
         if (Array.isArray(response.data)) {
-          // If response.data is already an array of products
           apiProducts = response.data.map((product) => ({
             id: product.id || `#API${Math.floor(Math.random() * 900) + 100}`,
             name: product.product_name,
@@ -98,7 +75,6 @@ export const useProductStore = defineStore("product", {
             originalData: product, // Keep original data for updates
           }));
         } else if (response.data.data && Array.isArray(response.data.data)) {
-          // If response.data has a nested data array (common API structure)
           apiProducts = response.data.data.map((product) => ({
             id: product.id || `#API${Math.floor(Math.random() * 900) + 100}`,
             name: product.product_name,
@@ -119,42 +95,8 @@ export const useProductStore = defineStore("product", {
           console.log("Unexpected API response format:", response.data);
         }
 
-        // Add dummy products for development/testing
-        const dummyProducts = [
-          // {
-          //   id: "#SLT145",
-          //   name: "Mama's Choice Rice",
-          //   category: "Rice",
-          //   unitPrice: "Rs 90",
-          //   unit: "Bag",
-          //   inStock: 5,
-          //   image: "../src/assets/rice.png",
-          //   isDummy: true,
-          // },
-          // {
-          //   id: "#SLT146",
-          //   name: "Cap Rice",
-          //   category: "Rice",
-          //   unitPrice: "Rs 25",
-          //   unit: "Bag",
-          //   inStock: 0,
-          //   image: "../src/assets/rice2.png",
-          //   isDummy: true,
-          // },
-          // {
-          //   id: "#SLT147",
-          //   name: "Ugu Leaf",
-          //   category: "Vegetables",
-          //   unitPrice: "Rs 15",
-          //   unit: "Bundle",
-          //   inStock: 10,
-          //   image: "../src/assets/ugwu.png",
-          //   isDummy: true,
-          // },
-        ];
-
-        // Combine API and dummy products
-        this.products = [...apiProducts, ...dummyProducts];
+        // Store all products from the API in state
+        this.products = apiProducts;
         return true;
       } catch (error) {
         console.error("Error fetching products:", error);
