@@ -61,14 +61,23 @@
         <!-- Password Field -->
         <div class="mb-3">
           <label class="form-label fw-semibold">Password</label>
-          <input
-            type="password"
-            class="form-control form-control-lg"
-            placeholder="Enter a Password"
-            v-model="authStore.password"
-            @input="validatePassword"
-            required
-          />
+          <div class="input-group">
+            <input
+              :type="showPassword ? 'text' : 'password'"
+              class="form-control form-control-lg"
+              placeholder="Enter a Password"
+              v-model="authStore.password"
+              @input="validatePassword"
+              required
+            />
+            <button 
+              class="btn btn-outline-secondary password-toggle" 
+              type="button"
+              @click="togglePasswordVisibility"
+            >
+              <i :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            </button>
+          </div>
           <p
             v-if="
               authStore.password.length > 0 && authStore.password.length < 8
@@ -82,14 +91,23 @@
         <!-- Confirm Password Field -->
         <div class="mb-3">
           <label class="form-label fw-semibold">Confirm Password</label>
-          <input
-            type="password"
-            class="form-control form-control-lg"
-            placeholder="Confirm Password"
-            v-model="authStore.confirmPassword"
-            @input="validatePassword"
-            required
-          />
+          <div class="input-group">
+            <input
+              :type="showConfirmPassword ? 'text' : 'password'"
+              class="form-control form-control-lg"
+              placeholder="Confirm Password"
+              v-model="authStore.confirmPassword"
+              @input="validatePassword"
+              required
+            />
+            <button 
+              class="btn btn-outline-secondary password-toggle" 
+              type="button"
+              @click="toggleConfirmPasswordVisibility"
+            >
+              <i :class="showConfirmPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            </button>
+          </div>
           <p v-if="passwordError" class="text-danger">{{ passwordError }}</p>
         </div>
       </form>
@@ -132,6 +150,8 @@ export default {
     const router = useRouter();
     const authStore = useAuthStore();
     const passwordError = ref("");
+    const showPassword = ref(false);
+    const showConfirmPassword = ref(false);
 
     // Define the list of countries and cities locally (or these could be part of your store)
     const countries = ["Nigeria", "Mauritius"];
@@ -173,8 +193,16 @@ export default {
       ) {
         passwordError.value = "Passwords do not match";
       } else {
-        this.passwordError = "";
+        passwordError.value = "";
       }
+    };
+
+    const togglePasswordVisibility = () => {
+      showPassword.value = !showPassword.value;
+    };
+
+    const toggleConfirmPasswordVisibility = () => {
+      showConfirmPassword.value = !showConfirmPassword.value;
     };
 
     const goBack = () => {
@@ -227,6 +255,10 @@ export default {
       countries,
       filteredCities,
       passwordError,
+      showPassword,
+      showConfirmPassword,
+      togglePasswordVisibility,
+      toggleConfirmPasswordVisibility,
       validatePassword,
       goBack,
       previousSignup,
@@ -267,5 +299,16 @@ export default {
 
 .back {
   text-decoration: none;
+}
+
+.password-toggle {
+  color: #06b17c;
+  border-color: #ced4da;
+}
+
+.password-toggle:hover {
+  color: #06b17c;
+  border-color: #ced4da;
+  background-color: rgba(6, 177, 124, 0.1);
 }
 </style>

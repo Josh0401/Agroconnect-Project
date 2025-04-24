@@ -42,13 +42,24 @@
 
             <div class="mb-3">
               <label for="password" class="form-label">Password</label>
-              <input
-                type="password"
-                class="form-control"
-                id="password"
-                placeholder="Enter Password"
-                v-model="password"
-              />
+              <div class="input-group">
+                <input
+                  :type="showPassword ? 'text' : 'password'"
+                  class="form-control"
+                  id="password"
+                  placeholder="Enter Password"
+                  v-model="password"
+                />
+                <button
+                  class="btn btn-outline-secondary password-toggle"
+                  type="button"
+                  @click="togglePasswordVisibility"
+                >
+                  <i
+                    :class="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"
+                  ></i>
+                </button>
+              </div>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -114,6 +125,7 @@ export default {
       rememberMe: false,
       loading: false,
       errorMessage: "",
+      showPassword: false,
     };
   },
   setup() {
@@ -124,6 +136,9 @@ export default {
     goBack() {
       // Navigate back in history or to a specific route
       this.$router ? this.$router.go(-1) : window.history.back();
+    },
+    togglePasswordVisibility() {
+      this.showPassword = !this.showPassword;
     },
     async onLogin() {
       // Basic form validation
@@ -182,5 +197,14 @@ export default {
 }
 .login-left {
   background-color: #43b28c; /* fallback color */
+}
+.password-toggle {
+  color: #43b28c;
+  border-color: #ced4da;
+}
+.password-toggle:hover {
+  color: #43b28c;
+  border-color: #ced4da;
+  background-color: rgba(67, 178, 140, 0.1);
 }
 </style>
