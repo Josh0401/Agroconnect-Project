@@ -462,8 +462,6 @@ export default {
 
     // Categories list
     const categories = ref([
-      "Vegetables", // Added Vegetables since it's missing
-      "Fruits",
       "Others",
       "Fresh Fruits",
       "Grains",
@@ -479,6 +477,7 @@ export default {
       "Snacks and Pastries",
       "Baking Ingredients",
       "Processed Foods",
+      "Herbs and Spices"
     ]);
 
     // Method to get product image URL with multiple fallbacks
