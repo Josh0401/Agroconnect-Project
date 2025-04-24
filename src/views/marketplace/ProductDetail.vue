@@ -220,11 +220,7 @@
             <router-link
               :to="
                 '/filtered-categories?category=' +
-                (
-                  product.product_category ||
-                  product.category ||
-                  'Category'
-                )
+                (product.product_category || product.category || 'Category')
               "
               class="text-decoration-none"
             >
@@ -962,10 +958,14 @@
 </template>
 
 <script>
+// This is the script section of your ProductDetail.vue component
+
 import { ref, computed, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useProductStore } from "../../stores/product";
 import { useAuthStore } from "../../stores/auth";
+import { useCartStore } from "../../stores/cart";
+import { useWishlistStore } from "../../stores/wishlist";
 import Footer from "../../components/MarketFooter.vue";
 
 export default {
@@ -977,6 +977,8 @@ export default {
     // Stores and router setup
     const productStore = useProductStore();
     const authStore = useAuthStore();
+    const cartStore = useCartStore();
+    const wishlistStore = useWishlistStore();
     const route = useRoute();
     const router = useRouter();
 
@@ -1002,13 +1004,10 @@ export default {
     const searchQuery = ref("");
     const dropdownOpen = ref(false);
     let dropdownTimeout = null;
-    const wishlistItems = ref([]);
-    const cartItems = ref([]);
     const notificationCount = ref(0);
     const showReviewModal = ref(false);
     const showLoginRequiredModal = ref(false);
     const hoverRating = ref(0);
-    const isInWishlist = ref(false);
     const showToast = ref(false);
     const toastMessage = ref("");
 
@@ -1039,10 +1038,10 @@ export default {
     ]);
 
     // Computed properties
-    const wishlistItemCount = computed(() => wishlistItems.value.length);
-
-    const cartItemCount = computed(() =>
-      cartItems.value.reduce((total, item) => total + item.quantity, 0)
+    const wishlistItemCount = computed(() => wishlistStore.getWishlistCount);
+    const cartItemCount = computed(() => cartStore.getTotalItems);
+    const isInWishlist = computed(() =>
+      wishlistStore.isProductInWishlist(productId.value)
     );
 
     const productImages = computed(() => {
@@ -1225,8 +1224,13 @@ export default {
         };
       }
 
-      // Check if product is in wishlist
-      checkWishlistStatus();
+      // Fetch wishlist and cart to check statuses
+      if (isLoggedIn.value) {
+        await Promise.all([
+          wishlistStore.fetchWishlistItems(),
+          cartStore.fetchCartItems(),
+        ]);
+      }
 
       // Simulate checking user notifications
       notificationCount.value = Math.floor(Math.random() * 5);
@@ -1236,22 +1240,7 @@ export default {
       }, 500);
     };
 
-    const checkWishlistStatus = () => {
-      // Check if product is already in wishlist
-      isInWishlist.value = wishlistItems.value.some(
-        (item) => item.id === product.value.id
-      );
-    };
-
-    // Get product price with proper fallbacks
-    const getProductPrice = (prod) => {
-      return (
-        prod.product_price ||
-        prod.product_unit_price ||
-        (prod.unitPrice ? prod.unitPrice.replace("Rs ", "") : 0)
-      );
-    };
-
+    // Helper methods
     const getStorageInfo = () => {
       // Return storage information based on category
       if (product.value.category === "Vegetables") {
@@ -1263,7 +1252,6 @@ export default {
       } else if (product.value.category === "Seedlings") {
         return "Plant in well-draining soil with adequate sunlight";
       }
-
       return "Store appropriately based on product type";
     };
 
@@ -1288,7 +1276,7 @@ export default {
       }
     };
 
-    const showToastNotification = (message) => {
+    const showToastNotification = (message, type = "success") => {
       toastMessage.value = message;
       showToast.value = true;
 
@@ -1298,130 +1286,144 @@ export default {
       }, 3000);
     };
 
-    const addToCart = () => {
-      if (isLoggedIn.value) {
-        // Check if product is in stock
-        if (product.value.inStock <= 0) {
-          showToastNotification("Sorry, this product is out of stock");
-          return;
-        }
+    // Cart and Wishlist methods
 
-        // Add to cart logic
-        const existingItem = cartItems.value.find(
-          (item) => item.id === product.value.id
-        );
-
-        if (existingItem) {
-          existingItem.quantity += quantity.value;
-        } else {
-          cartItems.value.push({
-            id: product.value.id,
-            name: product.value.name,
-            price: product.value.unitPrice,
-            image: product.value.image,
-            quantity: quantity.value,
-          });
-        }
-
-        showToastNotification(
-          `Added ${quantity.value} ${product.value.name} to cart!`
-        );
-      } else {
+    const addToCart = async () => {
+      if (!isLoggedIn.value) {
         // Show login required modal
         showLoginRequiredModal.value = true;
+        return;
+      }
+
+      // Check if product is in stock
+      if (product.value.inStock <= 0) {
+        showToastNotification("Sorry, this product is out of stock");
+        return;
+      }
+
+      // Add to cart logic using the cart store
+      try {
+        loading.value = true;
+        const result = await cartStore.addToCart(
+          product.value.id,
+          quantity.value
+        );
+
+        if (result.success) {
+          showToastNotification(
+            `Added ${quantity.value} ${product.value.name} to cart!`
+          );
+        } else {
+          // Check if it's an auth error that needs login
+          if (result.authError) {
+            showLoginRequiredModal.value = true;
+          } else {
+            showToastNotification(result.message, "error");
+          }
+        }
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+        showToastNotification("Failed to add item to cart", "error");
+      } finally {
+        loading.value = false;
       }
     };
-
-    const toggleWishlist = () => {
-      if (isLoggedIn.value) {
-        if (isInWishlist.value) {
-          // Remove from wishlist
-          wishlistItems.value = wishlistItems.value.filter(
-            (item) => item.id !== product.value.id
-          );
-          isInWishlist.value = false;
-          showToastNotification(`Removed ${product.value.name} from wishlist`);
-        } else {
-          // Add to wishlist
-          wishlistItems.value.push({
-            id: product.value.id,
-            name: product.value.name,
-            price: product.value.unitPrice,
-            image: product.value.image,
-          });
-          isInWishlist.value = true;
-          showToastNotification(`Added ${product.value.name} to wishlist`);
-        }
-      } else {
+    const toggleWishlist = async () => {
+      if (!isLoggedIn.value) {
         // Show login required modal
         showLoginRequiredModal.value = true;
+        return;
+      }
+
+      try {
+        loading.value = true;
+        const result = await wishlistStore.toggleWishlist(product.value.id);
+
+        if (result.success) {
+          const action = isInWishlist.value ? "Removed from" : "Added to";
+          showToastNotification(`${action} wishlist`);
+        } else {
+          // Check if it's an auth error that needs login
+          if (result.authError) {
+            showLoginRequiredModal.value = true;
+          } else {
+            showToastNotification(result.message, "error");
+          }
+        }
+      } catch (error) {
+        console.error("Error toggling wishlist:", error);
+        showToastNotification("Failed to update wishlist", "error");
+      } finally {
+        loading.value = false;
       }
     };
 
     const isProductInWishlist = (prodId) => {
-      return wishlistItems.value.some((item) => item.id === prodId);
+      return wishlistStore.isProductInWishlist(prodId);
     };
 
-    const addRelatedToCart = (relatedProduct, event) => {
+    const addRelatedToCart = async (relatedProduct, event) => {
       event.preventDefault();
-      if (isLoggedIn.value) {
-        // Check if product is in stock
-        if (relatedProduct.inStock <= 0) {
-          showToastNotification("Sorry, this product is out of stock");
-          return;
-        }
 
-        // Add related product to cart
-        const existingItem = cartItems.value.find(
-          (item) => item.id === relatedProduct.id
-        );
-
-        if (existingItem) {
-          existingItem.quantity += 1;
-        } else {
-          cartItems.value.push({
-            id: relatedProduct.id,
-            name: relatedProduct.name,
-            price: relatedProduct.unitPrice,
-            image: relatedProduct.image,
-            quantity: 1,
-          });
-        }
-
-        showToastNotification(`Added ${relatedProduct.name} to cart!`);
-      } else {
+      if (!isLoggedIn.value) {
         // Show login required modal
         showLoginRequiredModal.value = true;
+        return;
+      }
+
+      // Check if product is in stock
+      if (relatedProduct.inStock <= 0) {
+        showToastNotification("Sorry, this product is out of stock");
+        return;
+      }
+
+      // Add related product to cart
+      try {
+        loading.value = true;
+        const result = await cartStore.addToCart(relatedProduct.id, 1);
+
+        if (result.success) {
+          showToastNotification(`Added ${relatedProduct.name} to cart!`);
+        } else {
+          showToastNotification(result.message, "error");
+        }
+      } catch (error) {
+        console.error("Error adding related product to cart:", error);
+        showToastNotification("Failed to add item to cart", "error");
+      } finally {
+        loading.value = false;
       }
     };
 
-    const toggleRelatedWishlist = (relatedProduct, event) => {
+    const toggleRelatedWishlist = async (relatedProduct, event) => {
       event.preventDefault();
-      if (isLoggedIn.value) {
-        const isInList = isProductInWishlist(relatedProduct.id);
 
-        if (isInList) {
-          // Remove from wishlist
-          wishlistItems.value = wishlistItems.value.filter(
-            (item) => item.id !== relatedProduct.id
-          );
-          showToastNotification(`Removed ${relatedProduct.name} from wishlist`);
-        } else {
-          // Add to wishlist
-          wishlistItems.value.push({
-            id: relatedProduct.id,
-            name: relatedProduct.name,
-            price: relatedProduct.unitPrice,
-            image: relatedProduct.image,
-          });
-          showToastNotification(`Added ${relatedProduct.name} to wishlist`);
-        }
-      } else {
+      if (!isLoggedIn.value) {
         // Show login required modal
         showLoginRequiredModal.value = true;
+        return;
+      }
+
+      try {
+        loading.value = true;
+        const result = await wishlistStore.toggleWishlist(relatedProduct.id);
+
+        if (result.success) {
+          const inList = isProductInWishlist(relatedProduct.id);
+          const action = inList ? "Added to" : "Removed from";
+          showToastNotification(`${relatedProduct.name} ${action} wishlist`);
+        } else {
+          showToastNotification(result.message, "error");
+        }
+      } catch (error) {
+        console.error("Error toggling wishlist for related product:", error);
+        showToastNotification("Failed to update wishlist", "error");
+      } finally {
+        loading.value = false;
       }
     };
 
+    // Navigation & UI methods
     const selectImage = (index) => {
       currentImageIndex.value = index;
     };
@@ -1529,9 +1531,8 @@ export default {
     const handleLogout = () => {
       authStore.logout();
       // Clear local cart and wishlist
-      cartItems.value = [];
-      wishlistItems.value = [];
-      isLoggedIn.value = false;
+      cartStore.clearCart();
+      wishlistStore.clearWishlist();
       router.push("/login");
     };
 
@@ -1559,6 +1560,11 @@ export default {
 
     // Return all refs, computed properties, and methods to the template
     return {
+      // Store references
+      productStore,
+      cartStore,
+      wishlistStore,
+
       // State
       loading,
       quantity,
@@ -1568,15 +1574,12 @@ export default {
       isLoggedIn,
       searchQuery,
       dropdownOpen,
-      wishlistItems,
-      cartItems,
       notificationCount,
       showReviewModal,
       showLoginRequiredModal,
       hoverRating,
       reviewForm,
       productReviews,
-      isInWishlist,
       showToast,
       toastMessage,
 
@@ -1592,9 +1595,9 @@ export default {
       productLongDescription,
       productBenefits,
       relatedProducts,
+      isInWishlist,
 
       // Methods
-      getProductPrice,
       getStorageInfo,
       increaseQuantity,
       decreaseQuantity,
@@ -1739,10 +1742,10 @@ export default {
 .product-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.breadcrumb-item a{
+.breadcrumb-item a {
   color: #198754 !important;
 }
-.breadcrumb-item.active{
+.breadcrumb-item.active {
   color: #198754 !important;
 }
 .product-card:hover {

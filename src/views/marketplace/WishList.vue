@@ -72,9 +72,9 @@
             <!-- Wishlist badge -->
             <span
               class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-              v-if="wishlistItemCount > 0"
+              v-if="wishlistStore.getWishlistCount > 0"
             >
-              {{ wishlistItemCount }}
+              {{ wishlistStore.getWishlistCount }}
             </span>
           </button>
 
@@ -97,9 +97,9 @@
             </svg>
             <span
               class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-              v-if="cartItemCount > 0"
+              v-if="cartStore.getTotalItems > 0"
             >
-              {{ cartItemCount }}
+              {{ cartStore.getTotalItems }}
             </span>
           </button>
 
@@ -151,10 +151,12 @@
                 >
               </li>
               <li>
-                  <router-link class="dropdown-item" to="/account/groups-communities"
-                    >Groups</router-link
-                  >
-                </li>
+                <router-link
+                  class="dropdown-item"
+                  to="/account/groups-communities"
+                  >Groups</router-link
+                >
+              </li>
               <li>
                 <a class="dropdown-item" href="#" @click.prevent="logout"
                   >Logout</a
@@ -168,7 +170,6 @@
   </nav>
 
   <!-- Hero Section -->
-
   <div class="w-100">
     <img
       src="../../assets/hero-img-market.png"
@@ -181,7 +182,28 @@
   <div class="container my-5">
     <h2 class="text-center mb-4">My Wishlist</h2>
 
-    <div class="table-responsive" v-if="wishlistItems && wishlistItems.length">
+    <!-- Loading state -->
+    <div v-if="wishlistStore.isLoading" class="text-center py-5">
+      <div class="spinner-border text-success" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-3">Loading your wishlist...</p>
+    </div>
+
+    <!-- Error state -->
+    <div
+      v-else-if="wishlistStore.hasError"
+      class="alert alert-danger"
+      role="alert"
+    >
+      {{ wishlistStore.getError }}
+    </div>
+
+    <!-- Wishlist content -->
+    <div
+      class="table-responsive"
+      v-else-if="wishlistStore.getWishlistItems.length > 0"
+    >
       <table class="table align-middle table-bordered">
         <thead class="bg-light">
           <tr>
@@ -192,36 +214,50 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in wishlistItems" :key="index">
-            <!-- Product name + optional image -->
-            <td>
-              <!-- If you have product images, uncomment this <img> and set the path
-            <img
-              :src="item.image"
-              alt="Product Image"
-              class="me-2"
-              style="width: 60px; height: 60px; object-fit: cover"
-            /> 
-            -->
+          <tr v-for="item in wishlistStore.getWishlistItems" :key="item.id">
+            <!-- Product name + image -->
+            <td class="d-flex align-items-center">
+              <img
+                :src="item.image"
+                :alt="item.name"
+                class="me-3"
+                style="width: 60px; height: 60px; object-fit: cover"
+              />
               {{ item.name }}
             </td>
 
-            <!-- Price (formatted if desired) -->
-            <td>Rs{{ formatPrice(item.price) }}</td>
+            <!-- Price (formatted) -->
+            <td>{{ formatPrice(item.price) }}</td>
 
             <!-- Stock status -->
-            <td>{{ item.stockStatus }}</td>
+            <td>
+              <span
+                :class="
+                  item.stockStatus === 'In Stock'
+                    ? 'text-success'
+                    : 'text-danger'
+                "
+              >
+                {{ item.stockStatus }}
+              </span>
+            </td>
 
             <!-- Actions -->
             <td>
               <button
                 class="btn btn-success me-2"
-                :disabled="item.stockStatus === 'Out of Stock'"
-                @click="moveToCart(item, index)"
+                :disabled="
+                  item.stockStatus === 'Out of Stock' || wishlistStore.isLoading
+                "
+                @click="moveToCart(item.id)"
               >
                 Move to cart
               </button>
-              <button class="btn btn-danger" @click="removeFromWishlist(index)">
+              <button
+                class="btn btn-danger"
+                @click="removeFromWishlist(item.id)"
+                :disabled="wishlistStore.isLoading"
+              >
                 <i class="fas fa-times"></i>
               </button>
             </td>
@@ -230,17 +266,62 @@
       </table>
     </div>
 
-    <!-- If no wishlist items, show a friendly message -->
-    <div class="text-center" v-else>
-      <p>Your wishlist is empty.</p>
+    <!-- Empty wishlist state -->
+    <div class="text-center py-5" v-else>
+      <div class="mb-4">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="64"
+          height="64"
+          fill="currentColor"
+          class="bi bi-heart text-muted"
+          viewBox="0 0 16 16"
+        >
+          <path
+            d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"
+          />
+        </svg>
+      </div>
+      <h3>Your wishlist is empty</h3>
+      <p class="text-muted mb-4">Start exploring and save items you like!</p>
+      <router-link to="/market" class="btn btn-success"
+        >Continue Shopping</router-link
+      >
     </div>
   </div>
-  <!-- END OF WISHLIST SECTION -->
+
+  <!-- Toast notification -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div
+      :class="['toast', 'align-items-center', { show: showToast }]"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+    >
+      <div class="d-flex">
+        <div class="toast-body">
+          <i :class="toastIcon"></i>
+          {{ toastMessage }}
+        </div>
+        <button
+          type="button"
+          class="btn-close me-2 m-auto"
+          @click="showToast = false"
+          aria-label="Close"
+        ></button>
+      </div>
+    </div>
+  </div>
 
   <Footer />
 </template>
 
 <script>
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useCartStore } from "../../stores/cart";
+import { useWishlistStore } from "../../stores/wishlist";
+import { useAuthStore } from "../../stores/auth";
 import Footer from "../../components/MarketFooter.vue";
 
 export default {
@@ -248,129 +329,134 @@ export default {
   components: {
     Footer,
   },
-  data() {
-    return {
-      searchQuery: "",
-      wishlistItems: [
-        {
-          name: "Velles alipo Bread",
-          price: 200,
-          stockStatus: "In Stock",
-          // image: "path-to-bread-image", // if you have images
-        },
-        {
-          name: "ORON Crayfish",
-          price: 300,
-          stockStatus: "In Stock",
-        },
-        {
-          name: "1 Litre SUPER GRO",
-          price: 160,
-          stockStatus: "In Stock",
-        },
-        {
-          name: "Rice",
-          price: 70,
-          stockStatus: "Out of Stock",
-        },
-        {
-          name: "GOLDEN PENNY FLOUR",
-          price: 200,
-          stockStatus: "In Stock",
-        },
-      ],
-      cartItems: [
-        {
-          name: "GOLDEN PENNY FLOUR",
-          price: 62000,
-          quantity: 7,
-          image: "https://via.placeholder.com/60x60.png?text=Flour",
-        },
-        {
-          name: "Green Apple",
-          price: 500,
-          quantity: 1,
-          image: "https://via.placeholder.com/60x60.png?text=Apple",
-        },
-        {
-          name: "Fresh Orange",
-          price: 300,
-          quantity: 2,
-          image: "https://via.placeholder.com/60x60.png?text=Orange",
-        },
-        {
-          name: "Fresh Banana",
-          price: 200,
-          quantity: 3,
-          image: "https://via.placeholder.com/60x60.png?text=Banana",
-        },
-      ],
-      wishlistItemCount: 0,
-      cartItemCount: 0,
-      dropdownOpen: false,
-    };
-  },
-  methods: {
-    handleSearch() {
-      if (this.searchQuery) {
-        this.$router.push({ path: "/search", query: { q: this.searchQuery } });
-      }
-    },
-    goToWishlist() {
-      this.$router.push("/wishlist");
-    },
-    goToCart() {
-      this.$router.push("/cart");
-    },
-    incrementQty(index) {
-      this.cartItems[index].quantity++;
-    },
-    decrementQty(index) {
-      if (this.cartItems[index].quantity > 1) {
-        this.cartItems[index].quantity--;
-      }
-    },
-    removeItem(index) {
-      this.cartItems.splice(index, 1);
-    },
-    openDropdown() {
-      if (this.dropdownTimeout) {
-        clearTimeout(this.dropdownTimeout);
-        this.dropdownTimeout = null;
-      }
-      this.dropdownOpen = true;
-    },
-    closeDropdown() {
-      // Delay closing the dropdown to allow the user to move the mouse to the menu
-      this.dropdownTimeout = setTimeout(() => {
-        this.dropdownOpen = false;
-      }, 300); // Adjust delay (in ms) as needed
-    },
-    logout() {
-      this.$router.push("/login");
-    },
-    formatPrice(value) {
-      // This will format the price with commas, e.g. 2,000,000
-      return value.toLocaleString();
-    },
-    moveToCart(item, index) {
-      // 1. Add this item to your cart if you wish:
-      // this.cartItems.push(item);
+  setup() {
+    const wishlistStore = useWishlistStore();
+    const cartStore = useCartStore();
+    const authStore = useAuthStore();
+    const router = useRouter();
 
-      // 2. Remove from wishlist
-      this.removeFromWishlist(index);
-      // 3. Optionally update localStorage or make an API call here
-    },
-    removeFromWishlist(index) {
-      this.wishlistItems.splice(index, 1);
-    },
-  },
-  mounted() {
-    const storedCartItems = JSON.parse(localStorage.getItem("cartItems"));
-    if (storedCartItems) {
-      this.cartItems = storedCartItems;
-    }
-    this.cartItemCount = this.cartItems.length;
+    const searchQuery = ref("");
+    const dropdownOpen = ref(false);
+    let dropdownTimeout = null;
+
+    // Toast notification state
+    const showToast = ref(false);
+    const toastMessage = ref("");
+    const toastIcon = ref("bi bi-check-circle-fill text-success me-2");
+
+    const showToastNotification = (message, type = "success") => {
+      toastMessage.value = message;
+      toastIcon.value =
+        type === "success"
+          ? "bi bi-check-circle-fill text-success me-2"
+          : "bi bi-exclamation-circle-fill text-danger me-2";
+      showToast.value = true;
+
+      // Auto-hide toast after 3 seconds
+      setTimeout(() => {
+        showToast.value = false;
+      }, 3000);
+    };
+
+    const handleSearch = () => {
+      if (searchQuery.value) {
+        router.push({ path: "/search", query: { q: searchQuery.value } });
+      }
+    };
+
+    const goToWishlist = () => {
+      router.push("/wishlist");
+    };
+
+    const goToCart = () => {
+      router.push("/cart");
+    };
+
+    const moveToCart = async (wishlistItemId) => {
+      try {
+        const result = await wishlistStore.moveToCart(wishlistItemId);
+        if (result.success) {
+          showToastNotification("Item moved to cart", "success");
+        } else {
+          showToastNotification("Failed to move item to cart", "error");
+        }
+      } catch (error) {
+        console.error("Error moving item to cart:", error);
+        showToastNotification("An error occurred", "error");
+      }
+    };
+
+    const removeFromWishlist = async (wishlistItemId) => {
+      try {
+        const result = await wishlistStore.removeFromWishlist(wishlistItemId);
+        if (result.success) {
+          showToastNotification("Item removed from wishlist", "success");
+        } else {
+          showToastNotification("Failed to remove item", "error");
+        }
+      } catch (error) {
+        console.error("Error removing item from wishlist:", error);
+        showToastNotification("An error occurred", "error");
+      }
+    };
+
+    const formatPrice = (value) => {
+      // Handle string values with "Rs" prefix
+      if (typeof value === "string" && value.startsWith("Rs")) {
+        value = value.replace("Rs", "").trim();
+      }
+
+      // Format with Rs prefix and thousand separators
+      return `Rs ${parseFloat(value).toLocaleString()}`;
+    };
+
+    const openDropdown = () => {
+      if (dropdownTimeout) {
+        clearTimeout(dropdownTimeout);
+        dropdownTimeout = null;
+      }
+      dropdownOpen.value = true;
+    };
+
+    const closeDropdown = () => {
+      dropdownTimeout = setTimeout(() => {
+        dropdownOpen.value = false;
+      }, 300);
+    };
+
+    const logout = () => {
+      authStore.logout();
+      router.push("/login");
+    };
+
+    // Fetch wishlist data when component mounts
+    onMounted(async () => {
+      if (authStore.token) {
+        await wishlistStore.fetchWishlistItems();
+        await cartStore.fetchCartItems();
+      } else {
+        router.push("/login");
+      }
+    });
+
+    return {
+      wishlistStore,
+      cartStore,
+      searchQuery,
+      dropdownOpen,
+      showToast,
+      toastMessage,
+      toastIcon,
+      handleSearch,
+      goToWishlist,
+      goToCart,
+      moveToCart,
+      removeFromWishlist,
+      formatPrice,
+      openDropdown,
+      closeDropdown,
+      logout,
+    };
   },
 };
 </script>
@@ -415,6 +501,18 @@ a {
 
 .green {
   background-color: rgb(25, 135, 84);
+}
+
+/* Toast styling */
+.toast {
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-left: 4px solid #198754;
+}
+
+.toast.show {
+  opacity: 1;
 }
 
 /* CSS */

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- Navbar -->
+    <!-- Navbar (Kept the same) -->
     <nav class="navbar navbar-expand-lg sticky-top bg-white shadow-sm py-3">
       <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="/market">
@@ -74,9 +74,9 @@
               <!-- Wishlist badge -->
               <span
                 class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                v-if="wishlistItemCount > 0"
+                v-if="wishlistStore.getWishlistCount > 0"
               >
-                {{ wishlistItemCount }}
+                {{ wishlistStore.getWishlistCount }}
               </span>
             </button>
 
@@ -99,9 +99,9 @@
               </svg>
               <span
                 class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                v-if="cartItemCount > 0"
+                v-if="cartStore.getTotalItems > 0"
               >
-                {{ cartItemCount }}
+                {{ cartStore.getTotalItems }}
               </span>
             </button>
 
@@ -153,7 +153,9 @@
                   >
                 </li>
                 <li>
-                  <router-link class="dropdown-item" to="/account/groups-communities"
+                  <router-link
+                    class="dropdown-item"
+                    to="/account/groups-communities"
                     >Groups</router-link
                   >
                 </li>
@@ -181,7 +183,54 @@
     <!-- Shopping Cart Section -->
     <div class="container py-5">
       <h2 class="mb-4 text-center">My Shopping Cart</h2>
-      <div class="row">
+
+      <!-- Loading state -->
+      <div v-if="cartStore.isLoading" class="text-center py-5">
+        <div class="spinner-border text-success" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3">Loading your cart...</p>
+      </div>
+
+      <!-- Error state -->
+      <div
+        v-else-if="cartStore.hasError"
+        class="alert alert-danger"
+        role="alert"
+      >
+        {{ cartStore.getError }}
+      </div>
+
+      <!-- Empty cart state -->
+      <div
+        v-else-if="cartStore.getCartItems.length === 0"
+        class="text-center py-5"
+      >
+        <div class="mb-4">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="64"
+            height="64"
+            fill="currentColor"
+            class="bi bi-cart text-muted"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 .485.379L2.89 5H14.5a.5.5 0 0 1 .49.598l-1.5 7A.5.5 0 0 1 13 13H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM3.102 6l1.313 6h7.17l1.313-6H3.102zM5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"
+            />
+          </svg>
+        </div>
+        <h3>Your cart is empty</h3>
+        <p class="text-muted mb-4">
+          Looks like you haven't added any products to your cart yet.
+        </p>
+        <router-link to="/market" class="btn btn-success"
+          >Continue Shopping</router-link
+        >
+      </div>
+
+      <!-- Cart content -->
+      <div v-else class="row">
         <!-- Cart Table -->
         <div class="col-12 col-md-8">
           <div class="table-responsive">
@@ -196,12 +245,13 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(item, index) in cartItems" :key="index">
+                <tr v-for="item in cartStore.getCartItems" :key="item.id">
                   <td class="d-flex align-items-center align-middle">
                     <img
                       :src="item.image"
-                      alt=""
+                      :alt="item.name"
                       width="60"
+                      height="60"
                       class="me-3"
                       style="object-fit: cover"
                     />
@@ -212,26 +262,29 @@
                     <div class="d-flex align-items-center">
                       <button
                         class="btn btn-outline-secondary"
-                        @click="decrementQty(index)"
+                        @click="decrementQty(item.id)"
+                        :disabled="cartStore.isLoading || item.quantity <= 1"
                       >
                         -
                       </button>
                       <span class="mx-3">{{ item.quantity }}</span>
                       <button
                         class="btn btn-outline-secondary"
-                        @click="incrementQty(index)"
+                        @click="incrementQty(item.id)"
+                        :disabled="cartStore.isLoading"
                       >
                         +
                       </button>
                     </div>
                   </td>
                   <td class="align-middle">
-                    {{ formatCurrency(item.price * item.quantity) }}
+                    {{ formatCurrency(calculateSubtotal(item)) }}
                   </td>
                   <td class="align-middle">
                     <button
                       class="btn btn-outline-danger"
-                      @click="removeItem(index)"
+                      @click="removeItem(item.id)"
+                      :disabled="cartStore.isLoading"
                     >
                       <i class="fas fa-times"></i>
                     </button>
@@ -246,10 +299,15 @@
         <div class="col-12 col-md-4 mt-4 mt-md-0">
           <div class="card p-4 shadow-sm">
             <h5>Cart Total</h5>
-            <p class="fs-5 fw-bold">Total: {{ formatCurrency(totalPrice) }}</p>
+            <p class="fs-5 fw-bold">
+              Total: {{ formatCurrency(cartStore.getTotalPrice) }}
+            </p>
             <router-link
               to="/checkout"
               class="btn btn-success w-100 rounded-pill py-2 mt-3"
+              :disabled="
+                cartStore.isLoading || cartStore.getCartItems.length === 0
+              "
             >
               Proceed to Checkout
             </router-link>
@@ -257,110 +315,217 @@
         </div>
       </div>
     </div>
+
+    <!-- Toast notification -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+      <div
+        :class="['toast', 'align-items-center', { show: showToast }]"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+      >
+        <div class="d-flex">
+          <div class="toast-body">
+            <i :class="toastIcon"></i>
+            {{ toastMessage }}
+          </div>
+          <button
+            type="button"
+            class="btn-close me-2 m-auto"
+            @click="showToast = false"
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
+    </div>
+
     <Footer />
   </div>
 </template>
 
 <script>
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useCartStore } from "../../stores/cart";
+import { useWishlistStore } from "../../stores/wishlist";
+import { useAuthStore } from "../../stores/auth";
 import Footer from "../../components/MarketFooter.vue";
 
 export default {
-  name: "HomePage",
+  name: "ShoppingCart",
   components: {
     Footer,
   },
-  data() {
-    return {
-      searchQuery: "",
-      cartItems: [
-        {
-          name: "GOLDEN PENNY FLOUR",
-          price: 62000,
-          quantity: 7,
-          image: "https://via.placeholder.com/60x60.png?text=Flour",
-        },
-        {
-          name: "Green Apple",
-          price: 500,
-          quantity: 1,
-          image: "https://via.placeholder.com/60x60.png?text=Apple",
-        },
-        {
-          name: "Fresh Orange",
-          price: 300,
-          quantity: 2,
-          image: "https://via.placeholder.com/60x60.png?text=Orange",
-        },
-        {
-          name: "Fresh Banana",
-          price: 200,
-          quantity: 3,
-          image: "https://via.placeholder.com/60x60.png?text=Banana",
-        },
-      ],
-      wishlistItemCount: 0,
-      cartItemCount: 0,
-      dropdownOpen: false,
+  setup() {
+    const cartStore = useCartStore();
+    const wishlistStore = useWishlistStore();
+    const authStore = useAuthStore();
+    const router = useRouter();
+
+    const searchQuery = ref("");
+    const dropdownOpen = ref(false);
+    let dropdownTimeout = null;
+
+    // Toast notification state
+    const showToast = ref(false);
+    const toastMessage = ref("");
+    const toastIcon = ref("bi bi-check-circle-fill text-success me-2");
+
+    const showToastNotification = (message, type = "success") => {
+      toastMessage.value = message;
+      toastIcon.value =
+        type === "success"
+          ? "bi bi-check-circle-fill text-success me-2"
+          : "bi bi-exclamation-circle-fill text-danger me-2";
+      showToast.value = true;
+
+      // Auto-hide toast after 3 seconds
+      setTimeout(() => {
+        showToast.value = false;
+      }, 3000);
     };
-  },
-  computed: {
-    totalPrice() {
-      return this.cartItems.reduce((total, item) => {
-        return total + item.price * item.quantity;
-      }, 0);
-    },
-  },
-  methods: {
-    handleSearch() {
-      console.log("Searching for:", this.searchQuery);
-    },
-    formatCurrency(value) {
-      return new Intl.NumberFormat("en-MU", {
-        style: "currency",
-        currency: "MUR",
-      }).format(value);
-    },
-    goToWishlist() {
-      this.$router.push("/wishlist");
-    },
-    goToCart() {
-      this.$router.push("/cart");
-    },
-    incrementQty(index) {
-      this.cartItems[index].quantity++;
-    },
-    decrementQty(index) {
-      if (this.cartItems[index].quantity > 1) {
-        this.cartItems[index].quantity--;
+
+    const handleSearch = () => {
+      if (searchQuery.value) {
+        router.push({ path: "/search", query: { q: searchQuery.value } });
       }
-    },
-    removeItem(index) {
-      this.cartItems.splice(index, 1);
-    },
-    openDropdown() {
-      if (this.dropdownTimeout) {
-        clearTimeout(this.dropdownTimeout);
-        this.dropdownTimeout = null;
+    };
+
+    const goToWishlist = () => {
+      router.push("/wishlist");
+    };
+
+    const goToCart = () => {
+      router.push("/cart");
+    };
+
+    const incrementQty = async (itemId) => {
+      try {
+        const result = await cartStore.updateCartItem(itemId, 1);
+        if (result.success) {
+          showToastNotification("Quantity updated", "success");
+        } else {
+          showToastNotification("Failed to update quantity", "error");
+        }
+      } catch (error) {
+        console.error("Error incrementing quantity:", error);
+        showToastNotification("An error occurred", "error");
       }
-      this.dropdownOpen = true;
-    },
-    closeDropdown() {
-      // Delay closing the dropdown to allow the user to move the mouse to the menu
-      this.dropdownTimeout = setTimeout(() => {
-        this.dropdownOpen = false;
-      }, 300); // Adjust delay (in ms) as needed
-    },
-    logout() {
-      // Logout logic here
-      this.$router.push("/login");
-    },
-  },
-  mounted() {
-    const storedCartItems = JSON.parse(localStorage.getItem("cartItems"));
-    if (storedCartItems) {
-      this.cartItems = storedCartItems;
-    }
-    this.cartItemCount = this.cartItems.length;
+    };
+
+    const decrementQty = async (itemId) => {
+      try {
+        const result = await cartStore.updateCartItem(itemId, -1);
+        if (result.success) {
+          showToastNotification("Quantity updated", "success");
+        } else {
+          showToastNotification("Failed to update quantity", "error");
+        }
+      } catch (error) {
+        console.error("Error decrementing quantity:", error);
+        showToastNotification("An error occurred", "error");
+      }
+    };
+
+    const removeItem = async (itemId) => {
+      try {
+        const result = await cartStore.removeCartItem(itemId);
+        if (result.success) {
+          showToastNotification("Item removed from cart", "success");
+        } else {
+          showToastNotification("Failed to remove item", "error");
+        }
+      } catch (error) {
+        console.error("Error removing item:", error);
+        showToastNotification("An error occurred", "error");
+      }
+    };
+
+    const calculateSubtotal = (item) => {
+      const price =
+        typeof item.price === "string" && item.price.startsWith("Rs")
+          ? parseFloat(item.price.replace("Rs", "").trim())
+          : parseFloat(item.price);
+
+      return price * item.quantity;
+    };
+
+    const formatCurrency = (value) => {
+      // Format with Rs prefix and thousand separators
+      return `Rs ${parseFloat(value).toLocaleString()}`;
+    };
+
+    const openDropdown = () => {
+      if (dropdownTimeout) {
+        clearTimeout(dropdownTimeout);
+        dropdownTimeout = null;
+      }
+      dropdownOpen.value = true;
+    };
+
+    const closeDropdown = () => {
+      dropdownTimeout = setTimeout(() => {
+        dropdownOpen.value = false;
+      }, 300);
+    };
+
+    const logout = () => {
+      authStore.logout();
+      router.push("/login");
+    };
+
+    // Fetch cart data when component mounts
+    onMounted(async () => {
+      // Check if token exists
+      if (authStore.token) {
+        try {
+          // Load cart data - use await Promise.allSettled to prevent one error from blocking the other
+          const [cartResult, wishlistResult] = await Promise.allSettled([
+            cartStore.fetchCartItems(),
+            wishlistStore.fetchWishlistItems(),
+          ]);
+
+          // Log results but don't redirect on failure
+          if (cartResult.status === "rejected") {
+            console.error("Failed to load cart items:", cartResult.reason);
+          }
+
+          if (wishlistResult.status === "rejected") {
+            console.error(
+              "Failed to load wishlist items:",
+              wishlistResult.reason
+            );
+          }
+        } catch (error) {
+          console.error("Error loading cart/wishlist data:", error);
+          // Don't redirect for general errors - just show error in UI
+        }
+      } else {
+        // Only redirect if there's no token at all
+        router.push("/login");
+      }
+    });
+
+    return {
+      cartStore,
+      wishlistStore,
+      searchQuery,
+      dropdownOpen,
+      showToast,
+      toastMessage,
+      toastIcon,
+      handleSearch,
+      goToWishlist,
+      goToCart,
+      incrementQty,
+      decrementQty,
+      removeItem,
+      calculateSubtotal,
+      formatCurrency,
+      openDropdown,
+      closeDropdown,
+      logout,
+    };
   },
 };
 </script>
@@ -387,6 +552,18 @@ a {
 
 .green {
   background-color: rgb(25, 135, 84);
+}
+
+/* Toast styling */
+.toast {
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-left: 4px solid #198754;
+}
+
+.toast.show {
+  opacity: 1;
 }
 
 /* CSS */
