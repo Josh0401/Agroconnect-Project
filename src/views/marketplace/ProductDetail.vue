@@ -292,7 +292,7 @@
               {{ productReviews.length === 1 ? "Review" : "Reviews" }}</span
             >
             <span class="ms-3 text-muted small"
-              >SKU: #SLT142{{ product.id || "SKU4321" }}</span
+              >SKU: #SLT14{{ product.id || "SKU4321" }}</span
             >
           </div>
         </div>
