@@ -374,11 +374,43 @@ export default {
 
     const moveToCart = async (wishlistItemId) => {
       try {
-        const result = await wishlistStore.moveToCart(wishlistItemId);
-        if (result.success) {
-          showToastNotification("Item moved to cart", "success");
+        // First, find the wishlist item by ID
+        const wishlistItem = wishlistStore.getWishlistItems.find(
+          (item) => item.id === wishlistItemId
+        );
+
+        if (!wishlistItem) {
+          showToastNotification("Item not found in wishlist", "error");
+          return;
+        }
+
+        // Step 1: Add the item to the cart
+        const addToCartResult = await cartStore.addToCart(
+          wishlistItem.product_id,
+          1
+        );
+
+        if (!addToCartResult.success) {
+          showToastNotification(
+            addToCartResult.message || "Failed to add item to cart",
+            "error"
+          );
+          return;
+        }
+
+        // Step 2: Remove the item from the wishlist
+        const removeResult = await wishlistStore.removeFromWishlist(
+          wishlistItemId
+        );
+
+        if (removeResult.success) {
+          showToastNotification("Item moved to cart successfully", "success");
         } else {
-          showToastNotification("Failed to move item to cart", "error");
+          // Item was added to cart but not removed from wishlist
+          showToastNotification(
+            "Item added to cart but not removed from wishlist",
+            "error"
+          );
         }
       } catch (error) {
         console.error("Error moving item to cart:", error);
