@@ -35,7 +35,7 @@
         <div class="col-md-3 col-sm-6">
           <div class="card dashboard-card p-3 card-total-products">
             <h6 class="text-muted">Total Products</h6>
-            <h3 class="fw-bold">16</h3>
+            <h3 class="fw-bold">{{ productCount }}</h3>
             <div class="chart-container mt-2">
               <!-- Simple SVG Bar Chart -->
               <svg width="100%" height="60" viewBox="0 0 100 30" preserveAspectRatio="none">
@@ -214,36 +214,30 @@
 
 <script>
 import Sidebar from "../../../components/DashboardSidebar.vue";
+import { useProductStore } from "../../../stores/product"; // Import the product store
+import { ref, computed, onMounted } from "vue";
 
 export default {
   name: "DashboardPage",
   components: { 
     Sidebar
   },
-  data() {
+  setup() {
+    const productStore = useProductStore();
+    const productCount = ref(0);
+    
+    // Fetch products on component mount to get the count
+    onMounted(async () => {
+      try {
+        await productStore.fetchProducts();
+        productCount.value = productStore.getProducts.length;
+      } catch (error) {
+        console.error("Error fetching products for dashboard:", error);
+      }
+    });
+
     return {
-      keyMetrics: [
-        {
-          title: "Total Sales",
-          value: "Rs 4,000,000",
-          color: "card-total-sales",
-        },
-        {
-          title: "Total Products",
-          value: "16",
-          color: "card-total-products",
-        },
-        {
-          title: "Pending Sales",
-          value: "0",
-          color: "card-pending-sales",
-        },
-        {
-          title: "Completed Sales",
-          value: "71",
-          color: "card-completed-sales",
-        },
-      ],
+      productCount,
       ordersLast7days: 25,
       profitLast7days: "Rs 50,000",
       recentSales: [
@@ -263,7 +257,7 @@ export default {
         { id: "#SKU5760", name: "Beans", quantity: 9 },
       ]
     };
-  },
+  }
 };
 </script>
 
