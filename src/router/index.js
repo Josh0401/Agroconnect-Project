@@ -217,7 +217,7 @@ const routes = [
     meta: { hideHeader: true, hideFooter: true },
   },
   {
-    path: "/order-successful",
+    path: "/order-success",
     component: OrderSuccesful,
     meta: { hideHeader: true, hideFooter: true },
   },

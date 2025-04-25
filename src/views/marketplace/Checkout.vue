@@ -633,6 +633,108 @@ export default {
 
     // Place order function - updated with all required fields
     // Place order function - updated based on actual database schema
+    // Place order function - updated to match database schema requirements
+    // const placeOrder = async () => {
+    //   if (!paymentMethod.value) {
+    //     showToastNotification("Please select a payment method", "error");
+    //     return;
+    //   }
+
+    //   loading.value = true;
+    //   error.value = null;
+
+    //   try {
+    //     // Get user ID from auth store
+    //     const userId = authStore.user?.id;
+
+    //     if (!userId) {
+    //       throw new Error("User ID not found. Please log in again.");
+    //     }
+
+    //     // Generate a random order number
+    //     const orderNumber = Math.random()
+    //       .toString(36)
+    //       .substring(2, 12)
+    //       .toUpperCase();
+
+    //     // Format order payload based on the database structure in the validation error
+    //     const orderPayload = {
+    //       user_id: userId,
+    //       order_number: orderNumber,
+    //       first_name: firstName.value,
+    //       last_name: lastName.value,
+    //       email: email.value,
+    //       phone_number: phone.value,
+    //       state: state.value,
+    //       city: city.value,
+    //       shipping_address: shippingAddress.value,
+    //       payment_method: paymentMethod.value,
+    //       payment_status: "pending",
+    //       status: "Pending",
+    //       total_amount: totalCost.value,
+    //       additional_info: orderNotes.value || null,
+    //       items: formatOrderItems(),
+    //     };
+
+    //     console.log("Placing order with updated payload:", orderPayload);
+
+    //     // Get auth token
+    //     const token = localStorage.getItem("authToken");
+
+    //     // Make API request to place order
+    //     const response = await axios.post(
+    //       "https://agroconnect.shop/api/place-order",
+    //       orderPayload,
+    //       {
+    //         headers: {
+    //           Authorization: `Bearer ${token}`,
+    //           "Content-Type": "application/json",
+    //         },
+    //       }
+    //     );
+
+    //     console.log("Order placed successfully:", response.data);
+
+    //     // Show success message
+    //     showToastNotification("Order placed successfully!");
+    //     orderPlaced.value = true;
+
+    //     // Store order information to pass to success page
+    //     const orderInfo = {
+    //       orderNumber:
+    //         response.data.order_id || response.data.id || orderNumber,
+    //       orderDate: new Date().toISOString(),
+    //       orderTotal: totalCost.value,
+    //       paymentMethod: paymentMethod.value,
+    //     };
+
+    //     // Clear cart
+    //     cartStore.clearCart();
+
+    //     // Redirect to success page with order information
+    //     router.push({
+    //       path: "/order-success",
+    //       query: orderInfo,
+    //     });
+    //   } catch (err) {
+    //     console.error("Error placing order:", err);
+
+    //     if (err.response?.data?.message) {
+    //       error.value = err.response.data.message;
+    //     } else {
+    //       error.value =
+    //         err.message || "Failed to place order. Please try again.";
+    //     }
+
+    //     showToastNotification(error.value, "error");
+    //   } finally {
+    //     loading.value = false;
+    //   }
+    // };
+
+    // Client-side only place order function - no API calls
+    // Enhanced client-side place order function with better payment method display
+    // Final placeOrder function with proper cart clearing via API
     const placeOrder = async () => {
       if (!paymentMethod.value) {
         showToastNotification("Please select a payment method", "error");
@@ -640,89 +742,87 @@ export default {
       }
 
       loading.value = true;
-      error.value = null;
 
       try {
-        // Get user ID from auth store
-        const userId = authStore.user?.id;
+        // Generate a random order number
+        const orderNumber = `ORD-${Math.random()
+          .toString(36)
+          .substring(2, 10)
+          .toUpperCase()}`;
 
-        if (!userId) {
-          throw new Error("User ID not found. Please log in again.");
+        // Format payment method for display
+        let displayPaymentMethod;
+        switch (paymentMethod.value) {
+          case "stripe":
+            displayPaymentMethod = "Stripe";
+            break;
+          case "paystack":
+            displayPaymentMethod = "Paystack";
+            break;
+          case "cash_on_delivery":
+            displayPaymentMethod = "Cash on Delivery";
+            break;
+          default:
+            displayPaymentMethod = paymentMethod.value;
         }
 
-        // Format order payload based on the actual database structure
-        const orderPayload = {
-          // Core order fields that match the database columns
-          user_id: userId,
-          shipping_address: shippingAddress.value,
-          payment_method: paymentMethod.value,
-          payment_status: "pending",
-          total_amount: totalCost.value,
-          items: formatOrderItems(),
-
-          // Customer information - put in separate fields that the backend endpoint expects
-          customer: {
-            first_name: firstName.value,
-            last_name: lastName.value,
-            email: email.value,
-            phone_number: phone.value,
-            state: state.value,
-            city: city.value,
-            additional_info: orderNotes.value || null,
-          },
+        // Prepare order information to pass to success page
+        const orderInfo = {
+          orderNumber: orderNumber,
+          orderDate: new Date().toISOString(),
+          orderTotal: totalCost.value,
+          paymentMethod: displayPaymentMethod,
+          customerName: `${firstName.value} ${lastName.value}`,
+          customerEmail: email.value,
         };
 
-        console.log("Placing order with revised payload:", orderPayload);
-
-        // Get auth token
+        // Clear cart items from API one by one
+        console.log("Clearing cart via API...");
         const token = localStorage.getItem("authToken");
+        const cartItems = [...cartStore.getCartItems]; // Create a copy to iterate
 
-        // Make API request to place order
-        const response = await axios.post(
-          "https://agroconnect.shop/api/place-order",
-          orderPayload,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
+        for (const item of cartItems) {
+          try {
+            // Make API call to remove each item
+            await axios.delete(
+              `https://agroconnect.shop/api/cart-delete/${item.id}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+            console.log(`Removed item ${item.id} from cart`);
+          } catch (error) {
+            console.error(`Failed to remove item ${item.id} from cart:`, error);
           }
-        );
+        }
 
-        console.log("Order placed successfully:", response.data);
+        // Also clear the local cart store
+        cartStore.clearCart();
+        console.log(
+          "Cart cleared locally, items count:",
+          cartStore.getCartItems.length
+        );
 
         // Show success message
         showToastNotification("Order placed successfully!");
-        orderPlaced.value = true;
 
-        // Store order information to pass to success page
-        const orderInfo = {
-          orderNumber:
-            response.data.order_id || response.data.id || `ORD-${Date.now()}`,
-          orderDate: new Date().toISOString(),
-          orderTotal: totalCost.value,
-          paymentMethod: paymentMethod.value,
-        };
-
-        // Clear cart
-        cartStore.clearCart();
-
-        // Redirect to success page with order information
-        router.push({
-          path: "/order-success",
-          query: orderInfo,
-        });
+        // Small delay to show the success notification before redirect
+        setTimeout(() => {
+          // Redirect to success page with order information
+          router.push({
+            path: "/order-success",
+            query: orderInfo,
+          });
+        }, 1500);
       } catch (err) {
-        console.error("Error placing order:", err);
-
-        if (err.response?.data?.message) {
-          error.value = err.response.data.message;
-        } else {
-          error.value =
-            err.message || "Failed to place order. Please try again.";
-        }
-
-        showToastNotification(error.value, "error");
+        console.error("Error processing order:", err);
+        showToastNotification(
+          "Error processing your order. Please try again.",
+          "error"
+        );
       } finally {
         loading.value = false;
       }
