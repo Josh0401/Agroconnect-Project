@@ -294,6 +294,9 @@
 <script>
 import { useRoute, useRouter } from "vue-router";
 import { useProductStore } from "../../stores/product"; // Import product store
+import { useCartStore } from "../../stores/cart"; // Import cart store
+import { useWishlistStore } from "../../stores/wishlist"; // Import wishlist store
+import { useAuthStore } from "../../stores/auth"; // Import auth store
 import { ref, computed, onMounted, watch } from "vue";
 import Footer from "../../components/MarketFooter.vue";
 import LanguageDropdown from "../../components/LanguageDropdown.vue";
@@ -309,17 +312,19 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const productStore = useProductStore();
+    const cartStore = useCartStore(); // Add cart store
+    const wishlistStore = useWishlistStore(); // Add wishlist store
+    const authStore = useAuthStore(); // Add auth store
 
     // State
-    const isLoggedIn = ref(false);
+    const isLoggedIn = computed(() => !!authStore.token);
     const currentLanguage = ref("en");
     const t = ref(translations.en);
     const loading = ref(true);
     const selectedCategory = ref("All");
     const searchQuery = ref("");
     const dropdownOpen = ref(false);
-    const wishlistItemCount = ref(0);
-    const cartItems = ref([]);
+    const notificationCount = ref(0);
     let dropdownTimeout = null;
 
     // Category list - includes all possible product categories
@@ -373,10 +378,9 @@ export default {
       });
     });
 
-    // Computed: Cart item count
-    const cartItemCount = computed(() => {
-      return cartItems.value.reduce((total, item) => total + item.quantity, 0);
-    });
+    // Computed properties for cart and wishlist counts - use the store getters
+    const cartItemCount = computed(() => cartStore.getTotalItems);
+    const wishlistItemCount = computed(() => wishlistStore.getWishlistCount);
 
     // Watch for route changes to update category
     watch(
@@ -400,11 +404,6 @@ export default {
       });
     };
 
-    const checkLoginStatus = () => {
-      const token = localStorage.getItem("authToken");
-      isLoggedIn.value = !!token;
-    };
-
     const openDropdown = () => {
       if (dropdownTimeout) {
         clearTimeout(dropdownTimeout);
@@ -420,7 +419,10 @@ export default {
     };
 
     const logout = () => {
-      localStorage.removeItem("authToken");
+      authStore.logout();
+      // Clear cart and wishlist data on logout
+      cartStore.clearCart();
+      wishlistStore.clearWishlist();
       isLoggedIn.value = false;
       router.push("/login");
     };
@@ -467,8 +469,13 @@ export default {
 
     // Lifecycle hooks
     onMounted(async () => {
-      // Check login status
-      checkLoginStatus();
+      // Check if token exists in localStorage
+      const token = localStorage.getItem("authToken");
+      if (token && !authStore.token) {
+        // Set the auth state if token exists but not set in store
+        authStore.token = token;
+        isLoggedIn.value = true;
+      }
 
       // Load saved language preference
       const savedLang = localStorage.getItem("preferredLanguage");
@@ -482,12 +489,26 @@ export default {
         selectedCategory.value = route.query.category;
       }
 
-      // Fetch products if not already loaded
+      // Fetch data - products, cart and wishlist
       loading.value = true;
-      if (productStore.getProducts.length === 0) {
-        await productStore.fetchProducts();
+      try {
+        // Fetch products if they haven't been loaded yet
+        if (productStore.getProducts.length === 0) {
+          await productStore.fetchProducts();
+        }
+
+        // If user is logged in, fetch cart and wishlist data
+        if (isLoggedIn.value) {
+          await Promise.allSettled([
+            cartStore.fetchCartItems(),
+            wishlistStore.fetchWishlistItems(),
+          ]);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        loading.value = false;
       }
-      loading.value = false;
     });
 
     return {
@@ -500,7 +521,6 @@ export default {
       searchQuery,
       dropdownOpen,
       wishlistItemCount,
-      cartItems,
       filteredProducts,
       cartItemCount,
       selectCategory,
@@ -511,6 +531,8 @@ export default {
       handleLanguageChange,
       goToCart,
       goToWishlist,
+      cartStore,
+      wishlistStore,
     };
   },
 };

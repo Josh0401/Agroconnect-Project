@@ -412,6 +412,8 @@
 <script>
 import { useAuthStore } from "../../stores/auth"; // Import auth store
 import { useProductStore } from "../../stores/product"; // Import product store
+import { useCartStore } from "../../stores/cart"; // Import cart store
+import { useWishlistStore } from "../../stores/wishlist"; // Import wishlist store
 import Footer from "../../components/MarketFooter.vue";
 import { computed, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
@@ -424,6 +426,8 @@ export default {
   setup() {
     const authStore = useAuthStore();
     const productStore = useProductStore();
+    const cartStore = useCartStore(); // Add cart store
+    const wishlistStore = useWishlistStore(); // Add wishlist store
     const router = useRouter();
 
     // Auth state
@@ -433,8 +437,10 @@ export default {
     const dropdownOpen = ref(false);
     let dropdownTimeout = null;
     const searchQuery = ref("");
-    const cartItems = ref([]);
-    const wishlistItemCount = ref(0);
+
+    // Computed properties for cart and wishlist counts - use the store getters
+    const cartItemCount = computed(() => cartStore.getTotalItems);
+    const wishlistItemCount = computed(() => wishlistStore.getWishlistCount);
 
     // Methods
     const openDropdown = () => {
@@ -453,6 +459,9 @@ export default {
 
     const handleLogout = () => {
       authStore.logout();
+      // Clear cart and wishlist data on logout
+      cartStore.clearCart();
+      wishlistStore.clearWishlist();
       // Optionally add a success message or redirect
       location.reload(); // Refresh the page to reflect logged out state
     };
@@ -484,11 +493,6 @@ export default {
       }
     };
 
-    // Computed properties
-    const cartItemCount = computed(() => {
-      return cartItems.value.reduce((total, item) => total + item.quantity, 0);
-    });
-
     // Fetch products when component mounts
     onMounted(async () => {
       // Check if token exists in localStorage
@@ -496,6 +500,18 @@ export default {
       if (token && !authStore.token) {
         // Set the auth state if token exists but not set in store
         authStore.token = token;
+
+        // If user is logged in, fetch cart and wishlist data
+        if (isLoggedIn.value) {
+          try {
+            await Promise.allSettled([
+              cartStore.fetchCartItems(),
+              wishlistStore.fetchWishlistItems(),
+            ]);
+          } catch (error) {
+            console.error("Error fetching cart/wishlist data:", error);
+          }
+        }
       }
 
       // Fetch products if they haven't been loaded yet
@@ -507,10 +523,10 @@ export default {
     return {
       isLoggedIn,
       productStore,
+      cartStore, // Export cart store for template
+      wishlistStore, // Export wishlist store for template
       dropdownOpen,
       searchQuery,
-      cartItems,
-      wishlistItemCount,
       openDropdown,
       closeDropdown,
       handleLogout,
@@ -518,6 +534,7 @@ export default {
       goToCart,
       goToWishlist,
       cartItemCount,
+      wishlistItemCount,
     };
   },
 };

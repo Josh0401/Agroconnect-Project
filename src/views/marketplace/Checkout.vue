@@ -426,6 +426,19 @@
                 Paystack
               </label>
             </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="paymentMethod"
+                id="cashOnDeliveryOption"
+                value="cash_on_delivery"
+                v-model="paymentMethod"
+              />
+              <label class="form-check-label" for="cashOnDeliveryOption">
+                Cash on Delivery
+              </label>
+            </div>
           </div>
         </div>
 
@@ -605,10 +618,12 @@ export default {
     };
 
     // Format items for order submission
+    // Format items for order submission
     const formatOrderItems = () => {
       return cartStore.getCartItems.map((item) => ({
         product_id: item.product_id,
         quantity: item.quantity,
+        price: item.price, // Add the price field
       }));
     };
 
@@ -616,6 +631,8 @@ export default {
     // This is the updated placeOrder function for your checkout component
     // Replace your existing placeOrder function with this one
 
+    // Place order function - updated with all required fields
+    // Place order function - updated based on actual database schema
     const placeOrder = async () => {
       if (!paymentMethod.value) {
         showToastNotification("Please select a payment method", "error");
@@ -633,16 +650,29 @@ export default {
           throw new Error("User ID not found. Please log in again.");
         }
 
-        // Format the order payload according to backend requirements
+        // Format order payload based on the actual database structure
         const orderPayload = {
+          // Core order fields that match the database columns
           user_id: userId,
           shipping_address: shippingAddress.value,
           payment_method: paymentMethod.value,
-          payment_status: "pending", // Assuming initial status is pending
+          payment_status: "pending",
+          total_amount: totalCost.value,
           items: formatOrderItems(),
+
+          // Customer information - put in separate fields that the backend endpoint expects
+          customer: {
+            first_name: firstName.value,
+            last_name: lastName.value,
+            email: email.value,
+            phone_number: phone.value,
+            state: state.value,
+            city: city.value,
+            additional_info: orderNotes.value || null,
+          },
         };
 
-        console.log("Placing order with payload:", orderPayload);
+        console.log("Placing order with revised payload:", orderPayload);
 
         // Get auth token
         const token = localStorage.getItem("authToken");

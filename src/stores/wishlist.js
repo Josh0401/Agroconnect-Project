@@ -1,4 +1,4 @@
-// Simplified wishlist.js - Using only product_id as requested by backend
+// simplified-wishlist.js - Pinia Store with product_id only
 import { defineStore } from "pinia";
 import axios from "axios";
 
@@ -102,7 +102,7 @@ export const useWishlistStore = defineStore("wishlist", {
       };
     },
 
-    // Add an item to the wishlist - SIMPLIFIED VERSION
+    // Add an item to the wishlist - SIMPLIFIED VERSION WITH PRODUCT_ID ONLY
     async addToWishlist(productId) {
       this.loading = true;
       this.error = null;
@@ -113,40 +113,16 @@ export const useWishlistStore = defineStore("wishlist", {
           product_id: productId,
         };
 
-        console.log("Adding to wishlist with simplified payload:", payload);
+        console.log("Adding to wishlist with product_id only:", payload);
 
-        // Try using URLSearchParams format
-        const params = new URLSearchParams();
-        params.append("product_id", productId);
-
-        // Make the request with both JSON and URL-encoded formats to see which one works
-        let response;
-        try {
-          // Try JSON format first
-          response = await axios.post(
-            `${this.apiBaseUrl}/wishlist/create`,
-            payload,
-            {
-              headers: this.getAuthHeaders(),
-            }
-          );
-        } catch (jsonError) {
-          console.log("JSON format failed, trying URL-encoded format");
-
-          // If JSON format fails, try URL-encoded format
-          const formHeaders = {
-            ...this.getAuthHeaders(),
-            "Content-Type": "application/x-www-form-urlencoded",
-          };
-
-          response = await axios.post(
-            `${this.apiBaseUrl}/wishlist/create`,
-            params,
-            {
-              headers: formHeaders,
-            }
-          );
-        }
+        // Make the request
+        const response = await axios.post(
+          `${this.apiBaseUrl}/wishlist/create`,
+          payload,
+          {
+            headers: this.getAuthHeaders(),
+          }
+        );
 
         console.log("Add to wishlist API response:", response.data);
 
@@ -223,51 +199,6 @@ export const useWishlistStore = defineStore("wishlist", {
           return { success: false, message: this.error, authError: true };
         } else {
           this.error = "Failed to remove item from wishlist.";
-          return { success: false, message: this.error };
-        }
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    // Move item from wishlist to cart
-    async moveToCart(wishlistItemId, quantity = 1) {
-      this.loading = true;
-      this.error = null;
-
-      try {
-        // Find the wishlist item to get the product_id
-        const wishlistItem = this.wishlistItems.find(
-          (item) => item.id === wishlistItemId
-        );
-
-        if (!wishlistItem) {
-          throw new Error("Wishlist item not found");
-        }
-
-        // Add to cart with simplified payload
-        const cartPayload = {
-          product_id: wishlistItem.product_id,
-          quantity: quantity,
-        };
-
-        await axios.post(`${this.apiBaseUrl}/add-to-cart`, cartPayload, {
-          headers: this.getAuthHeaders(),
-        });
-
-        // Remove from wishlist
-        await this.removeFromWishlist(wishlistItemId);
-
-        return { success: true };
-      } catch (error) {
-        console.error("Error moving item to cart:", error);
-
-        // Improved error handling
-        if (error.response && error.response.status === 401) {
-          this.error = "Authentication error. Please log in.";
-          return { success: false, message: this.error, authError: true };
-        } else {
-          this.error = "Failed to move item to cart.";
           return { success: false, message: this.error };
         }
       } finally {

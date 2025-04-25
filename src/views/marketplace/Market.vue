@@ -81,9 +81,9 @@
               >
                 <path
                   d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 
-                     .485.379L2.89 5H14.5a.5.5 0 0 1 
-                     .49.598l-1.5 7A.5.5 0 0 1 
-                     13 13H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM3.102 6l1.313 6h7.17l1.313-6H3.102zM5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"
+         .485.379L2.89 5H14.5a.5.5 0 0 1 
+         .49.598l-1.5 7A.5.5 0 0 1 
+         13 13H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM3.102 6l1.313 6h7.17l1.313-6H3.102zM5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm7 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"
                 />
               </svg>
               <span
@@ -375,9 +375,11 @@
 
 <script>
 import { useI18n } from "vue-i18n";
-import { useAuthStore } from "../../stores/auth"; // Import auth store
-import { useProductStore } from "../../stores/product"; // Import product store
-import { useRouter } from "vue-router"; // Add router import
+import { useAuthStore } from "../../stores/auth";
+import { useProductStore } from "../../stores/product";
+import { useCartStore } from "../../stores/cart"; // Import cart store
+import { useWishlistStore } from "../../stores/wishlist"; // Import wishlist store
+import { useRouter } from "vue-router";
 import Footer from "../../components/MarketFooter.vue";
 import Categories from "../../components/Categories.vue";
 import LanguageDropdown from "../../components/LanguageDropdown.vue";
@@ -398,6 +400,8 @@ export default {
     const { t } = useI18n();
     const authStore = useAuthStore();
     const productStore = useProductStore();
+    const cartStore = useCartStore(); // Add cart store
+    const wishlistStore = useWishlistStore(); // Add wishlist store
     const router = useRouter();
 
     // Auth state
@@ -407,9 +411,7 @@ export default {
     const dropdownOpen = ref(false);
     let dropdownTimeout = null;
 
-    // Search, cart, wishlist and notification state
-    const cartItems = ref([]);
-    const wishlistItemCount = ref(0);
+    // Get notification state
     const notificationCount = ref(3); // Example count, in reality would be fetched from an API
 
     // Computed properties for limited products
@@ -423,6 +425,10 @@ export default {
       const reversedProducts = [...productStore.getProducts];
       return reversedProducts.reverse().slice(0, 15);
     });
+
+    // Computed properties for cart and wishlist counts - use the store getters
+    const cartItemCount = computed(() => cartStore.getTotalItems);
+    const wishlistItemCount = computed(() => wishlistStore.getWishlistCount);
 
     // Methods
     const openDropdown = () => {
@@ -441,6 +447,9 @@ export default {
 
     const handleLogout = () => {
       authStore.logout();
+      // Clear cart and wishlist data on logout
+      cartStore.clearCart();
+      wishlistStore.clearWishlist();
       // Optionally add a success message or redirect
       location.reload(); // Refresh the page to reflect logged out state
     };
@@ -472,20 +481,26 @@ export default {
       }
     };
 
-    // Computed properties
-    const cartItemCount = computed(() => {
-      return cartItems.value.reduce((total, item) => total + item.quantity, 0);
-    });
-
-    // Check authentication and fetch products on component mount
+    // Check authentication and fetch products, cart, and wishlist on component mount
     onMounted(async () => {
       // Check if token exists in localStorage
       const token = localStorage.getItem("authToken");
       if (token && !authStore.token) {
         // Set the auth state if token exists but not set in store
         authStore.token = token;
-        // Optionally fetch user data and notifications
-        fetchNotifications();
+        // Fetch user data including cart and wishlist if user is logged in
+        if (isLoggedIn.value) {
+          try {
+            // Use Promise.allSettled to prevent one error from blocking the others
+            await Promise.allSettled([
+              cartStore.fetchCartItems(),
+              wishlistStore.fetchWishlistItems(),
+              fetchNotifications(),
+            ]);
+          } catch (error) {
+            console.error("Error fetching user data:", error);
+          }
+        }
       }
 
       // Fetch products if they haven't been loaded yet
@@ -499,16 +514,18 @@ export default {
       // In a real application, this would be an API call
       // For demo purposes, we're just setting a static value
       notificationCount.value = 3;
+      return Promise.resolve(); // Return a resolved promise for consistent async handling
     };
 
     return {
       t,
       isLoggedIn,
       productStore,
+      cartStore, // Export cart store for template
+      wishlistStore, // Export wishlist store for template
       limitedProducts,
       newestProducts,
       dropdownOpen,
-      cartItems,
       wishlistItemCount,
       notificationCount,
       openDropdown,

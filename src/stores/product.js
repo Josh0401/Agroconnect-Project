@@ -256,35 +256,53 @@ export const useProductStore = defineStore("product", {
     },
 
     // Update an existing product
+    // Update an existing product
     async updateProduct(productData) {
       this.loading = true;
       this.error = null;
 
       try {
+        console.log("Updating product with data:", productData);
+
         // If this is an API product, update via API
-        if (productData.apiProduct) {
+        if (productData.apiProduct || !productData.isDummy) {
           const formData = new FormData();
+
+          // Required fields
           formData.append("product_name", productData.name);
           formData.append("product_category", productData.category);
-          formData.append(
-            "product_unit_price",
-            productData.unitPrice.replace("Rs ", "")
-          );
-          formData.append(
-            "product_price",
-            productData.unitPrice.replace("Rs ", "")
-          );
+
+          // Handle price formatting - remove currency symbol if present
+          const unitPrice = productData.unitPrice.replace(/^Rs\s+/, "").trim();
+          formData.append("product_unit_price", unitPrice);
+          formData.append("product_price", unitPrice);
+
           formData.append("product_unit", productData.unit);
           formData.append("product_qty", productData.inStock.toString());
-          formData.append("id", productData.id);
 
+          // Do NOT append ID to formData
+          // formData.append("id", productData.id); // Remove this line
+
+          // Only add image if a new one was uploaded
           if (productData.imageFile) {
             formData.append("product_img", productData.imageFile);
           }
 
-          // Fixed URL for updating product
+          // For debugging - log FormData contents
+          for (let pair of formData.entries()) {
+            console.log(pair[0] + ": " + pair[1]);
+          }
+
+          // Get the actual numeric ID (without any prefix like #SLT14)
+          const rawId = productData.id
+            .toString()
+            .replace(/^#SLT14/, "")
+            .replace(/^#API/, "");
+          console.log("Using raw ID for API call:", rawId);
+
+          // Make the API call with the correct ID in the URL
           const response = await axios.put(
-            `${this.apiBaseUrl}/update-product/${productData.id}`,
+            `${this.apiBaseUrl}/update-product/${rawId}`,
             formData,
             { headers: this.getFormDataHeaders() }
           );
@@ -340,7 +358,9 @@ export const useProductStore = defineStore("product", {
           };
 
           // Update the product in the local array
-          const index = this.products.findIndex((p) => p.id === productData.id);
+          const index = this.products.findIndex(
+            (p) => p.id.toString() === productData.id.toString()
+          );
           if (index !== -1) {
             this.products[index] = updatedProduct;
           }
@@ -356,12 +376,13 @@ export const useProductStore = defineStore("product", {
         }
       } catch (error) {
         console.error("Error updating product:", error);
-        this.error = "Failed to update product on the server.";
-
-        // Update local product even if API fails
-        const index = this.products.findIndex((p) => p.id === productData.id);
-        if (index !== -1) {
-          this.products[index] = productData;
+        if (error.response) {
+          console.log("API error response:", error.response.data);
+          this.error = `Failed to update product: ${
+            error.response.data.message || error.message
+          }`;
+        } else {
+          this.error = "Failed to update product on the server.";
         }
 
         return { success: false, product: productData, error: error.message };
