@@ -172,13 +172,14 @@ export const useWishlistStore = defineStore("wishlist", {
     },
 
     // Remove item from wishlist
+
     async removeFromWishlist(wishlistItemId) {
       this.loading = true;
       this.error = null;
 
       try {
         await axios.delete(
-          `${this.apiBaseUrl}/wishlist/create/${wishlistItemId}`,
+          `${this.apiBaseUrl}/wishlist/delete/${wishlistItemId}`,
           {
             headers: this.getAuthHeaders(),
           }
