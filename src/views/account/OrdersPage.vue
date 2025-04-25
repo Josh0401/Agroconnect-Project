@@ -154,10 +154,12 @@
                   >
                 </li>
                 <li>
-                  <router-link class="dropdown-item" to="/account/groups-communities"
+                  <router-link
+                    class="dropdown-item"
+                    to="/account/groups-communities"
                     >Groups</router-link
                   >
-                </li> 
+                </li>
                 <li>
                   <a
                     class="dropdown-item"
@@ -182,12 +184,23 @@
         style="border-radius: 0"
       />
       <!-- Added breadcrumb navigation with home icon on the banner -->
-      <div class="breadcrumb-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center">
+      <div
+        class="breadcrumb-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center"
+      >
         <div class="container">
           <div class="d-flex align-items-center">
             <router-link to="/market" class="text-white me-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
-                <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146Z"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                fill="currentColor"
+                class="bi bi-house-door"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146Z"
+                />
               </svg>
             </router-link>
             <span class="text-white mx-2">&gt;</span>
@@ -463,6 +476,10 @@
 // Import the OrderDetails component
 import OrderDetails from "./OrderDetails.vue";
 import Footer from "../../components/MarketFooter.vue";
+import { useCartStore } from "../../stores/cart"; // Import cart store
+import { useWishlistStore } from "../../stores/wishlist"; // Import wishlist store
+import { useAuthStore } from "../../stores/auth"; // Import auth store
+import { computed, onMounted } from "vue";
 
 export default {
   name: "OrdersPage",
@@ -470,19 +487,44 @@ export default {
     OrderDetails,
     Footer,
   },
+  setup() {
+    const cartStore = useCartStore();
+    const wishlistStore = useWishlistStore();
+    const authStore = useAuthStore();
+
+    // Computed properties for cart and wishlist counts
+    const cartItemCount = computed(() => cartStore.getTotalItems);
+    const wishlistItemCount = computed(() => wishlistStore.getWishlistCount);
+
+    // Fetch cart and wishlist data on component mount
+    onMounted(async () => {
+      // Check if user is logged in
+      if (authStore.token) {
+        try {
+          // Load cart and wishlist data simultaneously
+          await Promise.allSettled([
+            cartStore.fetchCartItems(),
+            wishlistStore.fetchWishlistItems(),
+          ]);
+        } catch (error) {
+          console.error("Error fetching cart/wishlist data:", error);
+        }
+      }
+    });
+
+    return {
+      cartItemCount,
+      wishlistItemCount,
+      cartStore,
+      wishlistStore,
+    };
+  },
   data() {
     return {
       // For navbar
       dropdownOpen: false,
       dropdownTimeout: null,
       searchQuery: "",
-      cartItemCount: 0, // This should be updated based on your cart data
-      wishlistItemCount: 0, // This should be updated based on your wishlist data
-      dropdownOpen: false,
-      cartItems: [
-        // { name: "Product 1", quantity: 2 },
-        // { name: "Product 2", quantity: 1 },
-      ],
 
       // For filtering and pagination
       currentPage: 1,
@@ -729,9 +771,6 @@ export default {
     showEllipsis() {
       return this.totalPages > 5 && this.currentPage < this.totalPages - 2;
     },
-    cartItemCount() {
-      return this.cartItems.reduce((total, item) => total + item.quantity, 0);
-    },
   },
 
   mounted() {
@@ -748,7 +787,6 @@ export default {
 
   methods: {
     // Navbar methods
-
     openDropdown() {
       if (this.dropdownTimeout) {
         clearTimeout(this.dropdownTimeout);
@@ -764,7 +802,14 @@ export default {
     },
     logout() {
       console.log("Logging out...");
+      const authStore = useAuthStore();
 
+      // Clear cart and wishlist data on logout
+      this.cartStore.clearCart();
+      this.wishlistStore.clearWishlist();
+
+      // Logout the user
+      authStore.logout();
       this.$router.push("/login");
     },
 
@@ -890,8 +935,6 @@ export default {
         });
       }
     },
-
-    // Auth methods
 
     // Order action methods
     trackOrder(order) {

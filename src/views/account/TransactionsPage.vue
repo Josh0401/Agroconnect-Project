@@ -154,7 +154,9 @@
                   >
                 </li>
                 <li>
-                  <router-link class="dropdown-item" to="/account/groups-communities"
+                  <router-link
+                    class="dropdown-item"
+                    to="/account/groups-communities"
                     >Groups</router-link
                   >
                 </li>
@@ -182,12 +184,23 @@
         style="border-radius: 0"
       />
       <!-- Added breadcrumb navigation with home icon on the banner -->
-      <div class="breadcrumb-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center">
+      <div
+        class="breadcrumb-overlay position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center"
+      >
         <div class="container">
           <div class="d-flex align-items-center">
             <router-link to="/market" class="text-white me-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-house-door" viewBox="0 0 16 16">
-                <path d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146Z"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                fill="currentColor"
+                class="bi bi-house-door"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4.5a.5.5 0 0 0 .5-.5v-4h2v4a.5.5 0 0 0 .5.5H14a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146Z"
+                />
               </svg>
             </router-link>
             <span class="text-white mx-2">&gt;</span>
@@ -216,17 +229,22 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="transaction in paginatedTransactions" :key="transaction.id">
+            <tr
+              v-for="transaction in paginatedTransactions"
+              :key="transaction.id"
+            >
               <td class="transaction-id">#{{ transaction.id }}</td>
               <td>{{ formatSimpleDate(transaction.date) }}</td>
-              <td class="fw-medium">Rs {{ formatAmount(transaction.amount) }}</td>
+              <td class="fw-medium">
+                Rs {{ formatAmount(transaction.amount) }}
+              </td>
               <td>{{ capitalizeFirstLetter(transaction.method) }}</td>
               <td>
-                <span 
-                  class="status-badge" 
+                <span
+                  class="status-badge"
                   :class="{
-                    'confirmed': transaction.status === 'success',
-                    'failed': transaction.status === 'failed'
+                    confirmed: transaction.status === 'success',
+                    failed: transaction.status === 'failed',
                   }"
                 >
                   {{ getStatusDisplay(transaction.status) }}
@@ -242,31 +260,57 @@
         <nav aria-label="Transactions pagination">
           <ul class="pagination">
             <li class="page-item" :class="{ disabled: currentPage === 1 }">
-              <a class="page-link" href="#" aria-label="Previous" @click.prevent="changePage(currentPage - 1)">
+              <a
+                class="page-link"
+                href="#"
+                aria-label="Previous"
+                @click.prevent="changePage(currentPage - 1)"
+              >
                 <span aria-hidden="true">&laquo;</span>
               </a>
             </li>
-            <li 
-              v-for="page in displayedPages" 
-              :key="page" 
-              class="page-item" 
+            <li
+              v-for="page in displayedPages"
+              :key="page"
+              class="page-item"
               :class="{ active: currentPage === page }"
             >
               <template v-if="page === '...'">
                 <span class="page-link">{{ page }}</span>
               </template>
               <template v-else>
-                <a class="page-link" href="#" @click.prevent="changePage(page)">{{ page }}</a>
+                <a
+                  class="page-link"
+                  href="#"
+                  @click.prevent="changePage(page)"
+                  >{{ page }}</a
+                >
               </template>
             </li>
             <li class="page-item" v-if="showEllipsis">
               <span class="page-link">...</span>
             </li>
-            <li class="page-item" v-if="totalPages > 5 && !displayedPages.includes(totalPages)">
-              <a class="page-link" href="#" @click.prevent="changePage(totalPages)">{{ totalPages }}</a>
+            <li
+              class="page-item"
+              v-if="totalPages > 5 && !displayedPages.includes(totalPages)"
+            >
+              <a
+                class="page-link"
+                href="#"
+                @click.prevent="changePage(totalPages)"
+                >{{ totalPages }}</a
+              >
             </li>
-            <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-              <a class="page-link" href="#" aria-label="Next" @click.prevent="changePage(currentPage + 1)">
+            <li
+              class="page-item"
+              :class="{ disabled: currentPage === totalPages }"
+            >
+              <a
+                class="page-link"
+                href="#"
+                aria-label="Next"
+                @click.prevent="changePage(currentPage + 1)"
+              >
                 <span aria-hidden="true">&raquo;</span>
               </a>
             </li>
@@ -284,6 +328,10 @@
 // Import the OrderDetails component
 import OrderDetails from "./OrderDetails.vue";
 import Footer from "../../components/MarketFooter.vue";
+import { useCartStore } from "../../stores/cart"; // Import cart store
+import { useWishlistStore } from "../../stores/wishlist"; // Import wishlist store
+import { useAuthStore } from "../../stores/auth"; // Import auth store
+import { computed, onMounted } from "vue";
 
 export default {
   name: "TransactionHistory",
@@ -291,13 +339,43 @@ export default {
     OrderDetails,
     Footer,
   },
+  setup() {
+    const cartStore = useCartStore();
+    const wishlistStore = useWishlistStore();
+    const authStore = useAuthStore();
+
+    // Computed properties for cart and wishlist counts
+    const cartItemCount = computed(() => cartStore.getTotalItems);
+    const wishlistItemCount = computed(() => wishlistStore.getWishlistCount);
+
+    // Fetch cart and wishlist data on component mount
+    onMounted(async () => {
+      // Check if user is logged in
+      if (authStore.token) {
+        try {
+          // Load cart and wishlist data simultaneously
+          await Promise.allSettled([
+            cartStore.fetchCartItems(),
+            wishlistStore.fetchWishlistItems(),
+          ]);
+        } catch (error) {
+          console.error("Error fetching cart/wishlist data:", error);
+        }
+      }
+    });
+
+    return {
+      cartItemCount,
+      wishlistItemCount,
+      cartStore,
+      wishlistStore,
+    };
+  },
   data() {
     return {
       // For navbar
       dropdownTimeout: null,
       searchQuery: "",
-      cartItemCount: 0, // This should be updated based on your cart data
-      wishlistItemCount: 0, // This should be updated based on your wishlist data
       dropdownOpen: false,
       // For pagination
       currentPage: 1,
@@ -424,17 +502,13 @@ export default {
   },
 
   computed: {
-    cartItemCount() {
-      return this.cartItems ? this.cartItems.reduce((total, item) => total + item.quantity, 0) : 0;
-    },
-    
     // Pagination computed properties
     paginatedTransactions() {
       const start = (this.currentPage - 1) * this.itemsPerPage;
       const end = start + this.itemsPerPage;
       return this.transactions.slice(start, end);
     },
-    
+
     displayedPages() {
       if (this.totalPages <= 5) {
         return Array.from({ length: this.totalPages }, (_, i) => i + 1);
@@ -456,11 +530,11 @@ export default {
         this.currentPage + 2,
       ];
     },
-    
+
     // Determine if we should show ellipsis in pagination
     showEllipsis() {
       return this.totalPages > 5 && this.currentPage < this.totalPages - 2;
-    }
+    },
   },
 
   methods: {
@@ -469,11 +543,11 @@ export default {
       const options = {
         day: "numeric",
         month: "short",
-        year: "numeric"
+        year: "numeric",
       };
       return new Date(dateStr).toLocaleDateString(undefined, options);
     },
-    
+
     // Keep the original date formatter for other uses
     formatDate(dateStr) {
       const options = {
@@ -486,28 +560,28 @@ export default {
       };
       return new Date(dateStr).toLocaleString(undefined, options);
     },
-    
+
     formatAmount(amount) {
       return amount.toLocaleString();
     },
-    
+
     // Helper to capitalize first letter
     capitalizeFirstLetter(string) {
       return string.charAt(0).toUpperCase() + string.slice(1);
     },
-    
+
     // Convert status to display format
     getStatusDisplay(status) {
-      switch(status) {
-        case 'success':
-          return 'Confirmed';
-        case 'failed':
-          return 'Failed';
+      switch (status) {
+        case "success":
+          return "Confirmed";
+        case "failed":
+          return "Failed";
         default:
           return status.charAt(0).toUpperCase() + status.slice(1);
       }
     },
-    
+
     // Navbar methods
     openDropdown() {
       if (this.dropdownTimeout) {
@@ -516,16 +590,24 @@ export default {
       }
       this.dropdownOpen = true;
     },
-    
+
     closeDropdown() {
       // Delay closing the dropdown to allow the user to move the mouse to the menu
       this.dropdownTimeout = setTimeout(() => {
         this.dropdownOpen = false;
       }, 300); // Adjust delay (in ms) as needed
     },
-    
+
     logout() {
       console.log("Logging out...");
+      const authStore = useAuthStore();
+
+      // Clear cart and wishlist data on logout
+      this.cartStore.clearCart();
+      this.wishlistStore.clearWishlist();
+
+      // Logout the user
+      authStore.logout();
       this.$router.push("/login");
     },
 
@@ -544,16 +626,23 @@ export default {
       // Navigate to the cart page
       this.$router.push("/cart");
     },
-    
+
+    goToWishlist() {
+      // Navigate to the wishlist page
+      this.$router.push("/wishlist");
+    },
+
     // Pagination method
     changePage(page) {
       if (page >= 1 && page <= this.totalPages) {
         this.currentPage = page;
         // Scroll to top of table
         this.$nextTick(() => {
-          const tableTop = document.querySelector('.transactions-table-container');
+          const tableTop = document.querySelector(
+            ".transactions-table-container"
+          );
           if (tableTop) {
-            tableTop.scrollIntoView({ behavior: 'smooth' });
+            tableTop.scrollIntoView({ behavior: "smooth" });
           }
         });
       }
@@ -578,9 +667,9 @@ export default {
 }
 
 /* Global cursor styles for all clickable elements */
-button, 
-a, 
-.btn, 
+button,
+a,
+.btn,
 [role="button"],
 select,
 input[type="submit"],
@@ -589,7 +678,7 @@ input[type="button"] {
   cursor: pointer;
 }
 
-input[disabled], 
+input[disabled],
 button[disabled],
 .btn.disabled,
 a.disabled,

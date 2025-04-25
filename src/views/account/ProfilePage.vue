@@ -624,12 +624,49 @@
 
 <script>
 import Footer from "../../components/MarketFooter.vue";
-import { useAuthStore } from "../../stores/auth"; // Update path if needed
+import { useAuthStore } from "../../stores/auth"; // Import auth store
+import { useCartStore } from "../../stores/cart"; // Import cart store
+import { useWishlistStore } from "../../stores/wishlist"; // Import wishlist store
+import { computed, onMounted } from "vue";
+import LanguageDropdown from "../../components/LanguageDropdown.vue";
 
 export default {
   name: "ProfilePage",
   components: {
     Footer,
+    LanguageDropdown,
+  },
+  setup() {
+    const authStore = useAuthStore();
+    const cartStore = useCartStore(); // Add cart store
+    const wishlistStore = useWishlistStore(); // Add wishlist store
+
+    // Computed properties for cart and wishlist counts
+    const cartItemCount = computed(() => cartStore.getTotalItems);
+    const wishlistItemCount = computed(() => wishlistStore.getWishlistCount);
+
+    // Fetch cart and wishlist data on component mount
+    onMounted(async () => {
+      // Check if user is logged in
+      if (authStore.token) {
+        try {
+          // Load cart and wishlist data simultaneously
+          await Promise.allSettled([
+            cartStore.fetchCartItems(),
+            wishlistStore.fetchWishlistItems(),
+          ]);
+        } catch (error) {
+          console.error("Error fetching cart/wishlist data:", error);
+        }
+      }
+    });
+
+    return {
+      cartItemCount,
+      wishlistItemCount,
+      cartStore,
+      wishlistStore,
+    };
   },
   data() {
     return {
@@ -665,7 +702,7 @@ export default {
         phone: "",
       },
 
-      // Password change data (keeping as is per request)
+      // Password change data
       passwords: {
         current: "",
         new: "",
@@ -679,23 +716,9 @@ export default {
 
       // Other UI state
       searchQuery: "",
-      cartItems: [],
-
-      cartItemCount: 0,
-      wishlistItemCount: 0,
-
       dropdownOpen: false,
       dropdownTimeout: null,
     };
-  },
-
-  computed: {
-    profileImageUrl() {
-      return this.user.profileImage || this.defaultProfileImage;
-    },
-    cartItemCount() {
-      return this.cartItems.reduce((total, item) => total + item.quantity, 0);
-    },
   },
 
   mounted() {
@@ -726,6 +749,14 @@ export default {
     // Navigation methods
     logout() {
       console.log("Logging out...");
+      const authStore = useAuthStore();
+
+      // Clear cart and wishlist data on logout
+      this.cartStore.clearCart();
+      this.wishlistStore.clearWishlist();
+
+      // Logout the user
+      authStore.logout();
       this.$router.push("/login");
     },
     handleSearch() {
@@ -907,7 +938,7 @@ export default {
       }
     },
 
-    // Keeping the password change method as is, per your request
+    // Password change method
     changePassword() {
       this.passwordUpdateMessage = "";
 
@@ -931,20 +962,6 @@ export default {
 
       this.passwordUpdateStatus = true;
       this.passwordUpdateMessage = "Password changed successfully!";
-    },
-
-    // Navigation methods
-    handleSearch() {
-      const query = this.searchQuery.trim();
-      if (query) {
-        console.log("Searching for:", query);
-      }
-    },
-
-    logout() {
-      const authStore = useAuthStore();
-      authStore.logout();
-      this.$router.push("/login");
     },
   },
 };
